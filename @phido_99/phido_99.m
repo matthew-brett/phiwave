@@ -3,8 +3,8 @@ function [o, others] = phido_99(des, params, phido_o)
 % FORMAT [o, others] = phido_99(des, params, phido_o)
 %
 % Inputs  
-% des     - SPM design, which can be a mardo object, or another SPM design
-%           format recognized by the mardo constructor - see help mardo for
+% des     - SPM design, which can be a mardo_99 object, or another SPM99 design
+%           format recognized by the mardo_99 constructor - see help mardo for
 %           details.
 % params  - structure, containing extra fields for object (or parent)
 % phido_o - (optional) phido object to inherit from
@@ -15,11 +15,10 @@ function [o, others] = phido_99(des, params, phido_o)
 %           children
 %
 % This object may be called from the phido object contructor with a mardo
-% and phido object as input.  phido_99 checks to see if the contained design
-% is an SPM2 design, returns the object unchanged if not.  If it is an SPM2
-% design, it claims ownership of the passed object.
+% and phido object as input, or called directly.  The container makes no
+% attempt to check if this is really an SPM99 design.
 %
-% $Id: phido_99.m,v 1.2 2004/09/19 03:15:31 matthewbrett Exp $
+% $Id: phido_99.m,v 1.3 2004/09/19 03:35:51 matthewbrett Exp $
   
 myclass = 'phido_99';
 defstruct = [];
@@ -39,16 +38,8 @@ if nargin < 3
 end
 others = [];
 
-% send design to mardo
-o_params = params;
-[mardo_o params] = mardo(des, params);
-
-% if this is not a good design type for us, return
-if ~strcmp(class(mardo_o), 'mardo_99')
-  o      = des;
-  others = o_params;
-  return
-end
+% send design to mardo_99
+[mardo_o params] = mardo_99(des, params);
 
 % fill params with defaults, parse into fields for this object, children
 [params, others] = mars_struct('ffillsplit', defstruct, params);
