@@ -20,7 +20,7 @@ function [o, others] = phido_99(params, others, phido_o)
 % and phido object as input, or called directly.  The container makes no
 % attempt to check if this is really an SPM99 design.
 %
-% $Id: phido_99.m,v 1.5 2004/09/22 16:00:58 matthewbrett Exp $
+% $Id: phido_99.m,v 1.6 2004/11/18 18:53:03 matthewbrett Exp $
   
 myclass = 'phido_99';
 cvs_v   = mars_cvs_version(myclass);
@@ -64,6 +64,6 @@ end
 params.cvs_version = cvs_v;
 
 % set the phido_99 object
-o  = class(params, myclass, mardo_o, phido_o);
+o  = class(params, myclass, phido_o, mardo_o);
 
 return
