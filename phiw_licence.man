@@ -359,4 +359,6 @@
 % library.  If this is what you want to do, use the GNU Library General
 % Public License instead of this License.
 %_______________________________________________________________________
-% @(#)spm_LICENCE.man	2.4 FIL 99/05/16
+% Copied from @(#)spm_LICENCE.man	2.4 FIL 99/05/16
+% 
+% $Id: phiw_licence.man,v 1.2 2004/09/14 05:14:41 matthewbrett Exp $
