@@ -1,10 +1,16 @@
-function [phiwD] = vox2wt_ana(phiwD, wtinfo)
+function [phiwD] = vox2wt_ana(phiwD, params)
 % Does image and mask conversion for wavelet analysis from voxel analysis
 % FORMAT [phiwD] = vox2wt_ana(phiwD, wtinfo)
 % 
 % Inputs 
 % phiwD       - phido design object
-% wtinfo      - structure containing wt info
+% params          - structure containing options as fields; [defaults]
+%                   'wavelet'    - phiwave wavelet object to transform
+%                      images [phiw_lemarie(2)] 
+%                   'scales'     - scales for wavelet transform [4]
+%                   'wtprefix'   - prefix for wavelet transformed files
+%                      ['wv_']
+%                   'maskthresh' - threshold for mask image [0.05]
 %
 % Outputs
 % phiwD       - modified phido design object
@@ -16,55 +22,42 @@ function [phiwD] = vox2wt_ana(phiwD, wtinfo)
 %
 % Matthew Brett 9/10/00
 %
-% $Id: vox2wt_ana.m,v 1.1 2004/11/18 18:34:47 matthewbrett Exp $
+% $Id: vox2wt_ana.m,v 1.2 2005/04/06 22:38:18 matthewbrett Exp $
   
-if nargin < 2
-  error('Need wavelet information');
-end
+% Default object structure
+defparams = struct('wavelet',  phiw_lemarie(2), ...
+		   'scales',   4, ...
+		   'wtprefix', 'wv_', ...
+		   'maskthresh', 0.05);
 
-% Check wtinfo structure
-if ~isfield(wtinfo, 'scales')
-  error('wtinfo.scales not set')
+if nargin < 2
+  params = [];
 end
+params = mars_struct('ffillsplit', defparams, params);
 
 % Get images
 if ~has_images(phiwD), error('Need images in design'); end
 VY = get_images(phiwD);
 
+% Get wt'ed and non wt'ed images from vols
+g_wt_opts = struct('reproc', 1, 'verbose', verbose(phiwD));
+for i = 1:prod(size(VY))
+  [VY_wt(i) VY_o(i)] = sf_get_wted(VY(i), params, g_wt_opts);
+end
+VY_wt = reshape(VY_wt, size(VY));
+VY_o  = reshape(VY_o, size(VY));
+
 % Get masking structure
 xM = masking_struct(phiwD);
 if isempty(xM), error('Need masking structure'), end
 
-% Are the images WT'ed?
-wvobj = phiw_wvimg(VY(1),struct('noproc',1));
-do_wt = 1;
-if isempty(wvobj) % no they're not
-  vy_wted = 0;
-else              % yes they are
-  vy_wted = 1;
-  % Are the images WT'ed as we would like?
-  if same_wtinfo(wvobj, wtinfo)
-    % Yes - keep these VYs
-    VT_wt = VY;
-    do_wt = 0;
-  end
-end
-if do_wt, [VY_wt wvobj] = phiw_volsub(VY, wtinfo); end
-
-% Check if the mask matches the current wtinfo. If not, we will need the
-% original images to calculate the mask from.
-redo_xm = 1;
+% Check if the mask matches the current wt information. If not, we will need
+% the original images to calculate the mask from.
 if isfield(xM, 'wave')
-  if same_wtinfo(xM.wave, wtinfo)
-    redo_xm = 0;
-  else
-    if vy_wted % we need original images back
-      VY = phiw_wvimg('orig_vol', VY);
-    end
+  if ~same_wtinfo(xM.wave, params)
+    xM = sf_make_mask(xM, VY_o, params);
   end
 end
-
-if redo_xm, xM = sf_make_mask(xM, VY, wtinfo); end
 
 % return new design
 phiwD = set_images(phiwD, VY_wt);
@@ -75,9 +68,68 @@ return
 % Subfunctions
 % ------------
 
-function xM = sf_make_mask(xM, VY, wtinfo)
+function [Vw, Vo] = sf_get_wted(V, params, options)
+% Takes vol struct, returned WT'ed, non WT'ed vol structs
+% FORMAT [Vw, Vo] = sf_get_wted(V, wtinfo, options)
+% 
+% Input 
+% V        - WT'ed or non WT'ed vol struct
+% params   - wavelet transform infomation structure
+% options  - structure containing none or more of the following fields as
+%            options:
+%              'reproc'  - redo WT on already WT'ed images, if parameters
+%                 dont match wtinfo
+%              'verbose' - display messages
+%              'find_similar' - if processing image, look for appropriate
+%                 previously transformed image
+% 
+% Images can be: 
+% Voxel images (not WTed) -> return to-be-WTed object
+% WT'ed images -> return WT'ed object
+% Voxel images with matching WT'ed image -> return WT'ed object
+
+f_s = mars_struct('getifthere', options, 'find_similar');  
+wv_opts = struct('noproc', 1, 'wtprefix', wtinfo.wtprefix, ...
+		 'find_similar', f_s);
+
+% Flag whether to reprocess if already WT'ed but with wrong parameters
+reproc_f = mars_struct('isthere', options, 'reproc');
+
+if phiw_wvimg('is_wted', V)  % already transformed
+
+  % Are the images WT'ed as we would like?
+  Vo = phiw_wvimg('orig_vol', V);
+  wvobj = phiw_wvimg(V, wv_opts);
+  if same_wtinfo(wvobj, params) % yes
+    Vw = V;
+    return
+  end
+  
+  % no, maybe reprocess
+  if ~reproc_f
+    error(sprintf('%s is already WTed with different parameters', ...
+		  V.fname))
+  end
+  options.find_similar = 0;
+  [Vw, Vo] = sf_get_wted(Vo, params, options);
+  return
+
+end  
+
+% Make wvimg object, maybe looking for compatible already processed
+% image
+wvobj = phiw_wvimg(V, wv_opts, params.wavelet, params.scales);
+if ~is_wted(wvobj)
+  wvobj = write_wtimg(wvobj);
+end
+Vw = wv_vol(wvobj);
+Vo = V;
+
+return
+
+function xM = sf_make_mask(xM, VY, params)
 % Process and recreate masking structure
-% FORMAT xM = sf_make_mask(xM, VY, wtinfo)
+% FORMAT xM = sf_make_mask(xM, VY, params)
 
 % masking, first
 %-If xM is not a structure then assumme it's a vector of thresholds
@@ -154,7 +206,7 @@ spm_write_vol(VM, mask);
 fprintf('...done\n');
 
 % Transform, do processing for wavelet space mask
-wvVM = phiw_wvmask(VM,wtinfo);
+wvVM = phiw_wvmask(VM,params);
 
 % save new mask
 fprintf(' Saving the wavelet transformed mask as %s...', wvVM.wvol.fname);
