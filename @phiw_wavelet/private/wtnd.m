@@ -5,7 +5,36 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 % where N is the number of dimensions of X.  The second argument H is the
 % lowpass filter and the third argument G the highpass filter.  WTND
 % generalizes the algorithm for UviWave WT to N dimensions.
-% 
+%
+% For a vector, the output contains the coefficients of the DWT ordered from
+% the low pass residue at SCALE to the coefficients at the lowest scale, as
+% the following example ilustrates:
+%
+%      Output vector (k=3):
+%
+%      [------|------|------------|------------------------]
+%	  |	  |	   |		    |
+%	  |	  |	   |		    `-> 1st scale coefficients 
+% 	  |	  |	   `-----------> 2nd scale coefficients
+%	  |	  `--------------------> 3rd scale coefficients
+%	  `----------------> Low pass residue  at 3rd scale 
+%
+% A matrix can be transformed over more than one dimension. For a 2D matrix,
+% the output would look like this: for every scale, the lowpass residue is
+% placed at the top-left corner of the corresponding subimage, the
+% horizontal high frequency band at the top-right, the vertical high
+% frequency band at the bottom-left and the diagonal high frequency band at
+% the bottom-right. Every successive wavelet subimage substitutes the
+% residue of the previous scale.
+%	
+%		Example with 2 scales:
+%					 _______
+%	2nd scale substituting the  -->	|_|_|   | <-- 1st scale 
+%	first scale lowpass residue	|_|_|___|     horiz. detail	
+%					|   |   | 
+%		        1st scale ---->	|___|___| <-- 1st scale 
+%		      vertical detail		    diagonal detail
+%
 % WTND(X,H,G,SCALES,DEL1,DEL2) calculates the N-D wavelet
 % transform of matrix X, but also allows the user to change the alignment of
 % the outputs with respect to the input signal. This effect is achieved by
@@ -26,7 +55,7 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 %
 % Based in part on wt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: wtnd.m,v 1.4 2004/07/14 20:31:54 matthewbrett Exp $
+% $Id: wtnd.m,v 1.5 2004/07/15 04:27:51 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
@@ -141,7 +170,7 @@ offsets = wt_sz - sz;
 %------------------------------
 
 % For doing tricksy permute thing in loop below (see help wt_dim_shifts)
-[shifts end_shift] = wt_dim_shifts(p_dims);
+[shifts end_shift] = wt_dim_shifts(p_dims, sz);
 dims = [1:n_dims]';
 
 % t is the input matrix to be wt'ed
