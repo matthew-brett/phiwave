@@ -2,7 +2,7 @@ function w = phiw_lemarie(params, inp)
 % phiw_lemarie - class constructor
 % inherits from phiw_wavelet
 %
-% $Id: phiw_lemarie.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_lemarie.m,v 1.2 2004/06/28 15:49:46 matthewbrett Exp $
 
 myname = 'phiw_lemarie';  
 if nargin < 1
@@ -15,5 +15,14 @@ if isa(params, myname)
   w = params;
   return
 end
+
+% check params argument
+if isempty(params)
+  params = 2;
+end
+if ~isnumeric(params)
+  error('Params should be numeric');
+end
+
 a.lemarie = [];
 w = class(a, myname, phiw_wavelet(params, inp));
