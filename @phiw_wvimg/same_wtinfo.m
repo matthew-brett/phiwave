@@ -1,29 +1,31 @@
-function tf = same_wtinfo(wvobj, wtinfo)
+function tf = same_wtinfo(wvobj, test_wtinfo)
 % returns 1 if wtinfo structure matches wvobj
-% FORMAT tf = same_wtinfo(wvobj, wtinfo)
+% FORMAT tf = same_wtinfo(wvobj, test_wtinfo)
 % 
 % Input 
-% wvobj     - phiw_wvimg object
-% wtinfo    - wtinfo structure with fields
-%               scales
-%               wavelet
-% 
-% The function only compares fields passed, so wtinfo can contain only
-% 'scales', or only 'wavelet', for example.  
-% Function returns 0 if wtinfo is empty
+% wvobj          - phiw_wvimg object
+% test_wtinfo    - wtinfo structure with none or more fields
+%                   scales
+%                   wavelet
+%                   wtprefix
 %
-% $Id: same_wtinfo.m,v 1.1 2004/11/18 18:43:11 matthewbrett Exp $
+% The function only compares fields passed, so test_wtinfo can contain only
+% 'scales', or only 'wavelet', for example.  
+%
+% Function returns 0 if test_wtinfo is empty
+%
+% $Id: same_wtinfo.m,v 1.2 2005/04/03 06:57:27 matthewbrett Exp $
 
 tf = 0;
 if nargin < 2
   error('Need wtinfo to compare');
 end
+if isempty(test_wtinfo), return, end
 
-wv_struct = mars_struct('split', struct(wvobj), wtinfo);
-if isempty(wv_struct), return, end
-fns = fieldnames(wv_struct);
+o_wtinfo = wtinfo(wvobj);
+fns = fieldnames(test_wtinfo);
 for fn = 1:length(fns)
   f = fns{fn};
-  if getfield(wv_struct, f) ~= getfield(wtinfo, f), return, end
+  if getfield(o_wtinfo, f) ~= getfield(test_wtinfo, f), return, end
 end
 tf = 1;
