@@ -46,7 +46,7 @@ function [dnobj, dnerr, thresholds] = denoise(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: denoise.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: denoise.m,v 1.3 2004/09/14 05:31:23 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least two args, sorry');

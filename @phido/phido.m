@@ -40,4 +40,4 @@ function [o, others] = phido(params,passf)
 % constructor with passf set to 0 in order for the constructor merely to
 % make a phido object, without passing back to the other classes. 
 % 
-% $Id: phido.m,v 1.1 2004/09/14 05:16:00 matthewbrett Exp $
+% $Id: phido.m,v 1.2 2004/09/14 05:31:23 matthewbrett Exp $
