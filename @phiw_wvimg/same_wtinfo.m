@@ -14,7 +14,7 @@ function tf = same_wtinfo(wvobj, test_wtinfo)
 %
 % Function returns 0 if test_wtinfo is empty
 %
-% $Id: same_wtinfo.m,v 1.2 2005/04/03 06:57:27 matthewbrett Exp $
+% $Id: same_wtinfo.m,v 1.3 2005/04/06 22:34:01 matthewbrett Exp $
 
 tf = 0;
 if nargin < 2
@@ -26,6 +26,8 @@ o_wtinfo = wtinfo(wvobj);
 fns = fieldnames(test_wtinfo);
 for fn = 1:length(fns)
   f = fns{fn};
-  if getfield(o_wtinfo, f) ~= getfield(test_wtinfo, f), return, end
+  if isfield(o_wtinfo, f)
+    if getfield(o_wtinfo, f) ~= getfield(test_wtinfo, f), return, end
+  end
 end
 tf = 1;
