@@ -12,7 +12,7 @@ function phiw_display(varargin)
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.3 2004/11/18 18:47:34 matthewbrett Exp $
   
 [action disptype vols phiw defyn] = argfill(...
     varargin, 0,{'display', 'orth', [],[],[]}, 1);
@@ -109,7 +109,7 @@ switch lower(disptype)
  case 'orth'
   global st
   spm_image('init', structv.fname);
-  spm_orthviews('Addtruecolourimage', 1, actvol.fname, cmap, phiw.display.actprop, ...
+  mars_orthviews('Addtruecolourimage', 1, actvol.fname, cmap, phiw.display.actprop, ...
 		range(2), range(1));
   st.callback = 'phiw_display(''orthcb'');';
  case 'slices'
@@ -139,14 +139,14 @@ switch lower(disptype)
   error('Don''t recognize display type');
 end
 case 'orthcb'
-% callback function from spm_orthviews, gives activation rather than
+% callback function from mars_orthviews, gives activation rather than
 % structural intensity in text box.  Copied from spm_image.m  
 global st
 if isfield(st,'mp'),
   fg = spm_figure('Findwin','Graphics');
   if any(findobj(fg) == st.mp),
-    set(st.mp,'String',sprintf('%.1f %.1f %.1f',spm_orthviews('pos')));
-    pos = spm_orthviews('pos',1);
+    set(st.mp,'String',sprintf('%.1f %.1f %.1f',mars_orthviews('pos')));
+    pos = mars_orthviews('pos',1);
     set(st.vp,'String',sprintf('%.1f %.1f %.1f',pos));
     if isfield(st.vols{1}, 'blobs') & isfield(st.vols{1}.blobs{1}, 'vol')
       pos = st.vols{1}.blobs{1}.mat \ st.vols{1}.mat * [pos; 1];
