@@ -1,10 +1,10 @@
-function [phiwD] = do_estimate(phiwD, params)
+function [phiwD] = estimate_wted(phiwD, params)
 % do_estimate method - estimates phiwave GLM for SPM99 model
 %
 % phiwD           - phido_99 design object (containing SPM99 design)
 % params          - struct containing options (not used for now)
 %
-% $Id: estimate_wted.m,v 1.1 2004/11/18 18:38:18 matthewbrett Exp $
+% $Id: estimate_wted.m,v 1.2 2005/04/06 22:39:40 matthewbrett Exp $
 
 if nargin < 2
   error('Need design and images');
