@@ -51,18 +51,22 @@ function wvimg = phiw_wvimg(inpimg,options,waveobj,scales)
 % Routine does little filling of fields, and relies on methods filling
 % the fields that they need, or complaining if appropriate
 %
+% The constructor can also be called to give class functions, where the
+% name of the class function is a character string which is one of:
+%    'is_wted'   returns 1 if passed vol struct is for wt'ed image
+%    'orig_vol'  returns original vol struct from wt'ed vol
+%
 % This class relies on SPM 99 routines
 % (spm_read_vols, spm_write_vol, spm_type, spm_vol, etc)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.3 2004/11/18 19:04:47 matthewbrett Exp $
 
-myname = 'phiw_wvimg';
-
+myclass = 'phiw_wvimg';
 
 % wvimg object passed as first arg, return it
-if nargin > 0 & isa(inpimg, myname)
+if nargin > 0 & isa(inpimg, myclass)
   wvimg = inpimg;
   return
 end
@@ -76,27 +80,52 @@ if nargin < 4, scales = [];end
 definpopts = struct('noproc',0,'remap',0,'descrip','');
 
 % overall default options
-defopts = struct('datatype','float','wtprefix','wt_',...
-		       'iwtprefix','iwt_','verbose',1,...
-		       'descrip','','noproc',0,'remap',0);
+defopts = struct('datatype','float', ...
+		 'wtprefix','wt_',...
+		 'iwtprefix','iwt_', ...
+		 'verbose',1,...
+		 'descrip','', ...
+		 'noproc',0, ...
+		 'remap',0);
 
-% default object; all fields are empty to allow fill below
+% default object struct; all fields are empty to allow fill below
 % it has to be this way to make sure all fields are in the same order
-defobj.ovol = [];
-defobj.wvol = [];
-defobj.options = [];
-defobj.img = [];
-defobj.wavelet = [];
-defobj.scales = [];
-defobj.oimgi = [];
-defobj.descrip = '';
-defobj.wtf = [];
-defobj.changef = [];
+defstruct = struct(...
+    'ovol', [], ...
+    'wvol', [], ...
+    'options', [], ...
+    'img', [], ...
+    'wavelet', [], ...
+    'scales', [], ...
+    'oimgi', [], ...
+    'descrip', '', ...
+    'wtf', [], ...
+    'changef', []);
 
 % no args, return default object
 if nargin < 1
-  wvimg = class(defobj,myname);
+  wvimg = class(defstruct,myclass);
   return
+end
+
+% parse out string action calls (class functions)
+if ischar(inpimg)
+  s_def = struct('noproc',1);
+  switch inpimg
+   case 'is_wted'
+    if nargin < 2 | ~isstruct(options), error('Need vol struct'); end
+    wvimg = ~isempty(phiw_wvimg(options(1),s_def));
+    return
+   case 'orig_vol'
+    VY = options;
+    if nargin < 2, error('Need vol struct'); end
+    for v = 1:prod(size(VY))
+      wvobj = phiw_wvimg(VY(v), s_def);
+      if isempty(wvobj), oVY(v) = VY(v); else oVY(v) = wvobj(v).ovol; end
+    end
+    wvimg = reshape(oVY, size(VY));
+    return
+  end
 end
 
 % process passed options
@@ -105,7 +134,7 @@ if isfield(options,'datatype') & ~ischar(options.datatype)
 end
 
 % get passed options from input
-inpopts = mars_struct('fillafromb', options,definpopts);
+inpopts = mars_struct('ffillsplit', definpopts, options);
 
 % process inpimg argument
 % ----------------------------------------------
@@ -123,21 +152,22 @@ if isstruct(waveobj)  % third arg is vol struct - lookfor wave info
   waveobj = getwave(waveobj);
   if isempty(waveobj), wvimg = [];return;end
 end
-wtf = nargin < 4 | isa(waveobj,myname); 
+wtf = nargin < 4 | isa(waveobj,myclass); 
 
 % insert necessary data into wvimg structure to start
-wvimg = defobj;
-wvimg.img = inpimg;
-wvimg.options = inpopts;
-wvimg.wtf = wtf;
-wvimg.descrip = inpopts.descrip;
+[wvimg others] = mars_struct('ffillsplit', defstruct, ...
+			     struct(...
+				 'img', inpimg, ...
+				 'options', inpopts, ...
+				 'wtf', wtf, ...
+				 'descrip', inpopts.descrip));
 
 % process different types of function call
 if wtf
   % this must be a wt image
 
   % check this is a sensible third arg if present
-  if nargin > 2 & ~isa(waveobj, myname)
+  if nargin > 2 & ~isa(waveobj, myclass)
     error('Odd third argument')
   end
 
@@ -217,7 +247,7 @@ if length(wvimg.wvol.dim) < 4
 end
 
 % bless (as we say in perl)
-wvimg = class(wvimg,myname);
+wvimg = class(wvimg,myclass);
 
 % do processing as necessary
 if ~wvimg.options.noproc
