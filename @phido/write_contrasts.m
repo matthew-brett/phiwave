@@ -22,7 +22,7 @@ function [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: write_contrasts.m,v 1.1 2004/11/18 18:35:27 matthewbrett Exp $
+% $Id: write_contrasts.m,v 1.2 2005/04/03 06:55:43 matthewbrett Exp $
 
 if ~is_phiw_estimated(phiwD), error('Need phiwave estimated design'); end
 changef = 0;
@@ -49,7 +49,7 @@ end
 % Get SPM structure
 SPM = des_struct(phiwD);
 
-% wave file prefix
+% wave file prefix *** FIXME ***
 wvobj = phiw_wvimg(SPM
 wvp = 
 
