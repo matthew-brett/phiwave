@@ -1,5 +1,6 @@
 function [o, others] = phido(params, others, passf)
 % phido - class constructor for MarsBaR design object
+% FORMAT [o, others] = phido(params, others, passf)
 % inputs [defaults]
 % params  -  one of:            
 %            - string, specifying SPM design file, OR
@@ -11,10 +12,7 @@ function [o, others] = phido(params, others, passf)
 %               structure
 % others  - any other fields for mardo object or phido object or children
 %           Fields for phido object are:
-%           - wavelet     - phiwave wavelet object to transform images
-%           - scales      - scales for wavelet transform
-%           - wtprefix    - prefix for wavelet transformed files
-%           - maskthresh  - threshold for mask image
+%           [none, so far]
 % passf   - if 1, or not passed, will try children objects to see if
 %           they would like to own this design
 %
@@ -42,16 +40,13 @@ function [o, others] = phido(params, others, passf)
 % constructor with passf set to 0 in order for the constructor merely to
 % make a phido object, without passing back to the other classes. 
 % 
-% $Id: phido.m,v 1.7 2004/09/22 05:58:24 matthewbrett Exp $
+% $Id: phido.m,v 1.8 2005/04/06 22:36:49 matthewbrett Exp $
 
 myclass = 'phido';
 cvs_v   = mars_cvs_version(myclass);
 
 % Default object structure
-defstruct = struct('wavelet',  phiw_lemarie(2), ...
-		   'scales',   4, ...
-		   'wtprefix', 'wv_', ...
-		   'maskthresh', 0.05);
+defstruct = [];
 
 if nargin < 1
   defstruct.cvs_version = cvs_v;
@@ -73,11 +68,8 @@ if isa(params, myclass)
   if isempty(others), return, end
 
   % Otherwise, we are being asked to set fields of object
+  % (but there are none for now, so just split)
   [p others] = mars_struct('split', others, defstruct);
-  if isfield(p, 'wavelet'), o.wavelet = p.wavelet; end
-  if isfield(p, 'scales'), o.scales = p.scales; end
-  if isfield(p, 'wtprefix'), o.wtprefix = p.wtprefix; end
-  if isfield(p, 'maskthresh'), o.maskthresh = p.maskthresh; end
   return
 end
 
