@@ -10,7 +10,7 @@ function [wimg, oimgi] = transform(data, w, scales)
 % oimgi   - index limits to retrieve original data from (inverted) wimg
 %           matrix
 %
-% $Id: transform.m,v 1.2 2004/09/14 05:31:23 matthewbrett Exp $
+% $Id: transform.m,v 1.3 2004/11/18 19:03:11 matthewbrett Exp $
   
 % embed data in appropriate size matrix for wt
 [newdims oimgi] = inp2out(w, size(data));
@@ -22,11 +22,11 @@ wimg = subsasgn(wimg, lims2subs(oimgi), data);
 % transform
 levs = levels(w, newdims, scales);
 for d = 1:numdims
-  [H{d} K{d}] = filters(w,newdims(d));
+  [H{d} K{d}] = get_filters(w,newdims(d));
 end
 
 % in (up to) 3d
-wimg = wt3d(wimg, H, K, scales);
+wimg = wtnd(wimg, H, K, scales);
 
 return
 
