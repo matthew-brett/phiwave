@@ -7,14 +7,14 @@ function varargout=phiwave(varargin)
 % the GNU general public license.  Please see phiw_licence.man for details.
 % 
 % PhiWave written by 
-% Federico Turkheimer, Matthew Brett, John Aston, Vincent Cunningham
+% John Aston, Matthew Brett, Rainer Hinz and Federico Turkheimer
 %
 % Data structures, programming style and portions of the code rely heavily
-% on SPM99 (http://www.fil.ion.ucl.ac.uk/spm99), which is also released
+% on SPM (http://www.fil.ion.ucl.ac.uk/spm), which is also released
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.3 2004/07/09 16:32:02 matthewbrett Exp $
+% $Id: phiwave.m,v 1.4 2004/09/14 03:41:26 matthewbrett Exp $
   
 % PhiWave version
 PWver = 2.2;  % alpha 
@@ -340,11 +340,14 @@ case 'splash'
  pause(3);
  close(h);
  
-case 'make'
-% runs mex file compilation   
-% Make compiled files for PhiWave
-% FORMAT phiwave('make' [,optfile]);
+%=======================================================================
+case 'make'                                                       %-make
+%=======================================================================
+% phiwave('make' [,optfile])
+%-----------------------------------------------------------------------
+% runs PhiWave mex file compilation   
 % 
+% Inputs
 % optfile    - optional options (mexopts) file to use for compile
 %   
 % You may want to look into the optimizations for mex compilation
@@ -394,113 +397,17 @@ catch
   rethrow(lasterror);
 end 
  
-case 'str2fname'
-% accepts string, attempts return of string for valid filename
- if nargin < 2
-   error('Need to specify string');
- end
- str = varargin{2};
- % forbidden chars in file name
- badchars = unique([filesep '/\ :;.''"~*?<>']);
-
- tmp = find(ismember(str, badchars));   
- if ~isempty(tmp)
-   str(tmp) = '_';
-   dt = diff(tmp);
-   if ~isempty(dt)
-     str(tmp(dt==1))=[];
-   end
- end
- varargout={str};
- 
-case 'get_spmmat'
- % accepts or fetches name of SPM.mat file, returns SPM.mat structure
- if nargin < 2
-   spmmat = [];
- else
-   spmmat = varargin{2};
- end
- swd = [];
- if isempty(spmmat)
-  spmmat = spm_get(1, 'SPM.mat', 'Select analysis');
-  if isempty(spmmat),return,end
- end
- if ischar(spmmat) % assume is SPM.mat file name
-   swd    = spm_str_manip(spmmat,'H');
-   spmmat = load(spmmat);
-   spmmat.swd = swd;
- elseif isstruct(spmmat)
-   if isfield(spmmat,'swd')
-     swd = spmmat.swd;
-   end
- else
-   error('Requires string or struct as input');
- end
-
- % check the structure
- if ~isfield(spmmat,'SPMid')
-   %-SPM.mat pre SPM99
-   error('Incompatible SPM.mat - old SPM results format!?')
- end
-
- % remove large and unuseda field
- if isfield(spmmat, 'XYZ')
-   rmfield(spmmat, 'XYZ');
- end
- 
- varargout = {spmmat, swd};
-
-case 'ana_desmooth'
-anamat = spm_get([0 1], 'SPM*.mat', 'Analysis -> unsmoothed');
-if ~isempty(anamat)
-  newdir = spm_get(-1, '', 'Directory to save analysis');
-  prefix = 's';
-  phiwave('ana_deprefix', anamat, newdir, prefix);
-end
+%=======================================================================
+case 'ana_desmooth'           %-makes new SPM design for unsmoothed data
+%=======================================================================
+% phiwave('ana_desmooth')
+%-----------------------------------------------------------------------
+phiwD = phiw_arm('get', 'def_design');
+if isempty(phiwD), return, end;
+phiwD = prefix_images(phiwD, 'remove', 's');
+phiw_arm('set', 'def_design', phiwD);
+disp('Done');
   
-case 'ana_deprefix'
-if nargin < 2
-  anamat = spm_get(1, 'SPM*.mat', 'Analysis to deprefix');
-else
-  anamat = varargin{2};
-end
-if nargin < 3
-  newdir = spm_get(-1, '', 'Directory to save analysis');
-else
-  newdir = varargin{3};
-end
-if nargin < 4
-  prefix = 's';
-else
-  prefix = varargin{4};
-end
-
-ana = load(anamat);
-if ~isfield(ana, 'VY')
-  error('No VY vols in this mat file')
-end
-if ~isfield(ana.VY, 'fname')
-  error('VY does not contain fname field')
-end
-files = strvcat(ana.VY(:).fname);
-fpaths = spm_str_manip(files, 'h');
-fns = spm_str_manip(files, 't');
-if all(fns(:,1) == prefix)
-  fns(:,1) = [];
-  newfns = cellstr(strcat(fpaths, filesep, fns));
-  [ana.VY(:).fname] = deal(newfns{:});
-  [pn fn e] = fileparts(anamat);
-  newanamat = fullfile(newdir,[fn e]);
-  if exist(newanamat, 'file')
-    spm_unlink(newanamat);
-  end
-  savestruct(newanamat,ana);
-  fprintf('Done...\n');
-else
-  warning(['Analysis files not all prefixed with ''' prefix ''', no new' ...
-		    ' file saved'])
-end
-
 %=======================================================================
 otherwise                                        %-Unknown action string
 %=======================================================================
