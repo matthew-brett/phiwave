@@ -4,7 +4,7 @@ do first scale inverse wavelet transform in x dimension of matrix
 FORMAT t = do_iwtx(t, h, g, dlp, dhp, reco_detail)
 See the do_iwtx.m file for detail
 
-$Id: do_iwtx.c,v 1.3 2004/07/09 23:51:42 matthewbrett Exp $ 
+$Id: do_iwtx.c,v 1.4 2004/07/10 05:01:28 matthewbrett Exp $ 
 
 */ 
 
@@ -171,7 +171,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       }
 
       /* do convolution */
-      pos = st_ptr + st_d[fno];
+      pos = st_ptr + lp_st_d;
 
       /* do start conv for odd delay */
       if (odd_delay) {
@@ -200,7 +200,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	  res1 += val * *(f_ptr++);  /* odd portion of filter */
 	  res2 += val * *(f_ptr++);  /* even portion */
 	}
-	if (odd_f)
+	if (lp_odd_f)
 	  res1 += *(f_pos) * *(f_ptr);
 	if (fno) {
 	  *(iwm_out_ptr++) += res1;
