@@ -20,7 +20,7 @@ function [o, others] = phido_2(params, others, phido_o)
 % and phido object as input, or called directly.  The container makes no
 % attempt to check if this is really an SPM99 design.
 %
-% $Id: phido_2.m,v 1.5 2004/09/22 16:00:58 matthewbrett Exp $
+% $Id: phido_2.m,v 1.6 2004/11/18 18:56:45 matthewbrett Exp $
   
 myclass = 'phido_2';
 cvs_v   = mars_cvs_version(myclass);
@@ -30,7 +30,7 @@ defstruct = [];
 
 if nargin < 1
   defstruct.cvs_version = cvs_v;
-  o = class(defstruct, myclass, mardo_2, phido);
+  o = class(defstruct, myclass, phido, mardo_2);
   others = [];
   return
 end
@@ -64,6 +64,6 @@ end
 params.cvs_version = cvs_v;
 
 % set the phido_2 object
-o  = class(params, myclass, mardo_o, phido_o);
+o  = class(params, myclass, phido_o, mardo_o);
 
 return
