@@ -63,7 +63,7 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.5 2005/04/03 06:58:49 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.6 2005/04/03 08:53:19 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 
@@ -110,12 +110,6 @@ defopts = struct('datatype','float', ...
 if ischar(inpimg)
   s_def = struct('noproc',1);
   switch inpimg
-   case 'is_wted'
-    % Second argument is vol struct
-    VY = input_options;
-    if ~isstruct(VY), error('Need vol struct as second argument'); end
-    wvimg = ~isempty(phiw_wvimg(input_options(1),s_def));
-    return
    case 'orig_vol'
     % Second argument is (array of) vol structs
     VY = input_options;
@@ -130,8 +124,10 @@ if ischar(inpimg)
 end
 
 % process passed options
-if isfield(input_options,'datatype') & ~ischar(input_options.datatype)
-  input_options.datatype = spm_type(input_options.datatype);
+if isfield(input_options,'datatype')
+  if ~ischar(input_options.datatype)
+    input_options.datatype = spm_type(input_options.datatype);
+  end
 end
 
 % get passed options from input
@@ -210,11 +206,8 @@ else
   % no template obtainable -> give up and return empty
   if isempty(waveobj), wvimg = []; return, end
   
-  % fill any missing fields from template
+  % fill any missing / empty object fields from template
   wvimg = mars_struct('fillafromb', wvimg, struct(waveobj));
-  
-  % and fill any missing options from defaults
-  wvimg.options = mars_struct('fillafromb', wvimg.options, defopts);
   
   % input vol struct overrides template vol struct
   if isstruct(inpimg)
@@ -226,7 +219,7 @@ else
 end
 
 % set any options passed, overriding previous
-if isfield(input_options,'datatype') & ~isempty(input_options.datatype)
+if mars_struct('isthere', input_options, 'datatype')
   wvimg.wvol.dim(4) = spm_type(input_options.datatype);
 end
 
