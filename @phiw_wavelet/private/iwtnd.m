@@ -1,5 +1,4 @@
 function y=iwtnd(wx,rh,rg,scales,tam,scales_levels,del1,del2) 
-
 % IWTND Discrete Inverse N-D Wavelet Transform.
 %
 % IWTND (WX,RH,RG,SCALES) calculates the N-D inverse wavelet transform of
@@ -37,7 +36,7 @@ function y=iwtnd(wx,rh,rg,scales,tam,scales_levels,del1,del2)
 %
 % Based on iwt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: iwtnd.m,v 1.1 2004/07/01 23:46:25 matthewbrett Exp $
+% $Id: iwtnd.m,v 1.2 2004/07/08 04:30:22 matthewbrett Exp $
 
 % Restrictions:
 %
@@ -242,104 +241,9 @@ for sc=1:scales
     
     if lx > 1  % only transform dims of size > 1
 
-      % 1 - The lowpass vector... interpolate it ending with a '0' so that
-      % the wraparound doesn't put two samples toghether.  The input signal
-      % can be smaller than L, so it can be necessary to repeat the
-      % wraparound several times
-      wrap_repeats = ceil(L/lx);
-      wrap_indices = repmat(1:lx, 1, wrap_repeats);
-      wrap_b = wrap_indices(end-L+1:end);
-      wrap_e = wrap_indices(1:L);
+      w = do_iwtx(w, rh, rg, dlp, dhp, scales_levels(d));
       
-      lp_inds = 1:lx/2;
-      hp_inds = lx/2+1:lx;
-      dat_inds = 1:2:lx;
-      yl = zeros(size(w));
-      switch n_dims
-       case 2
-	yl(dat_inds, :) = w(lp_inds, :);
-	yl=[yl(wrap_b, :); yl; yl(wrap_e, :)];
-       case 3
-	yl(dat_inds, :, :) = w(lp_inds, :, :);
-	yl=[yl(wrap_b, :, :); yl; yl(wrap_e, :, :)];
-       case 4
-	yl(dat_inds, :, :, :) = w(lp_inds, :, :, :);
-	yl=[yl(wrap_b, :, :, :); yl; yl(wrap_e, :, :, :)];
-       otherwise
-	error('Not implemented');
-      end
-      
-      % Process the highpass band only if SCALES_LEVELS specifies to do so.
-      if (scales_levels(sc)~=0)		
-	
-	yh = zeros(size(w));
-	switch n_dims
-	 case 2
-	  yh(dat_inds, :) = w(hp_inds, :);
-	  yh=[yh(wrap_b, :); yh; yh(wrap_e, :)];
-	 case 3
-	  yh(dat_inds, :, :) = w(hp_inds, :, :);
-	  yh=[yh(wrap_b, :, :); yh; yh(wrap_e, :, :)];
-	 case 4
-	  yh(dat_inds, :, :, :) = w(hp_inds, :, :, :);
-	  yh=[yh(wrap_b, :, :, :); yh; yh(wrap_e, :, :, :)];
-	 otherwise
-	  error('Not implemented');
-	end
-      end
-    
-      % Do the lowpass systhesis filtering and leave out the filter delays and
-      % the wraparound.
-      
-      % Make into vector - it's slightly faster even for long L
-      % maybe due to cache blocking
-      sz = size(yl);
-      yl = yl(:);
-      
-      % Then do lowpass filtering ...
-      yl=filter(rh, 1, yl);	       	
-      
-      % Reshape to matrix
-      yl = reshape(yl, sz);
-      
-      % put back into outputs leaving out wraparound, filter delays
-      dec_indices = (dlp+1+L):1:(dlp+L+lx);
-      switch n_dims
-       case 2 
-	yl=yl(dec_indices, :);    
-       case 3 
-	yl=yl(dec_indices, :, :);    
-       case 4 
-	yl=yl(dec_indices, :, :, :);    
-       otherwise
-	error('Not implemented');
-      end
-      
-      % If necessary, do the same with highpass.
-      if (scales_levels(sc)~=0)		
-	yh = yh(:);
-	yh=filter(rg, 1, yh);	       	
-	yh = reshape(yh, sz);
-	dec_indices = (dlp+1+L):1:(dlp+L+lx);
-	switch n_dims
-	 case 2 
-	  yh=yh(dec_indices, :);    
-	 case 3 
-	  yh=yh(dec_indices, :, :);    
-	 case 4 
-	  yh=yh(dec_indices, :, :, :);    
-	 otherwise
-	  error('Not implemented');
-	end 
-	% Sum the two outputs if we've reconstructed high-pass
-	w=yl+yh;		
-      else 
-	% or get only the lowpass side.
-	w=yl;			
-      end;
-      
-      % I found this code in iwt, but can't understand how this extra
-      % zero can be added
+      % zero can be added by iwt - but not by compiled version - so omitted
 % $$$     lx=size(w, 1);
 % $$$     % If the added '0' was not needed
 % $$$     if lx>lo(d, proc_scale)

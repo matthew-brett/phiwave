@@ -16,7 +16,7 @@ function y=wtnd(x,h,g,scales,del1,del2)
 %
 % Based on wt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: wtnd.m,v 1.1 2004/06/28 15:49:19 matthewbrett Exp $
+% $Id: wtnd.m,v 1.2 2004/07/08 04:30:22 matthewbrett Exp $
 
 
 %--------------------------------------------------------
@@ -96,11 +96,6 @@ end;
 llp=length(h);                	% Length of the lowpass filter
 lhp=length(g);                	% Length of the highpass filter.
 
-% The number of samples for the wrapparound. Thus, we should need to move
-% along any L samples to get the output wavelet vector phase equal to
-% original input phase.
-L=max([lhp,llp,dlp,dhp]);	
-
 %------------------------------
 %     START THE ALGORITHM 
 %------------------------------
@@ -135,57 +130,7 @@ for sc=1:scales
     
     if lx > 1  % do not transform dims of size 1
     
-      % Build wrapparound. The input signal can be smaller than L, so it
-      % can be necessary to repeat it several times
-      wrap_repeats = ceil(L/lx);
-      wrap_indices = repmat(1:lx, 1, wrap_repeats);
-      wrap_b = wrap_indices(end-L+1:end);
-      wrap_e = wrap_indices(1:L);
-      
-      % Add wraparound
-      switch n_dims
-       case 2
-	t=[t(wrap_b, :); t; t(wrap_e, :)];
-       case 3
-	t=[t(wrap_b, :, :); t; t(wrap_e, :, :)];
-       case 4
-	t=[t(wrap_b, :, :, :); t; t(wrap_e, :, :, :)];
-       otherwise
-	error('Not implemented');
-      end
-      
-      % Make into vector - it's slightly faster even for long L
-      % maybe due to cache blocking
-      sz = size(t);
-      t = t(:);
-      
-      % Then do lowpass, highpass filtering ...
-      yl=filter(h, 1, t);	       	
-      yh=filter(g, 1, t); 
-      
-      % Reshape to matrix
-      yl = reshape(yl, sz);
-      yh = reshape(yh, sz);
-      
-      % Decimate the outputs, leaving out wraparound
-      dec_indices = (dlp+1+L):2:(dlp+L+lx);
-      switch n_dims
-       case 2 
-	yl=yl(dec_indices, :);    
-	yh=yh(dec_indices, :);    
-       case 3 
-	yl=yl(dec_indices, :, :);    
-	yh=yh(dec_indices, :, :);    
-       case 4 
-	yl=yl(dec_indices, :, :, :);    
-	yh=yh(dec_indices, :, :, :);    
-       otherwise
-	error('Not implemented');
-      end
-      
-      % Put the resulting wavelet step on its place into the wavelet
-      % vector; generates UviWave ordering
-      t =[yl; yh];
+      t = do_wtx(t, h, g, dlp, dhp);
     
     end % if lx > 1
     
