@@ -1,28 +1,32 @@
 function H = fdr(p,alfa,No,sortf)
-%	FDR - False Discovery Rate: adaptive algorithm.
+% FDR - False Discovery Rate: adaptive algorithm.
+% FORMAT H = FDR(p,alfa,No,sortf)
+% 
+% Input:
+% p		= pvalues
+% alfa		= FDR
+% No		= number of Null Hypotheses
+% sortf         = is 1 if p is already sorted ascending
+% 
+% Output:
+% H		= vector of rejections 
+%                 1 hypothesis rejected
+%                 0 otherwise
 %
-%	References:
-%	Benjamini Y, Hochberg Y (2000)"On the adaptive control of the false discovery 
-%		rate in multiple testing with independent statistics" Journal of
-%		Educational and Behavioral Statistics, 25:(1),60-83 (2000). 
-%	Benjamini Y, Hochberg Y (1995). ``Controlling the False Discovery Rate: 
-%		a Practical and Powerful Approach to Multiple Testing',Journal
-%		of the Royal Statistical Society B, 57 289-300.
+% References:
+% 
+% Benjamini Y, Hochberg Y (2000)"On the adaptive control of the false
+% discovery rate in multiple testing with independent statistics" Journal of
+% Educational and Behavioral Statistics, 25:(1),60-83 (2000).
+% 
+% Benjamini Y, Hochberg Y (1995). ``Controlling the False Discovery Rate:
+% a Practical and Powerful Approach to Multiple Testing',Journal
+% of the Royal Statistical Society B, 57 289-300.
 %
-%	Usage:	H = FDR(p,alfa,No,sortf)
-%	Input:
-%		p		= pvalues
-%		alfa		= FDR
-%		No		= number of Null Hypotheses
-%               sortf           = is 1 if p is already sorted ascending
-%	Output:
-%		H		= vector of rejections 
-%				1	hypothesis rejected
-%				0 	otherwise
 %
-% 	Federico E. Turkheimer 16/2/2001, Matthew Brett 1/6/2001
+% Federico E. Turkheimer 16/2/2001, Matthew Brett 1/6/2001
 %
-% $Id: fdr.m,v 1.1 2004/06/25 15:20:35 matthewbrett Exp $
+% $Id: fdr.m,v 1.2 2004/09/14 05:30:29 matthewbrett Exp $
 
 if nargin < 1
   error('Need p values');
