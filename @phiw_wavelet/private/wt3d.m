@@ -13,7 +13,7 @@ function img=wt3d(img,varargin)
 % 
 % Modifications Matthew Brett 28/6/01
 %
-% $Id: wt3d.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $ 
+% $Id: wt3d.m,v 1.2 2004/07/14 20:03:37 matthewbrett Exp $ 
   
 % -----------------------------------
 %    CHECK PARAMETERS AND OPTIONS
@@ -54,8 +54,8 @@ if nargin > 4
   if nargin < 6
     error('Need two values for delay, or none')
   end
-  dlp = varargin{3}; if length(dlp)==1, dlp = dlp * ones(1,nodims);end
-  dhp = varargin{4}; if length(dhp)==1, dhp = dhp * ones(1,nodims);end
+  dlp = varargin{4}; if length(dlp)==1, dlp = dlp * ones(1,nodims);end
+  dhp = varargin{5}; if length(dhp)==1, dhp = dhp * ones(1,nodims);end
 end
     
 for d = dims
@@ -87,7 +87,7 @@ for d = dims
   % move along any wrapl samples to get the
   % output wavelet vector phase equal to
   % original input phase.
-  wrapl(d) =max([lhp,llp,dlp(d),dhp(d)]);	
+  wrapl(d) =max([lhp,llp,dlp(d),dhp(d) llp-dlp(d) lhp-dhp(d)]);	
 	
   % get no of zeros to add to end of vector for convolution
   zpad{d} = zeros(1,max(length(h{d}),length(g{d}))-1);
