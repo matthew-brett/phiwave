@@ -1,8 +1,8 @@
-function w = do_iwtx_m(w, rh, rg, dlp, dhp, reco_detail)
+function w = do_iwtx_m(w, rh, rg, dlp, dhp, reco_detail, truncate)
 % do first scale inverse wavelet transform in x dimension of matrix
-% FORMAT t = do_iwtx(t, h, g, L, dlp, dhp, reco_detail)
+% FORMAT t = do_iwtx(t, h, g, L, dlp, dhp, reco_detail, truncate)
 % 
-% $Id: do_iwtx_m.m,v 1.3 2004/07/10 05:02:04 matthewbrett Exp $ 
+% $Id: do_iwtx_m.m,v 1.4 2004/07/12 01:49:46 matthewbrett Exp $ 
 
 if nargin < 5
   error('Need matrix, filters and delays');
@@ -81,7 +81,7 @@ yl=filter(rh, 1, yl);
 yl = reshape(yl, sz);
 
 % put back into outputs leaving out wraparound, filter delays
-dec_indices = (dlp+1+L):1:(dlp+L+lx);
+dec_indices = (dlp+1+L):1:(dlp+L+lx-truncate);
 switch n_dims
  case 2 
   yl=yl(dec_indices, :);    
@@ -98,7 +98,7 @@ if reco_detail
   yh = yh(:);
   yh=filter(rg, 1, yh);	       	
   yh = reshape(yh, sz);
-  dec_indices = (dhp+1+L):1:(dhp+L+lx);
+  dec_indices = (dhp+1+L):1:(dhp+L+lx-truncate);
   switch n_dims
    case 2 
     yh=yh(dec_indices, :);    
@@ -116,11 +116,3 @@ else
   w=yl;			
 end;
 
-% I found this code in iwt, but can't understand how this extra
-% zero can be added
-% $$$     lx=size(w, 1);
-% $$$     % If the added '0' was not needed
-% $$$     if lx>lo(d, proc_scale)
-% $$$       w=w(1:lx-1);	% pick it out now, not before.
-% $$$       lx=lx-1;	% (this reduces the next length)
-% $$$     end
