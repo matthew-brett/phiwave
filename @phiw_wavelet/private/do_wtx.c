@@ -4,10 +4,16 @@ do first scale wavelet transform in x dimension of matrix
 FORMAT t = do_wtx(t, h, g, dlp, dhp)
 See the do_wtx.m file for detail
 
-Todo
-----
+If the dimension to be transformed is of odd length, then the routine
+will pad the input with an extra 0 in each column of X before doing
+the wavelet transform - as for the UviWave wt function.  This is
+slighty different behaviour from the do_iwtx.c function, which does
+_not_ remove the extra zero (in contrast to the UviWave itx function).
+This is because a) it is faster to add the 0 in c for do_wt.c, but it
+can as easily be removed in matlab for do_iwtx.c and b) because
+otherwise do_iwtx.c would need the expected output length as input.
 
-$Id: do_wtx.c,v 1.2 2004/07/09 16:34:38 matthewbrett Exp $
+$Id: do_wtx.c,v 1.3 2004/07/09 23:52:14 matthewbrett Exp $
 
 */ 
 
@@ -24,10 +30,11 @@ $Id: do_wtx.c,v 1.2 2004/07/09 16:34:38 matthewbrett Exp $
 #define WM      plhs[0]
 
 /* max min minifunctions */
-int my_max(int a, int b) {
-  return a > b ? a : b;
+int max0(int a, int b) { /* returns max of a,b,0 */
+  a = a > b ? a : b;
+  return a > 0 ? a : 0;
 }
-int my_min(int a, int b) {
+int my_min(int a, int b) { /* returns min of a,b */
   return a > b ? b : a;
 }
 
@@ -37,7 +44,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   double        *m_ptr, *wm_ptr, *col_ptr, *in_ptr, *out_ptr,
     *d_start, *d_end, *h_pos, *g_pos, *h_f_pos, *g_f_pos;
   double        h_res, g_res;
-  int           dlp, dhp, st_wrap, end_wrap, n_cols, col, h_g_same, h_bigger;
+  const int     *m_dims;
+  int           *wm_dims;
+  int           n_m_dims, dlp, dhp, st_wrap, end_wrap, n_cols, col, h_g_same, h_bigger;
   int		len_x, len_x_12, len_h, len_g, len_buf, len_shared, len_diff, i, j;
   long int      size_m;
   
@@ -66,30 +75,43 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   len_h    = mxGetM(H) * mxGetN(H);
   len_g    = mxGetM(G) * mxGetN(G);
   
-  /* check length divisible by 2 */
-  if (len_x & 1)
-    mexErrMsgTxt("Length of x dimension must be divisible by 2.");    
-  len_x_12 = len_x/2;
-     
-  /* make output matrix */
-  WM = mxCreateNumericArray(mxGetNumberOfDimensions(M),
-			    mxGetDimensions(M), 
-			    mxDOUBLE_CLASS, mxREAL);
+  /* make output matrix It will have to get one 0 bigger in x if it
+     does not have even x length */
+  m_dims   = mxGetDimensions(M);
+  n_m_dims = mxGetNumberOfDimensions(M);
+  wm_dims  = (int *)mxCalloc(n_m_dims, sizeof(int));  
+  for (i=0; i<n_m_dims; i++)
+    wm_dims[i] = m_dims[i];
+  if (len_x & 1) /* x length is odd - need to add 1 */
+    wm_dims[0]++;
+  WM = mxCreateNumericArray(n_m_dims, wm_dims, mxDOUBLE_CLASS, mxREAL);
+  mxFree(wm_dims);
   wm = mxGetPr(WM);
   m_ptr = m; 
   wm_ptr = wm;
-  for (i=0; i<size_m; i++)
-    *(wm_ptr++) = *(m_ptr++);
+  if (len_x & 1) { /* x length is odd - need to add 1 */
+    for (col=0; col < n_cols; col++) {
+      for (i=0; i<len_x; i++)
+	*(wm_ptr++) = *(m_ptr++);
+      wm_ptr++;
+    }
+    len_x++;
+  } else /* len_x not odd, straight copy */
+    for (i=0; i<size_m; i++)
+      *(wm_ptr++) = *(m_ptr++);
 
+  /* length x is now even */
+  len_x_12 = len_x/2;
+       
   /* work out wraparound */
-  st_wrap = my_max((len_h-dlp), (len_g-dhp))-1;
-  end_wrap = my_max(dlp, dhp);
+  st_wrap = max0(len_h-dlp-1, len_g-dhp-1);
+  end_wrap = max0(dlp, dhp);
   len_buf = st_wrap + len_x + end_wrap;
   buf = (double *)mxCalloc(len_buf, sizeof(double));
   
   /* filter differences */
   len_shared = my_min(len_h, len_g);
-  len_diff   = my_max(len_h, len_g) - len_shared;
+  len_diff   = max0(len_h, len_g) - len_shared;
   h_g_same   = (len_h == len_g);
   h_bigger   = (len_h > len_g);
 
