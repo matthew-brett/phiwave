@@ -16,7 +16,7 @@ function y=wtnd(x,h,g,scales,del1,del2)
 %
 % Based on wt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: wtnd.m,v 1.2 2004/07/08 04:30:22 matthewbrett Exp $
+% $Id: wtnd.m,v 1.3 2004/07/13 01:51:07 matthewbrett Exp $
 
 
 %--------------------------------------------------------
@@ -56,22 +56,21 @@ function y=wtnd(x,h,g,scales,del1,del2)
 %    CHECK PARAMETERS AND OPTIONS
 % -----------------------------------
 
-h=h(:)';	% Arrange the filters so that they are row vectors.
+if nargin < 3
+  error('Need at least matrix to wt, and wt filters');
+end
+if nargin < 4
+  scales = [];
+end
+
+% get output and scales dimensions 
+dims   = size(z);
+n_dims = length(dims);
+[wt_sz sc_in_sz sc_out_sz] = wt_dims(dims, scales);
+
+% Arrange the filters so that they are row vectors.  
+h=h(:)';	
 g=g(:)';
-
-% matrix dimensions
-dims = size(x);
-if any(log2(dims)-floor(log2(dims)))
-  error('Need dyadic dimensions');
-end
-
-% scale
-min_sz = min(dims(dims > 1));
-if min_sz<2^scales 
-  disp('The scale is too high. The maximum for the signal is:')
-  floor(log2(min_sz))
-  return
-end
 
 %--------------------------
 %    DELAY CALCULATION 
@@ -85,8 +84,10 @@ if rem(dhp-dlp,2)~=0	% difference between them.
   dhp=dhp+1;		% must be even
 end;
 
-if nargin==6,		% Other experimental filter delays
-  dlp=del1;		% can be forced from the arguments
+% Other experimental filter delays can be forced from the arguments
+if nargin==5, error('Need two delays, if specified'); end
+if nargin==6,		
+  dlp=del1;		
   dhp=del2;
 end;
 
