@@ -42,7 +42,7 @@ function y=iwt(wx,rh,rg,k,tam,kl,del1,del2)
 %        See also: WT, WT2D, WTCENTER, WTMETHOD
 %
 %
-% $Id: iwt.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: iwt.m,v 1.2 2004/07/14 20:02:12 matthewbrett Exp $
 
 % Restrictions:
 %
@@ -208,9 +208,12 @@ dhp = suml - dhpa;		% synthesis are the total minus the
 %    WRAPPAROUND CALCULATION 
 %------------------------------
 
-L=max([llp,lhp,dhp,dlp]);	% The number of samples for the
+% The line below does not cope correctly with -ve delays
+% L=max([llp,lhp,dhp,dlp]);	% The number of samples for the
 				% wrapparound.
 
+% fix by MB for negative delays
+L=max([llp lhp dlp dhp llp-dlp lhp-dhp]);	
 
 %------------------------------
 %     START THE ALGORITHM 
