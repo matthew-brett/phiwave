@@ -43,10 +43,10 @@ function [o, others] = phido(des, params, passf)
 % constructor with passf set to 0 in order for the constructor merely to
 % make a phido object, without passing back to the other classes. 
 % 
-% $Id: phido.m,v 1.4 2004/09/16 05:46:42 matthewbrett Exp $
+% $Id: phido.m,v 1.5 2004/09/16 06:20:02 matthewbrett Exp $
 
 myclass = 'phido';
-defstruct = struct('vavelet',  phiw_lemarie(2), ...
+defstruct = struct('wavelet',  phiw_lemarie(2), ...
 		   'scales',   4, ...
 		   'wtprefix', 'wv_', ...
 		   'maskthresh', 0.05);
@@ -60,13 +60,13 @@ end
 if nargin < 2
   passf = 1;
 end
-if isa(params, myclass)
-  o = params;
+if isa(des, myclass)
+  o = des;
   return
 end
 
 % send design to mardo
-mardo_o = mardo(des);
+[mardo_o params] = mardo(des, params);
 
 % fill params with defaults, parse into fields for this object, children
 [pparams, others] = mars_struct('ffillsplit', defstruct, params);
