@@ -1,6 +1,6 @@
-function [o, others] = phiw_daub(params, others)
+function [o, others] = phiw_daub(num_coeffs, others)
 % phiw_daub - class constructor
-% FORMAT [o, others] = phiw_daub(params, others)
+% FORMAT [o, others] = phiw_daub(num_coeffs, others)
 % inherits from phiw_wavelet
 % 
 % Synopsis
@@ -8,56 +8,52 @@ function [o, others] = phiw_daub(params, others)
 % o = phiw_daub(4);
 % 
 % Inputs
-% params    - maybe a scalar, setting the number of coefficients for the
+% num_coeffs - a scalar, setting the number of coefficients for the
 %             Daubechies wavelet filter
-%             OR
-%             structure containing params field as above and values for
-%             any other object field for this object or parent (see
-%             phiw_wavelet for details)
-% others    - optional structure with any other fields for the object
+% others    - optional structure with any other fields for phiw_wavelet
 %             (see phiw_wavelet) 
 % 
-% $Id: phiw_daub.m,v 1.3 2004/09/26 03:56:50 matthewbrett Exp $
+% $Id: phiw_daub.m,v 1.4 2004/09/26 07:53:43 matthewbrett Exp $
 
 myclass = 'phiw_daub'; 
-cvs_v   = mars_cvs_version(myclass);
 
 % Default object structure; Daub filter with 4 coefficients
 defstruct = struct('num_coeffs', 4);
 
 if nargin < 1
-  params  = [];
+  
+  num_coeffs  = [];
 end
 if nargin < 2
   others = [];
 end
 
-if isa(params, myclass)
-  o = params;
+if isa(num_coeffs, myclass)
+  o = num_coeffs;
   % Check for simple form of call
   if isempty(others), return, end
 
   % Otherwise, we are being asked to set fields of object
-  % (There aren't any for now, so just sort out input args)
   [p others] = mars_struct('split', others, defstruct);
-  if isfield(p, 'num_coeffs'), o = num_coeffs(o, p.num_coeffs), end
+  if isfield(p, 'num_coeffs'), o = num_coeffs(o, p.num_coeffs); end
   return
 end
 
-% Check params input argument
-if isempty(params), params = defstruct; end
-if ~isfield(params, 'num_coeffs'), params = struct('num_coeffs', params); end
-n_c = mars_struct('getifthere', params, 'num_coeffs');
-if isempty(n_c)
-  error('Need params field in input struct, or scalar');
+% Check num_coeffs input argument
+if isempty(num_coeffs), num_coeffs = defstruct.num_coeffs; end
+if ~isnumeric(num_coeffs) | prod(size(num_coeffs)) > 1
+  error('num_coeffs argument should be a scalar');
 end
-if ~isnumeric(n_c) | prod(size(n_c)) > 1
-  error('params argument should be a scalar');
-end
-
-params.cvs_version = cvs_v;
 
 % set the phiw_wavelet object
-[phiw_w others] = phiw_wavelet(params, others);
-[o, others  = class(params, myclass);
+[H G RH RG] = daub(num_coeffs);
+[phiw_w others] = phiw_wavelet(struct('H',  H, ...
+				      'G',  G, ...
+				      'RH', RH, ...
+				      'RG', RG), ...
+			       others);
+
+% Return phiw_daub object
+params.num_coeffs = num_coeffs;
+o  = class(params, myclass, phiw_w);
 
