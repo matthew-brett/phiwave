@@ -1,4 +1,6 @@
 SPM2 compatibility!
-Faster wavelet transforms and inversion
+Faster wavelet inversion
 Add back slice_overlay functions
 Check on compilation
+add class method to phiw_wavelet for wavelet center
+move all uses of wtcenter to pr_center

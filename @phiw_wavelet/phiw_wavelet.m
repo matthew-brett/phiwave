@@ -9,7 +9,7 @@ function w = phiw_wavelet(params, flag)
 %
 %  flag     - specifies detail coeffs to right (UviWave) [1]
 %
-% $Id: phiw_wavelet.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_wavelet.m,v 1.2 2004/06/28 15:50:27 matthewbrett Exp $
   
 if nargin < 1
   params = [];
@@ -20,7 +20,7 @@ if nargin < 2
   flag = 1;  
 end
 if isempty(params)
-  % inp1 is wavelet filter structure
+  % inp1 can be wavelet filter structure
   params = struct('H',1,'G',1,'RH',1,'RG',1);
 end
 if isa(params, 'phiw_wavelet')

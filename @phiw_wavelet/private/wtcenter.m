@@ -12,7 +12,7 @@ function d=wtcenter(x,op);
 %           See also: WTMETHOD, CENTER, WT
 %
 %
-% $Id: wtcenter.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: wtcenter.m,v 1.2 2004/06/28 15:50:27 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
@@ -46,6 +46,6 @@ if WTCENTERMETHOD>3 | WTCENTERMETHOD<0
 	WTCENTERMETHOD=0
 end
 	
-d=floor(center(x,WTCENTERMETHOD));
+d=floor(pr_center(x,WTCENTERMETHOD));
 
 % (Another long function !!!)
