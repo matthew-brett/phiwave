@@ -1,4 +1,4 @@
-function y=wt2d(x,h,g,k,del1,del2)
+function y=wt2d(x,h,g,scales,del1,del2)
 % WT2D   Two dimensional Wavelet Transform. 
 %
 % See wtnd for help on inputs and output format 
@@ -7,7 +7,7 @@ function y=wt2d(x,h,g,k,del1,del2)
 %
 % See also:  WTND, IWT, IWTND, WTCENTER, ISPLIT.
 %
-% $Id: wt2d.m,v 1.2 2004/07/15 05:19:00 matthewbrett Exp $
+% $Id: wt2d.m,v 1.3 2004/07/15 21:23:26 matthewbrett Exp $
 
 if nargin < 3
   error('Need data to transform and two filters');
