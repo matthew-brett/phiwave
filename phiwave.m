@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: phiwave.m,v 1.3 2004/07/09 16:32:02 matthewbrett Exp $
   
 % PhiWave version
 PWver = 2.2;  % alpha 
@@ -339,6 +339,60 @@ case 'splash'
  set(h,'visible','on');
  pause(3);
  close(h);
+ 
+case 'make'
+% runs mex file compilation   
+% Make compiled files for PhiWave
+% FORMAT phiwave('make' [,optfile]);
+% 
+% optfile    - optional options (mexopts) file to use for compile
+%   
+% You may want to look into the optimizations for mex compilation
+% See the SPM99 spm_MAKE.sh file or SPM2 Makefile for examples
+% 
+% My favorite compilation flags for a pentium 4 system, linux, gcc are:
+% -fomit-frame-pointer -O3 -march=pentium4 -mfpmath=sse -funroll-loops
+
+if nargin < 2
+  optfile = '';
+else
+  optfile = varargin{2};
+end
+
+if ~isempty(optfile)
+  if ~exist(optfile, 'file')
+    error(['optfile ' optfile ' does not appear to exist']);
+  end
+  optfile = [' -f ' optfile];
+end
+
+mexfiles = { {'@phiw_wavelet', 'private'}, ...
+	     {'do_wtx.c', 'do_iwtx.c'};...
+	     {'@phiw_wvimg', 'private'}, {'pplot_elbow.c'} };
+	     
+pwd_orig = pwd;
+phiwave_dir = fileparts(which('phiwave.m'));
+if isempty(phiwave_dir)
+  error('Can''t find phiwave on the matlab path');
+end
+try
+  for d = 1:size(mexfiles, 1)
+    cd(fullfile(phiwave_dir, mexfiles{d}{:}));
+    files = mexfiles{d, 2};
+    for f = 1:length(files)
+      fprintf('Compiling %s\n', fullfile(pwd, files{f}));
+      if isempty(optfile)
+	mex(files{f});
+      else
+	mex(optfile, files{f});
+      end
+    end
+  end
+  cd(pwd_orig);
+catch
+  cd(pwd_orig);
+  rethrow(lasterror);
+end 
  
 case 'str2fname'
 % accepts string, attempts return of string for valid filename
