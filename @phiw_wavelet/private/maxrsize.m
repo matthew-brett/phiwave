@@ -14,7 +14,7 @@ function s=maxrsize(lw,k)
 %           See also: WVLTSIZE, WT, WT2D, BANDSITE.
 %
 %
-% $Id: maxrsize.m,v 1.1 2004/06/25 15:20:36 matthewbrett Exp $
+% $Id: maxrsize.m,v 1.1 2004/06/25 16:00:34 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
