@@ -1,22 +1,26 @@
-function y=matrix_wt(x, h, g, dims, scales, del1, del2)
+function y=matrix_wt(x, h, g, p_dims, scales, del1, del2)
 % matrix_wt - Discrete N-D Wavelet Transform.
 % 
-% MATRIX_WT(X,H,G,SCALES) calculates the N-D wavelet transform of matrix X,
-% where N is the number of dimensions of X.  The second argument H is the
-% lowpass filter and the third argument G the highpass filter.  MATRIX_WT
-% generalizes the algorithm for UviWave WT to N dimensions.
+% MATRIX_WT(X,H,G,P_DIMS,SCALES) calculates the N-D wavelet transform of
+% matrix X, where N is the number of dimensions of X.  The second argument H
+% is the lowpass filter and the third argument G the highpass filter.
+% P_DIMS is a matrix of flag values, one value per dimension of x; each
+% dimension with a flag value of 1 is wt'ed.  Dimensions of size 1 are of
+% course igmored.  MATRIX_WT generalizes the algorithm for UviWave WT to N
+% dimensions.
+% 
 %
-% MATRIX_WT(X,H,G,SCALES,DEL1,DEL2) calculates the N-D wavelet transform of
-% matrix X, but also allows the user to change the alignment of the outputs
-% with respect to the input signal. This effect is achieved by setting to
-% DEL1 and DEL2 the delays of H and G respectively. The default values of
-% DEL1 and DEL2 are calculated using the function WTCENTER.
+% MATRIX_WT(X,H,G,P_DIMS,SCALES,DEL1,DEL2) calculates the N-D wavelet
+% transform of matrix X, but also allows the user to change the alignment of
+% the outputs with respect to the input signal. This effect is achieved by
+% setting to DEL1 and DEL2 the delays of H and G respectively. The default
+% values of DEL1 and DEL2 are calculated using the function WTCENTER.
 %
 %      See also:  IWT, WT2D, IWT2D, WTCENTER, ISPLIT.
 %
 % Based in part on wt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: matrix_wt.m,v 1.1 2004/07/13 01:49:49 matthewbrett Exp $
+% $Id: matrix_wt.m,v 1.2 2004/07/13 06:37:09 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
@@ -42,14 +46,11 @@ function y=matrix_wt(x, h, g, dims, scales, del1, del2)
 %--------------------------------------------------------
 
 % Do the wt by iteratively switching matrix dimension to be processed to be
-% the X dimension, then filtering.  Filtering done by making image into a
-% vector and filtering the vector.  This can result in a lot of redundant
-% computation (across X lines) but, probably because of efficient use of the
-% cache by the matlab/ATLAS code, it is still faster than filtering line by
-% line. The algorithm goes up to 4D, but could be extended further using
-% subsref commands [n_dims = 2; subsref(c, struct('type', '()', 'subs',
-% repmat({:}, 1, n_dims)))]; I haven't used these here because they can be
-% considerably slower than direct [c(:,:)] type referencing
+% the X dimension (columns), then filtering. The algorithm goes up to 4D,
+% but could be extended further using subsref commands [n_dims = 2;
+% subsref(c, struct('type', '()', 'subs', repmat({:}, 1, n_dims)))]; I
+% haven't used these here because they can be considerably slower than
+% direct [c(:,:)] type referencing
   
 % -----------------------------------
 %    CHECK PARAMETERS AND OPTIONS
@@ -63,14 +64,25 @@ sz     = size(x);
 n_dims = length(sz);
 
 if nargin < 4
-  dims = ones(1, sz); 
+  p_dims = [];
+end
+if isempty(p_dims)
+  p_dims = ones(1, n_dims);
+end
+if prod(size(p_dims))==1
+  p_dims = ones(1, n_dims) * p_dims;
+end
+p_dims = p_dims & sz > 1;
+if ~any(p_dims)
+  y = x;
+  return
 end
 if nargin < 5
   scales = [];
 end
 
 % get output and scales dimensions 
-[wt_sz sc_in_sz sc_out_sz] = wt_dims(sz, scales);
+[wt_sz sc_in_sz sc_out_sz scales] = wt_dims(sz, scales, p_dims);
 
 % Arrange the filters so that they are row vectors.  
 h=h(:)';	
@@ -115,58 +127,80 @@ shift_dims = [2:n_dims 1];
 t = x;
 
 % y is the output matrix
-y = zeros(wt_sz(:));
+y = zeros(wt_sz(:)');
 
 % For every scale (iteration)...
 for sc=1:scales			
   % get new data block
+  in_sz = sc_in_sz(sc, :);
   if sc > 1
-    t_sz(dims > 1) = t_sz(dims > 1) / 2;
     % following assumes UviWave ordering
     switch n_dims
-      case 2
-       t = y(1:t_sz(1), 1:t_sz(2));
-      case 3
-       t = y(1:t_sz(1), 1:t_sz(2), 1:t_sz(3));
-      case 4
-       t = y(1:t_sz(1), 1:t_sz(2), 1:t_sz(3), 1:t_sz(4));
+     case 2
+      t = t(1:in_sz(1), 1:in_sz(2));
+     case 3
+      t = t(1:in_sz(1), 1:in_sz(2), 1:in_sz(3));
+     case 4
+      t = t(1:in_sz(1), 1:in_sz(2), 1:in_sz(3), 1:in_sz(4));
      otherwise
-       error('Not implemented');
+      error('Not implemented - but go ahead and do it if you need it');
     end
   end
   
   for d = 1:n_dims
-  
-    % Transform X dimension of matrix
-    lx=size(t, 1);
-    
-    if lx > 1  % do not transform dims of size 1
-    
+
+    % all the hard work is in C
+    if p_dims(d)
       t = do_wtx(t, h, g, dlp, dhp);
-    
-    end % if lx > 1
+    end 
     
     % move next dimension to X
     t = permute(t, shift_dims);
   end
 
+  % reset offsets
+  out_sz = sc_out_sz(sc, :);
+  offsets = offsets - (out_sz - in_sz);
+  op1 = offsets + 1;
+  
   % set data block into output
-  if sc == 1
-    y = t;
-  else
+  if ~(any(offsets)) % for speed, do the simplest case 
+    if sc == 1
+      y = t;
+    else
+      
+      % following assumes UviWave ordering
+      switch n_dims
+       case 2
+	y(1:out_sz(1), 1:out_sz(2)) = t;
+       case 3
+	y(1:out_sz(1), 1:out_sz(2), 1:out_sz(3)) = t;
+       case 4
+	y(1:out_sz(1), 1:out_sz(2), 1:out_sz(3), 1:out_sz(4)) = t;
+       otherwise
+	error('Not implemented');
+      end    
+    end
+  else % more general case when there are offsets
+    
     % following assumes UviWave ordering
     switch n_dims
      case 2
-      y(1:t_sz(1), 1:t_sz(2)) = t;
+      y(op1(1):out_sz(1) + offsets(1), ...
+	op1(2):out_sz(2) + offsets(2)) = t;
      case 3
-      y(1:t_sz(1), 1:t_sz(2), 1:t_sz(3)) = t;
+      y(op1(1):out_sz(1) + offsets(1), ...
+	op1(2):out_sz(2) + offsets(2), ...
+	op1(3):out_sz(3) + offsets(3)) = t;
      case 4
-      y(1:t_sz(1), 1:t_sz(2), 1:t_sz(3), 1:t_sz(4)) = t;
+      y(op1(1):out_sz(1) + offsets(1), ...
+	op1(2):out_sz(2) + offsets(2), ...
+	op1(3):out_sz(3) + offsets(3), ...
+	op1(4):out_sz(4) + offsets(4)) = t;
      otherwise
       error('Not implemented');
     end    
   end
-    
 end
 
 %------------------------------
