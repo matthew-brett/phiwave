@@ -1,4 +1,4 @@
 SPM2 compatibility!
 Add back slice_overlay functions
 Check on compilation
-Do wtcentermethod sets for wt, iwt in phiw_wavelet methods
+Rethink check whether there is matching wt image - prefix!
