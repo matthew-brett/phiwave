@@ -42,7 +42,7 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 %
 % Based on iwt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: iwtnd.m,v 1.3 2004/07/14 20:31:08 matthewbrett Exp $
+% $Id: iwtnd.m,v 1.4 2004/07/15 04:24:21 matthewbrett Exp $
 
 % Restrictions:
 %
@@ -254,7 +254,7 @@ dhp = suml - dhpa;
 %------------------------------
 
 % For doing tricksy permute thing in loop below (see help wt_dim_shifts)
-[shifts end_shift] = wt_dim_shifts(p_dims);
+[shifts end_shift] = wt_dim_shifts(p_dims, sz);
 dims = [1:n_dims]';
 
 % upend scale size matrix, scales has opposite meaning to wt
