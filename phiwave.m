@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.4 2004/09/14 03:41:26 matthewbrett Exp $
+% $Id: phiwave.m,v 1.5 2004/09/26 07:43:46 matthewbrett Exp $
   
 % PhiWave version
 PWver = 2.2;  % alpha 
@@ -369,7 +369,7 @@ if ~isempty(optfile)
   optfile = [' -f ' optfile];
 end
 
-mexfiles = { {'@phiw_wavelet', 'private'}, ...
+mexfiles = { {'uvi_wave'}, ...
 	     {'do_wtx.c', 'do_iwtx.c'};...
 	     {'@phiw_wvimg', 'private'}, {'pplot_elbow.c'} };
 	     
