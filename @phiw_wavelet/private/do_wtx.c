@@ -8,7 +8,7 @@ If the dimension to be transformed is of odd length, then the routine
 will pad the input with an extra 0 in each column of X before doing
 the wavelet transform - as for the UviWave wt function. 
 
-$Id: do_wtx.c,v 1.4 2004/07/12 01:51:01 matthewbrett Exp $
+$Id: do_wtx.c,v 1.5 2004/07/14 19:59:42 matthewbrett Exp $
 
 */ 
 
@@ -37,7 +37,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     *d_start, *d_end, *h_pos, *g_pos, *h_f_pos, *g_f_pos;
   double        h_res, g_res;
   const int     *m_dims;
-  int           *wm_dims;
+  int           *wm_dims, is_row_vector;
   int           n_m_dims, dlp, dhp, st_wrap, end_wrap, n_cols, col, h_g_same, h_bigger;
   int		len_x, len_x_12, len_h, len_g, len_buf, len_shared, len_diff, i, j;
   long int      size_m;
@@ -66,18 +66,24 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   len_x    = mxGetM(M);
   n_cols   = mxGetN(M);
   size_m   = len_x * n_cols;
+  n_m_dims = mxGetNumberOfDimensions(M);
+  is_row_vector = (len_x == 1) & (n_m_dims == 2);
+  if (is_row_vector) {
+    i = n_cols;
+    n_cols = len_x;
+    len_x = i;
+  }
   len_h    = mxGetM(H) * mxGetN(H);
   len_g    = mxGetM(G) * mxGetN(G);
   
   /* make output matrix It will have to get one 0 bigger in x if it
      does not have even x length */
   m_dims   = mxGetDimensions(M);
-  n_m_dims = mxGetNumberOfDimensions(M);
   wm_dims  = (int *)mxCalloc(n_m_dims, sizeof(int));  
   for (i=0; i<n_m_dims; i++)
     wm_dims[i] = m_dims[i];
   if (len_x & 1) /* x length is odd - need to add 1 */
-    wm_dims[0]++;
+    wm_dims[is_row_vector]++;
   WM = mxCreateNumericArray(n_m_dims, wm_dims, mxDOUBLE_CLASS, mxREAL);
   mxFree(wm_dims);
   wm = mxGetPr(WM);
