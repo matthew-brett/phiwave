@@ -2,7 +2,7 @@ function w = do_iwtx_m(w, rh, rg, dlp, dhp, reco_detail)
 % do first scale inverse wavelet transform in x dimension of matrix
 % FORMAT t = do_iwtx(t, h, g, L, dlp, dhp, reco_detail)
 % 
-% $Id: do_iwtx_m.m,v 1.2 2004/07/09 23:40:22 matthewbrett Exp $ 
+% $Id: do_iwtx_m.m,v 1.3 2004/07/10 05:02:04 matthewbrett Exp $ 
 
 if nargin < 5
   error('Need matrix, filters and delays');
@@ -17,7 +17,7 @@ n_dims = ndims(w);
 % The number of samples for the wrapparound. Thus, we should need to move
 % along any L samples to get the output wavelet vector phase equal to
 % original input phase.  Note delays can be negative
-lh = length(h); lg = length(g);
+lh = length(rh); lg = length(rg);
 L=max([lh lg dlp dhp lh-dlp lg-dhp]);	
 
 % 1 - The lowpass vector... interpolate it ending with a '0' so that
