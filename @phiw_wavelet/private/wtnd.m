@@ -35,22 +35,46 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 %		        1st scale ---->	|___|___| <-- 1st scale 
 %		      vertical detail		    diagonal detail
 %
+% Notes 1: Dimensions to transform
+% --------------------------------
+%
+% If the passed matrix X has N dimensions, then the default behaviour is to
+% transform all N dimensions.  It is possible to select a subset of
+% dimensions to transform, using the P_DIMS input (see below).  For example
+% we could choose to do a 2D transform on a 3D matrix.
+% 
 % WTND(X,H,G,SCALES,DEL1,DEL2) calculates the N-D wavelet
 % transform of matrix X, but also allows the user to change the alignment of
 % the outputs with respect to the input signal. This effect is achieved by
 % setting to DEL1 and DEL2 the delays of H and G respectively. The default
 % values of DEL1 and DEL2 are calculated using the function WTCENTER.
 %
-% WTND(X,H,G,SCALES,DEL1,DEL2,P_DIMS) adds the ability to wt over a subset
-% of the matrix dimensions.  P_DIMS should be a matrix of flag values,
-% one value per dimension of X; each dimension with a flag value of 1 is
-% wt'ed, dimensions of size 1 or with a 0 flag value are ignored.
+% Note 2: Using P_DIMS
+% --------------------
 % 
+% WTND(X,H,G,SCALES,DEL1,DEL2,P_DIMS) adds the ability to wt over a subset
+% of the matrix dimensions.  P_DIMS should be a vector of flag values, one
+% value per dimension of X; each dimension with a flag value of 1 is wt'ed,
+% dimensions of size 1 or with a 0 flag value are ignored. Thus, if we have
+% a 3D matrix, the default value for P_DIMS will be [1 1 1]; if you want to
+% transform just over the rows of this matrix, you could override the
+% default by passing a value of P_DIMS of [0 1 0];  P_DIMS can also be a
+% scalar, in which case it specifies that the first P_DIMS dimensions
+% should be processed; for example, for a 3D matrix, a P_DIMS value of 2
+% will expand to a P_DIMS vector of [1 1 0].
+% 
+% Note 3: Different dimensions, different filters
+% -----------------------------------------------
+%
 % Each dimension can have its own wavelet filter; the input filters h and
 % g can be given as cell arrays, each cell containing a filter for the
-% matching processed dimension (first cell processes first non-zero
-% dimension in p_dims, etc).  Similarly the delays DEL1 and DEL2 can be
-% vectors, with one delay for each processed dimension.
+% matching processed dimension. For example, let use imagine you are passing
+% a 3D matrix, but only want to transform the first 2 dimensions.  You want
+% a different filter for the first and second dimensions.  You would use a
+% P_DIMS of [1 1 0] (see above), and pass a two element cell array in h and
+% in g, with the h filter for dimension 2 in h{2}, etc.  Similarly the
+% delays DEL1 and DEL2 can be vectors, with one delay for each processed
+% dimension.
 %
 % Returns
 % Y           - transformed matrix
@@ -61,7 +85,7 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 %
 % Based on wt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: wtnd.m,v 1.6 2004/07/15 05:17:20 matthewbrett Exp $
+% $Id: wtnd.m,v 1.7 2004/07/16 03:56:01 matthewbrett Exp $
 
 %--------------------------------------------------------
 % wt is Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
@@ -88,7 +112,7 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 % Programmers' notes
 % 
 % We do the wt by iteratively switching the matrix dimension we want to
-% process to be the X dimension (columns), then filtering. The algorithm
+% process to be the first dimension (columns), then filtering. The algorithm
 % goes up to 4D, but could be extended further by adding the relevant liesn
 % to the switch statements, or made general by using subsref commands:
 % [n_dims = 2; d = subsref(c, struct('type', '()', 'subs', repmat({:}, 1,
@@ -127,12 +151,11 @@ sz     = size(x);
 n_dims = length(sz);
 
 % Process p_dims 
-def_pdims = ones(1, n_dims);
 p_d_l = prod(size(p_dims));
 if p_d_l == 0  % empty
-  p_dims = def_pdims;
+  p_dims = ones(1, n_dims);
 elseif p_d_l == 1
-  p_dims = def_pdims * p_dims;
+  p_dims = [ones(1, p_dims) zeros(1, n_dims-p_dims)];
 elseif p_d_l < n_dims
   p_dims = [p_dims(:)' ones(1, n_dims-p_d_l)];
 elseif p_d_l > n_dims
@@ -207,7 +230,7 @@ for sc=1:scales
   
   for d = 1:n_p_dims
 
-    % move next dimension to X
+    % move next dimension to column dimension
     s = shifts(d);
     if s, t = permute(t, circshift(dims, s)); end
     
