@@ -7,7 +7,7 @@ function e = end(obj,K,N)
 % For three, (wvimg(2, 5, 10)) the voxel value is returned for the
 % contained object.
 %
-% $Id: end.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: end.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if N == 3
   % img case

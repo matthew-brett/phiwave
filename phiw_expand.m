@@ -2,7 +2,7 @@ function m = phiw_expand(img, nvoxels, outvol)
 % phiw_expand - expand (probably binary) image by 'voxels' no of voxels
 %
 %
-% $Id: phiw_expand.m,v 1.1 2004/06/25 15:20:40 matthewbrett Exp $
+% $Id: phiw_expand.m,v 1.1.1.1 2004/06/25 15:20:40 matthewbrett Exp $
   
 if nargin < 2
   error('Need two input args');

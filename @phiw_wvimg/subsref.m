@@ -1,7 +1,7 @@
 function R = subsref(obj, s)
 %SUBSREF Method to overload subscripted references
 %
-% $Id: subsref.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: subsref.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if nargin < 2
   error('Crazy no of args')

@@ -1,7 +1,7 @@
 function obj = subsasgn(obj, s, rhs)
 %SUBSASGN  Method to overload subsasgn for phiw_wvimg object
 %
-% $Id: subsasgn.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: subsasgn.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if nargin < 3
   error('Crazy no of args')

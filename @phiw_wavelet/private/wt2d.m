@@ -31,7 +31,7 @@ function y=wt2d(x,h,g,k,del1,del2)
 %       Run the script 'FORMAT2D' for more help on the output format.	
 %       See also: IWT2D, WT, WTMETHOD
 %
-% $Id: wt2d.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: wt2d.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 
 %--------------------------------------------------------

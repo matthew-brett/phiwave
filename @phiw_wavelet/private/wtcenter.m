@@ -12,7 +12,7 @@ function d=wtcenter(x,op);
 %           See also: WTMETHOD, CENTER, WT
 %
 %
-% $Id: wtcenter.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: wtcenter.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 

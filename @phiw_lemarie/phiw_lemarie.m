@@ -2,7 +2,7 @@ function w = phiw_lemarie(params, inp)
 % phiw_lemarie - class constructor
 % inherits from phiw_wavelet
 %
-% $Id: phiw_lemarie.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_lemarie.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 myname = 'phiw_lemarie';  
 if nargin < 1

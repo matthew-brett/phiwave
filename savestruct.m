@@ -2,7 +2,7 @@ function savestruct(varargin)
 % savestruct - saves data in structure to .mat file
 % FORMAT savestruct(matname, struct)
 %
-% $Id: savestruct.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: savestruct.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
   
 if nargin ~= 2
   error('Need matfile name and structure (only)');

@@ -21,7 +21,7 @@ function [Vdcon, Vderr] = phiw_get_wdimg(varargin)
 % Matthew Brett, Federico Turkheimer, 9/10/00
 % error maps added 19/11/01 - RP
 %
-% $Id: phiw_get_wdimg.m,v 1.1 2004/06/25 15:20:40 matthewbrett Exp $
+% $Id: phiw_get_wdimg.m,v 1.1.1.1 2004/06/25 15:20:40 matthewbrett Exp $
   
 % set unpassed args to empty
 [spmmat, xCon, Ic, wdstruct, fname] = argfill(varargin);

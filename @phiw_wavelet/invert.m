@@ -11,7 +11,7 @@ function data = invert(wimg, w, scales, oimgi)
 % Output
 % data    - wavelet inverted data, in resized data matrix if necessary
 %
-% $Id: invert.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: invert.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
  
 if nargin < 4
   oimgi = []; % do not reembed in original matrix

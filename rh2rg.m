@@ -10,7 +10,7 @@ function [rh,rg,h,g]=rh2rg(rh)
 %	
 %	  It is an auxiliary function for orthogonal filters design.
 %
-% $Id: rh2rg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: rh2rg.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 

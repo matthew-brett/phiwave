@@ -1,7 +1,7 @@
 function [obj, wvol] = write_wtimg(obj, fname)
 % write_wtimg - saves wvimg object as .img / .mat combination
 %
-% $Id: write_wtimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: write_wtimg.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if nargin < 2
   fname = [];

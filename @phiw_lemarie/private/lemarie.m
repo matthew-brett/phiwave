@@ -14,7 +14,7 @@ function  [h,g,rh,rg]=lemarie(num_coefs)
 %	    		Decomposition: The Wavelet Representation", IEEE Trans.
 %			on Patt. An. and Mach. Intell., July 1989
 %
-% $Id: lemarie.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: lemarie.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 

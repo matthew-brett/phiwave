@@ -2,7 +2,7 @@ function sz = lims2sz(lims)
 % szs = lims2szs(lims), returns data size for limits
 % limits given in lims matrix (2 by no of dimensions)
 %
-% $Id: lims2sz.m,v 1.1 2004/06/25 15:20:35 matthewbrett Exp $
+% $Id: lims2sz.m,v 1.1.1.1 2004/06/25 15:20:35 matthewbrett Exp $
   
 if nargin < 1
   error('Need lims');

@@ -35,7 +35,7 @@ function y=wt(x,h,g,k,del1,del2)
 %
 %      See also:  IWT, WT2D, IWT2D, WTCENTER, ISPLIT.
 %
-% $Id: wt.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: wt.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 
 %--------------------------------------------------------

@@ -20,7 +20,7 @@ function H = hoch(p,alfa,No,sortf)
 %
 % 	Federico E. Turkheimer 15/6/2000, Matthew Brett 1/6/2001
 %
-% $Id: hoch.m,v 1.1 2004/06/25 15:20:35 matthewbrett Exp $
+% $Id: hoch.m,v 1.1.1.1 2004/06/25 15:20:35 matthewbrett Exp $
 
 if nargin < 1
   error('Need p values');

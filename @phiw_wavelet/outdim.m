@@ -4,7 +4,7 @@ function odim = outdim(w, idim)
 % This template function assumes dyadic dimensions are 
 % required and that first two output dimensions must be the same
 %
-% $Id: outdim.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: outdim.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if nargin < 2
   error('Need input dimensions');

@@ -15,7 +15,7 @@ function [phiw, msgstr] = phiw_options(varargin)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.1 2004/06/25 15:20:42 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.1.1.1 2004/06/25 15:20:42 matthewbrett Exp $
   
 [optstr phiw cfg_fname] = argfill(varargin, 0, ...
 				  {'load', spm('getglobal','PHIWAVE'),''});

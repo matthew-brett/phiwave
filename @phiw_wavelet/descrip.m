@@ -1,7 +1,7 @@
 function str = descrip(w)
 % descrip - returns string describing wavelet
 %
-% $Id: descrip.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: descrip.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 str = class(w);
 

@@ -6,7 +6,7 @@ function c = fillafromb(a, b,fieldns)
 % c is returned structure
 % Is recursive, will fill struct fields from struct fields
 %
-% $Id: fillafromb.m,v 1.1 2004/06/25 15:20:35 matthewbrett Exp $
+% $Id: fillafromb.m,v 1.1.1.1 2004/06/25 15:20:35 matthewbrett Exp $
   
 if nargin < 2
   error('Must specify a and b')

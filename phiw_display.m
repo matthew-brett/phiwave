@@ -12,7 +12,7 @@ function phiw_display(varargin)
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.1 2004/06/25 15:20:40 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.1.1.1 2004/06/25 15:20:40 matthewbrett Exp $
   
 [action disptype vols phiw defyn] = argfill(...
     varargin, 0,{'display', 'orth', [],[],[]}, 1);

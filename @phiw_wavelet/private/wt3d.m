@@ -13,7 +13,7 @@ function img=wt3d(img,varargin)
 % 
 % Modifications Matthew Brett 28/6/01
 %
-% $Id: wt3d.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $ 
+% $Id: wt3d.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $ 
   
 % -----------------------------------
 %    CHECK PARAMETERS AND OPTIONS

@@ -1,7 +1,7 @@
 function write_descrip(obj, fname)
 % write_descrip - writes description text file
 %
-% $Id: write_descrip.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: write_descrip.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if nargin < 2
   fname = obj.wvol.fname;

@@ -94,7 +94,7 @@ function varargout = spm_orthviews(action,varargin)
 %_______________________________________________________________________
 % @(#)spm_orthviews.m	2.20 John Ashburner & Matthew Brett 00/05/25
 %
-% $Id: spm_orthviews.m,v 1.1 2004/06/25 15:20:44 matthewbrett Exp $
+% $Id: spm_orthviews.m,v 1.1.1.1 2004/06/25 15:20:44 matthewbrett Exp $
 
 global st;
 

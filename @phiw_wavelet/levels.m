@@ -13,7 +13,7 @@ function [inplevs, quads, nquads] = levels(w, odim, scales)
 %
 % This template wavelet function assumes dyadic dimensions
 %
-% $Id: levels.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: levels.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
   
 if nargin < 3
   error('Need odim and scales to return level info');

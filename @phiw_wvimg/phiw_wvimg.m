@@ -56,7 +56,7 @@ function wvimg = phiw_wvimg(inpimg,options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 myname = 'phiw_wvimg';
 

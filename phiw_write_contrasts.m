@@ -26,7 +26,7 @@ function [rxCon, wave, connos, spmmat, rmsi] = phiw_write_contrasts(varargin)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: phiw_write_contrasts.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_write_contrasts.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
   
 [spmmat,connos,xCon,flags,phiw]  = argfill(varargin);
 [wave rmsi rxCon] = deal([]);

@@ -9,7 +9,7 @@ function w = phiw_wavelet(params, flag)
 %
 %  flag     - specifies detail coeffs to right (UviWave) [1]
 %
-% $Id: phiw_wavelet.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_wavelet.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
   
 if nargin < 1
   params = [];

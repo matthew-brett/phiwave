@@ -12,7 +12,7 @@ function thresh = ValSUREThresh(x)
 %
 % Federico Turkheimer
 %
-% $Id: ValSUREThresh.m,v 1.1 2004/06/25 15:20:44 matthewbrett Exp $
+% $Id: ValSUREThresh.m,v 1.1.1.1 2004/06/25 15:20:44 matthewbrett Exp $
 
   a = sort(abs(x)).^2 ;
   b = cumsum(a);

@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.1 2004/06/25 15:20:40 matthewbrett Exp $
+% $Id: phiwave.m,v 1.1.1.1 2004/06/25 15:20:40 matthewbrett Exp $
   
 % PhiWave version
 PWver = 0.2;  % alpha minus 

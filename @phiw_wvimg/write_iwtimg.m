@@ -1,7 +1,7 @@
 function [iwtvol, obj] = write_iwtimg(obj, iwtvol)
 % write_wtimg - iwt on wvimg object, save as img
 %
-% $Id: write_iwtimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: write_iwtimg.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if nargin < 2
   iwtvol = [];

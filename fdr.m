@@ -22,7 +22,7 @@ function H = fdr(p,alfa,No,sortf)
 %
 % 	Federico E. Turkheimer 16/2/2001, Matthew Brett 1/6/2001
 %
-% $Id: fdr.m,v 1.1 2004/06/25 15:20:35 matthewbrett Exp $
+% $Id: fdr.m,v 1.1.1.1 2004/06/25 15:20:35 matthewbrett Exp $
 
 if nargin < 1
   error('Need p values');

@@ -22,7 +22,7 @@ function mfcells = matfilerw(mfimgs, varargin)
 %
 % Matthew Brett 20/10/00
 %
-% $Id: matfilerw.m,v 1.1 2004/06/25 15:20:36 matthewbrett Exp $
+% $Id: matfilerw.m,v 1.1.1.1 2004/06/25 15:20:36 matthewbrett Exp $
   
 if nargin < 1
   error('Need image / mat file name(s), +/- params to add')

@@ -10,7 +10,7 @@ function [wtvols, wave]=phiw_volsub(imgvols, wtinfo)
 % wtvols       - wavelet transformed vols
 % wave         - phiw_wvimg object with wt info for these vols
 %
-% $Id: phiw_volsub.m,v 1.1 2004/06/25 15:20:42 matthewbrett Exp $
+% $Id: phiw_volsub.m,v 1.1.1.1 2004/06/25 15:20:42 matthewbrett Exp $
   
 if nargin < 1
   error('Need image volume structures');

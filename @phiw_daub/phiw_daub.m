@@ -2,7 +2,7 @@ function w = phiw_daub(params, inp)
 % phiw_daub - class constructor
 % inherits from phiw_wavelet
 %
-% $Id: phiw_daub.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_daub.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 myname = 'phiw_daub';  
 if nargin < 1

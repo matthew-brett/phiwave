@@ -329,7 +329,7 @@ function spm_spm(VY,xX,xM,F_iX0,varargin)
 %_______________________________________________________________________
 % @(#)spm_spm.m	2.37 Andrew Holmes, Jean-Baptiste Poline, Karl Friston 99/11/26
 %
-% $Id: spm_spm.m,v 1.1 2004/06/25 15:20:45 matthewbrett Exp $
+% $Id: spm_spm.m,v 1.1.1.1 2004/06/25 15:20:45 matthewbrett Exp $
 
 SCCSid   = '2.37';
 

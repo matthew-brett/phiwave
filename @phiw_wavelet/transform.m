@@ -10,7 +10,7 @@ function [wimg, oimgi] = transform(data, w, scales)
 % oimgi   - index limits to retrieve original data from (inverted) wimg
 %           matrix
 %
-% $Id: transform.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: transform.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
   
 % embed data in appropriate size matrix for wt
 [newdims oimgi] = inp2out(w, size(data));

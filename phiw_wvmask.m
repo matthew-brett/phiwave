@@ -1,7 +1,7 @@
 function wtobj = phiw_wvmask(voxmask,wtinfo,options)
 % phiw_wvmask - returns wavelet eqivalent mask for given voxel mask
 %
-% $Id: phiw_wvmask.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_wvmask.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
   
 if nargin < 1
   voxmask = spm_get(1,'img','Voxel mask');

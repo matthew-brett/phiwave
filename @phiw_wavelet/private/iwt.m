@@ -42,7 +42,7 @@ function y=iwt(wx,rh,rg,k,tam,kl,del1,del2)
 %        See also: WT, WT2D, WTCENTER, WTMETHOD
 %
 %
-% $Id: iwt.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: iwt.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 % Restrictions:
 %

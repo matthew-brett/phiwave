@@ -1,7 +1,7 @@
 function wvimg = doproc(wvimg)
 % doproc - performs any necessary processing
 %
-% $Id: doproc.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: doproc.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 % read the data if it's a vol struct
 if isstruct(wvimg.img)

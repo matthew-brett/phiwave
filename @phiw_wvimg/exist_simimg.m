@@ -3,7 +3,7 @@ function exf = exist_simimg(obj, fname)
 % Similar means - same filename, same wavelet, same scales, same .mat
 % and same dimensions
 %
-% $Id: exist_simimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: exist_simimg.m,v 1.1.1.1 2004/06/25 15:20:43 matthewbrett Exp $
 
 if nargin < 2
   fname = [];

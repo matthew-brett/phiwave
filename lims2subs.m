@@ -3,7 +3,7 @@ function s = lims2subs(lims, type)
 % for limits given in lims matrix (2 by no of dimensions)
 % useful in indexing in subsasgn, subsref
 %
-% $Id: lims2subs.m,v 1.1 2004/06/25 15:20:35 matthewbrett Exp $
+% $Id: lims2subs.m,v 1.1.1.1 2004/06/25 15:20:35 matthewbrett Exp $
   
 if nargin < 1
   error('Need lims');

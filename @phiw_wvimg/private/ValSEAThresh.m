@@ -14,7 +14,7 @@ function w = ValSEAThresh(X)
 %	Federico E. Turkheimer
 %	August 13th, 1998
 %
-% $Id: ValSEAThresh.m,v 1.1 2004/06/25 15:20:44 matthewbrett Exp $
+% $Id: ValSEAThresh.m,v 1.1.1.1 2004/06/25 15:20:44 matthewbrett Exp $
         
   X    = abs(X);
   n    = length(X);
