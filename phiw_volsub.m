@@ -10,7 +10,7 @@ function [wtvols, wave]=phiw_volsub(imgvols, wtinfo)
 % wtvols       - wavelet transformed vols
 % wave         - phiw_wvimg object with wt info for these vols
 %
-% $Id: phiw_volsub.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: phiw_volsub.m,v 1.3 2004/11/18 18:48:36 matthewbrett Exp $
   
 if nargin < 1
   error('Need image volume structures');
@@ -29,7 +29,7 @@ wvp = wtinfo.wtprefix;
 
 nimgs = prod(size(imgvols));
 options = struct('noproc',1,'wtprefix',wvp);
-wtvols = imgvols;
+
 for i = 1:nimgs
 
   % check whether these is a wv image of same scale and wavelet type
@@ -57,6 +57,7 @@ for i = 1:nimgs
 end
 
 % and return
+wtvols = reshape(wtvols, size(imgvols));
 wave = phiw_wvimg(wtvols(1),struct('noproc',1));
 
 return
