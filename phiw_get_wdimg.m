@@ -21,7 +21,7 @@ function [Vdcon, Vderr] = phiw_get_wdimg(varargin)
 % Matthew Brett, Federico Turkheimer, 9/10/00
 % error maps added 19/11/01 - RP
 %
-% $Id: phiw_get_wdimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: phiw_get_wdimg.m,v 1.3 2004/09/14 03:40:30 matthewbrett Exp $
   
 % set unpassed args to empty
 [spmmat, xCon, Ic, wdstruct, fname] = argfill(varargin);
@@ -154,7 +154,7 @@ else
 end
 if isempty(fname)
   fname = spm_input('Filename for contrast', 1, 's', ...
-		    ['phiw_' phiwave('str2fname',str)]);
+		    ['phiw_' mars_utils('str2fname',str)]);
 end
 Qdir = spm_str_manip(fname,'Hv');
 fname = [spm_str_manip(fname,'stv'),'.img'];

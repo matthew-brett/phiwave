@@ -26,7 +26,7 @@ function [rxCon, wave, connos, spmmat, rmsi] = phiw_write_contrasts(varargin)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: phiw_write_contrasts.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: phiw_write_contrasts.m,v 1.3 2004/09/14 03:40:30 matthewbrett Exp $
   
 [spmmat,connos,xCon,flags,phiw]  = argfill(varargin);
 [wave rmsi rxCon] = deal([]);
@@ -147,7 +147,7 @@ for ii = 1:length(I)
   end
 
   % make sensible file suffix from contrast name
-  fsuff = phiwave('str2fname', xCon(i).name);
+  fsuff = mars_utils('str2fname', xCon(i).name);
   
   %-Write contrast/ESS images?
   %-------------------------------------------------------------------
