@@ -25,8 +25,8 @@ function [wt_sz, sc_in_sz, sc_out_sz, scales] = wt_dims(sz, scales, p_dims)
 % sizes as we go through the wt, in order to get and set the data to/from
 % the pre-wt and post-wt matrices.
 % 
-% $Id: wt_dims.m,v 1.3 2004/07/13 06:34:17 matthewbrett Exp $
-  
+% $Id: wt_dims.m,v 1.4 2004/07/13 17:23:54 matthewbrett Exp $
+
 if nargin < 1
   error('Need input size(s)');
 end
