@@ -15,7 +15,7 @@ function [phiw, msgstr] = phiw_options(varargin)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.3 2004/11/18 18:46:38 matthewbrett Exp $
   
 [optstr phiw cfg_fname] = argfill(varargin, 0, ...
 				  {'load', spm('getglobal','PHI'),''});
@@ -245,7 +245,7 @@ switch lower(optstr)
 				 min(phiw.display.slices),...
 				 mean(diff(phiw.display.slices)),...
 				 max(phiw.display.slices)));
-       eval(['phiw.display.slices = 'slstr ';'], 'sflg=0;');
+       eval(['phiw.display.slices = ' slstr ';'], 'sflg=0;');
      end
 
      % statistics - not currently used
