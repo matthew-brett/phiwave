@@ -6,26 +6,29 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 % second argument RH is the synthesis lowpass filter and the third argument
 % RG the synthesis highpass filter.
 %
-% IWTND will calculate the size of the reconstructed vector(s) the largest as
-% possible (maybe 1 point larger than the original) unless it is provided
-% using IWTND(WX,RH,RG,SCALES,SIZ). A value of 0 for SIZ is the same as
-% ommiting it.
+% IWTND will calculate the size of the reconstructed matrix dimensions to be
+% as large as possible (maybe 1 point larger than the original) unless the
+% size is given using IWTND(WX,RH,RG,SCALES,SIZ). A value of 0 for SIZ is
+% the same as omitting it.  SIZ should either be scalar, in which case it
+% it the default size for any reconstructed dimension, or should be
+% vector with the same number of values as reconstructed dimensions (see
+% P_DIM); each value specifies an output dimension size.
 %
 % IWTND can be used to perform a single process of multiresolution
 % analysis. The way to do it is by selecting the scales whose highpass bands
 % (detail signals) should be ignored for reconstruction.
 %
-% Using IWTND(WX,RH,RG,SCALES,SIZ,SC_LEVELS) where SC_LEVELS is a
-% SCALES-sized vector,1's or 0's. An i-th coefficient of 0 means that the
-% i-th scale detail (starting from the deepest) should be
-% ignored. SC_LEVELS vector can be replaced by a single number for
-% selecting just only the SC_LEVELS deepest scales.
+% This can be done Using IWTND(WX,RH,RG,SCALES,SIZ,SC_LEVELS) where
+% SC_LEVELS is a SCALES-sized vector,1's or 0's. An i-th coefficient of 0
+% means that the i-th scale detail (starting from the deepest) should be
+% ignored. SC_LEVELS vector can be replaced by a single number for selecting
+% just only the SC_LEVELS deepest scales.
 %
-% An all-ones vector, or a single number equal to SCALES, is the same as the
-% normal inverse transform.
+% An all-ones vector, or an empty values, or a single number equal to
+% SCALES, is the same as the normal inverse transform.
 %         
 % IWTND(WX,RH,RG,SCALES,SIZ,SC_LEVELS,DEL1,DEL2) calculates the inverse
-% transform or performs the multiresolution analysis, but allowing the users
+% transform or performs the multiresolution analysis, but allowing the user
 % to change the alignment of the outputs with respect to the input
 % signal. This effect is achieved by setting to DEL1 and DEL2 the analysis
 % delays of H and G respectively, and calculating the complementary delays
@@ -38,11 +41,17 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 % value of 1 is iwt'ed, dimensions of size 1 or with a 0 flag value are
 % ignored.
 %
-% See also: WT, WT2D, WTCENTER, WTMETHOD
+% Each dimension can have its own wavelet filter; the input filters rh and
+% rg can be given as cell arrays, each cell containing a filter for the
+% matching processed dimension (first cell processes first non-zero
+% dimension in p_dims, etc).  Similarly the delays DEL1 and DEL2 can be
+% vectors, with one delay for each processed dimension.
+%
+% See also: WT, WTND, WTCENTER, WTMETHOD
 %
 % Based on iwt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: iwtnd.m,v 1.4 2004/07/15 04:24:21 matthewbrett Exp $
+% $Id: iwtnd.m,v 1.5 2004/07/15 05:18:14 matthewbrett Exp $
 
 % Restrictions:
 %
@@ -59,8 +68,8 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 % recostructed vector the largest size possible.
 
 %--------------------------------------------------------
-% iwt: Copyright (C) 1994, 1995, 1996, by Universidad de Vigo                                                 
-%                                                      
+% iwt: Copyright (C) 1994, 1995, 1996, by Universidad de Vigo
+% 
 % Uvi_Wave is free software; you can redistribute it and/or modify it      
 % under the terms of the GNU General Public License as published by the    
 % Free Software Foundation; either version 2, or (at your option) any      
@@ -106,7 +115,7 @@ if nargin < 9
   p_dims = [];
 end  
   
-% Process scales levels: If SC_LEVELS specifies the number of scales then
+% Process scales levels: if SC_LEVELS specifies the number of scales then
 % build the SC_LEVELS vector with SC_LEVELS ones and SCALES-SC_LEVELS zeros.
 sc_l_l = prod(size(sc_levels));
 if sc_l_l == 0  % empty
@@ -244,8 +253,7 @@ else
   dhpa=del2; if prod(size(dhpa))==1, dhpa = o * dhpa; end
 end
 
-% Found the analysis delays, the synthesis are the total minus the analysis
-% ones.
+% Synthesis delays are the total minus the analysis delays.
 dlp = suml - dlpa;		
 dhp = suml - dhpa;
 							
@@ -257,7 +265,7 @@ dhp = suml - dhpa;
 [shifts end_shift] = wt_dim_shifts(p_dims, sz);
 dims = [1:n_dims]';
 
-% upend scale size matrix, scales has opposite meaning to wt
+% upend scale size matrix, scales has opposite meaning compared to wt
 sc_wt_sz = flipud(sc_wt_sz);
 
 % Flags for truncation (scales by dims)
