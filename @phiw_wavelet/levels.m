@@ -13,7 +13,7 @@ function [inplevs, quads, nquads] = levels(w, odim, scales)
 %
 % This template wavelet function assumes dyadic dimensions
 %
-% $Id: levels.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: levels.m,v 1.2 2004/11/18 19:02:25 matthewbrett Exp $
   
 if nargin < 3
   error('Need odim and scales to return level info');
@@ -25,7 +25,7 @@ nquads = 2^ndims;
 qs = 0:(nquads-1); 
 % flag to note that detail coefficients go to 
 % right of data vector (as for UviWave)
-if w.rightf, qs = fliplr(qs); end
+if w.detail_right, qs = fliplr(qs); end
 
 % get quadrants (including low) by analogy to ind2sub for 
 % matrix of size ones(ones(1,ndims)*2)
