@@ -1,4 +1,4 @@
-function [shifts, end_shift] = wt_dim_shifts(p_dims)
+function [shifts, end_shift] = wt_dim_shifts(p_dims, sz)
 % return dimension permute shifts needed for wt/iwt routines
 % FORMAT [shifts, end_shift] = wt_dim_shifts(p_dims)
 % 
@@ -6,6 +6,8 @@ function [shifts, end_shift] = wt_dim_shifts(p_dims)
 % 
 % p_dims      - flags, one for each dimension, non-zero if dimension is
 %               to be (wt, iwt) processed
+% sz          - size of matrix to be processed
+%               (needed to identify row vectors)
 % 
 % Outputs 
 % 
@@ -29,7 +31,7 @@ function [shifts, end_shift] = wt_dim_shifts(p_dims)
 % x3 = permute(x2, [2 3 1]);  % Z->X; shift(3) of -1
 % x  = permute(x3, [2 3 1]);  % X->X; end_shift of -1
 % 
-% $Id: wt_dim_shifts.m,v 1.1 2004/07/14 20:00:52 matthewbrett Exp $ 
+% $Id: wt_dim_shifts.m,v 1.2 2004/07/15 04:26:18 matthewbrett Exp $ 
 
 n_dims = length(p_dims);
 fpd  = find(p_dims);
