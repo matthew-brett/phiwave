@@ -1,0 +1,4 @@
+SPM2 compatibility!
+Faster wavelet transforms and inversion
+Add back slice_overlay functions
+Check on compilation
