@@ -4,7 +4,7 @@ do first scale inverse wavelet transform in x dimension of matrix
 FORMAT t = do_iwtx(t, h, g, dlp, dhp, reco_detail, truncate)
 See the do_iwtx.m file for detailed help
 
-$Id: do_iwtx.c,v 1.5 2004/07/12 01:48:47 matthewbrett Exp $ 
+$Id: do_iwtx.c,v 1.6 2004/07/14 20:01:14 matthewbrett Exp $ 
 
 */ 
 
@@ -46,7 +46,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   double        *f[N], *dat_start[N], *st_ptr, *end_ptr, *lp_f, *pos, *f_pos;
   double        val, res1, res2;
   const int     *m_dims;
-  int           n_m_dims, d[N], len_f[N],  st_d[N], end_d[N], st_wrap[N];
+  int           n_m_dims, is_row_vector, d[N], len_f[N],  st_d[N], end_d[N], st_wrap[N];
   int           reco_detail, truncate, len_mid, odd_delay, extra_res1, len_x_12_m;
   int           n_cols, col, fno, f_len_f_12, c_len_f_12, odd_f, lp_st_d; 
   int		lp_end_d, lp_st_wrap, len_x, len_x_12, len_buf, i, j;
@@ -82,6 +82,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   len_x    = mxGetM(M);
   n_cols   = mxGetN(M);
   size_m   = len_x * n_cols;
+  n_m_dims = mxGetNumberOfDimensions(M);
+  is_row_vector = (len_x == 1) & (n_m_dims == 2);
+  if (is_row_vector) {
+    i = n_cols;
+    n_cols = len_x;
+    len_x = i;
+  }
   len_f[HI] = mxGetM(RH) * mxGetN(RH);
   len_f[GI] = mxGetM(RG) * mxGetN(RG);
 
@@ -104,7 +111,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   /* make output matrix */
   m_dims   = mxGetDimensions(M);
-  n_m_dims = mxGetNumberOfDimensions(M);
   IWM = mxCreateNumericArray(n_m_dims, m_dims, mxDOUBLE_CLASS, mxREAL);
   iwm = mxGetPr(IWM);
 
@@ -261,7 +267,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
   /* make smaller matrix if truncating */
   if (truncate) {
-    mxSetM(IWM, --len_x);
+    if (is_row_vector)
+      mxSetN(IWM, --len_x);
+    else
+      mxSetM(IWM, --len_x);
     iwm = mxRealloc(iwm, len_x * n_cols * sizeof(double)); 
     mxSetPr(IWM, iwm);
   }
