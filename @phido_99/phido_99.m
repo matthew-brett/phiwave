@@ -1,25 +1,25 @@
-function [o, others] = phido_99(des, params)
-% class constructor for SPM99 phiwave design object
-% FORMAT [o, others] = phido_99(des, params)
+function [o, others] = phido_99(des, params, phido_o)
+% class constructor for SPM2 phiwave design object
+% FORMAT [o, others] = phido_99(des, params, phido_o)
 %
-% Inputs 
-% des     - SPM design, which can be a mardo object, or another SPM
-%           design format recognized by the mardo constructor - see help mardo for
+% Inputs  
+% des     - SPM design, which can be a mardo object, or another SPM design
+%           format recognized by the mardo constructor - see help mardo for
 %           details.
 % params  - structure, containing extra fields for object (or parent)
+% phido_o - (optional) phido object to inherit from
 %
 % Outputs
 % o       - phido_99 object (unless disowned)
 % others  - any unrecognized fields from params, for processing by
 %           children
 %
-% This object is called from the phido object contructor
-% with a phido object as input.  phido_99 checks to see
-% if the contained design is an SPM99 design, returns
-% the object unchanged if not.  If it is an SPM99
+% This object may be called from the phido object contructor with a mardo
+% and phido object as input.  phido_99 checks to see if the contained design
+% is an SPM2 design, returns the object unchanged if not.  If it is an SPM2
 % design, it claims ownership of the passed object.
 %
-% $Id: phido_99.m,v 1.1 2004/09/16 06:19:39 matthewbrett Exp $
+% $Id: phido_99.m,v 1.2 2004/09/19 03:15:31 matthewbrett Exp $
   
 myclass = 'phido_99';
 defstruct = [];
@@ -27,42 +27,36 @@ defstruct = [];
 if nargin < 1
   des = [];
 end
-if nargin < 2
-  params = [];
-end
-others = [];
-
 if isa(des, myclass)
   o = des;
   return
 end
-    
-% normal call is via phido constructor
-if isa(des, 'phido')
-  % Check to see if this is a suitable design, return if not
-  if ~strcmp(type(des), 'spm99'), o = des; return, end
-  uo = des;
-  des = [];
-else
-  uo = [];
+if nargin < 2
+  params = [];
+end
+if nargin < 3
+  [phido_o params] = phido([], params, 0);
+end
+others = [];
+
+% send design to mardo
+o_params = params;
+[mardo_o params] = mardo(des, params);
+
+% if this is not a good design type for us, return
+if ~strcmp(class(mardo_o), 'mardo_99')
+  o      = des;
+  others = o_params;
+  return
 end
 
-% fill with defaults
-params = mars_struct('ffillmerge', defstruct, params);
-
-if ~isa(uo, 'phido') % phido object not passed
-  % umbrella object, parse out fields for (this object and children)
-  % second argument of 0 prevents recursive call back to here
-  [uo, params] = phido(des, params, 0);
-end
-
-% reparse parameters into those for this object, children
-[params, others] = mars_struct('split', params, defstruct);
+% fill params with defaults, parse into fields for this object, children
+[params, others] = mars_struct('ffillsplit', defstruct, params);
 
 % add cvs tag
 params.cvs_version = mars_cvs_version(myclass);
 
-% set the phido object
-o  = class(params, myclass, uo);
+% set the phido_99 object
+o  = class(params, myclass, mardo_o, phido_o);
 
 return

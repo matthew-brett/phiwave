@@ -19,20 +19,14 @@ function [o, others] = phido(des, params, passf)
 %
 % phido is pronounced like Fido, the dog's name.
 % 
-% phido is a container for mardo designs - see the mardo constructor
-% functions for details.  The container allows us to use the various
-% methods for SPM designs contained in the mardo classes; among other
-% advantages, this makes compatibility with different versions of SPM
-% more-or-less seamless.  Meanwhile, we can overload the estimation and
-% other routines to do phiwave processing.
-% 
-% This constructor first converts any inputs that are not mardo designs, to
-% mardo designs.  It then labels itself as a phido design, inheriting from
-% the mardo object, and passes itself to candidate phido design classes (99
-% and 2 type designs) for these classes to further claim the object.  If the
-% (99 or 2) classes claim the object, they return an object of class (99 or
-% 2), which inherits the phido class just created in this call to the
-% object.
+% phido is the parent for containers of mardo designs - see the mardo
+% constructor functions for details. The phido object itself if only a
+% placeholder for various settings - contained in the object fields.  The
+% SPM / MarsBaR design is passed to the children of this class, either
+% phido_99 or phido_2.  If the design is not suitable for either, the phido
+% object has no use for it, and throws it away. If the (99 or 2) classes
+% claim the object, they return an object of class (99 or 2), which inherits
+% the phido class just created in this call to the object.
 % 
 % Note the "passf" input flag; this is a trick to allow the other phido
 % classes (99 and 2) to create a phido object for them to inherit,
@@ -43,7 +37,7 @@ function [o, others] = phido(des, params, passf)
 % constructor with passf set to 0 in order for the constructor merely to
 % make a phido object, without passing back to the other classes. 
 % 
-% $Id: phido.m,v 1.5 2004/09/16 06:20:02 matthewbrett Exp $
+% $Id: phido.m,v 1.6 2004/09/19 03:15:31 matthewbrett Exp $
 
 myclass = 'phido';
 defstruct = struct('wavelet',  phiw_lemarie(2), ...
@@ -69,19 +63,21 @@ end
 [mardo_o params] = mardo(des, params);
 
 % fill params with defaults, parse into fields for this object, children
-[pparams, others] = mars_struct('ffillsplit', defstruct, params);
+[params, others] = mars_struct('ffillsplit', defstruct, params);
 
 % add cvs tag
-pparams.cvs_version = mars_cvs_version(myclass);
+params.cvs_version = mars_cvs_version(myclass);
 
 % set the phido object
-o  = class(pparams, myclass, mardo_o);
+o  = class(params, myclass);
 
-% If requested, pass to child objects to request ownership
+% If requested (passf) pass it to candidate children 
 if passf
-  o = phido_99(o, others);
-  if strcmp(class(o), myclass)
-    o = phido_2(o, others);
+  switch lower(type(mardo_o))
+   case 'spm99'
+    [o others] = phido_99(mardo_o, others, o);
+   case 'spm2'
+    [o others] = phido_2(mardo_o, others, o);
   end
 end
 
