@@ -47,6 +47,9 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %         noproc    - if not zero defer vol struct load and any wavelet
 %                     transform [0] OCO 
 %         remap     - forces remap of passed vol struct [0] OCO
+%         find_similar - when trying to create a wavelet image, first
+%                     look for a compatible image that already exists [0]
+%                     OCO  
 %
 % wvimg returned is empty if inputs are incorrect
 % 
@@ -56,13 +59,15 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 % The constructor can also be called to give class functions, where the
 % name of the class function is a character string which is one of:
 %    'orig_vol'  returns original vol struct from wt'ed vol
+%    'is_wted'   returns 1 is this vol appears to be be WT'ed
+%    'wtinfo'    returns wtinfo, if available, empty otherwise
 %
 % This class relies on lots of SPM routines
 % (spm_read_vols, spm_write_vol, spm_type, spm_vol, etc)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.7 2005/04/03 10:00:34 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.8 2005/04/06 22:33:28 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 
@@ -103,7 +108,8 @@ defopts = struct('datatype','float', ...
 		 'verbose',1,...
 		 'descrip','', ...
 		 'noproc',0, ...
-		 'remap',0);
+		 'remap',0, ...
+		 'find_similar',0);
 
 % parse out string action calls (class functions)
 if ischar(inpimg)
@@ -118,6 +124,24 @@ if ischar(inpimg)
       if isempty(wvobj), oVY(v) = VY(v); else oVY(v) = wvobj(v).ovol; end
     end
     wvimg = reshape(oVY, size(VY));
+    return
+   case 'is_wted'
+    % Second argument is (array of) vol structs
+    VY = input_options;
+    is_wtf = zeros(size(VY));
+    for v = 1:prod(size(VY))
+      is_wtf(v) = ~isempty(pr_getwave(VY(v)));
+    end
+    wvimg = is_wtf;
+    return
+   case 'wtinfo'
+    % Second argument is a single vol struct
+    VY = input_options;
+    if prod(size(VY)) > 1, error('Can only handle one vol'); end
+    wvimg = pr_getwave(VY);
+    if ~ismempty(wvimg)
+      wvimg = wtinfo(wvimg);
+    end
     return
   end
 end
@@ -159,12 +183,34 @@ if nargin > 3  % must be untransformed data with wavelet and scales
   end
 
   % set ovol and ouput filename 
-  if isstruct(inpimg)
+  if isstruct(inpimg) % got a vol struct
+    % set output file name by adding wt prefix
+    [p f e] = fileparts(inpimg.fname);
+    out_fname = fullfile(p,[wvimg.options.wtprefix f e]);
+    
+    % look for a similar image that exists already
+    if filled_opts.find_similar
+      if exist(out_fname, 'file')
+	Vw = spm_vol(out_fname);
+	if phiw_wvimg('is_wted', Vw)
+	  Wo = phiw_wvimg(Vw, struct('noproc', 1));
+	  if same_wtinfo(Wo, struct(...
+	      'wavelet', waveobj, ...
+	      'scales', scales))
+	    wvimg = Wo;
+	    if ~filled_opts.noproc
+	      wvimg = doproc(wvimg);
+	    end
+	    return
+	  end
+	end	
+      end
+    end      
+      
+    % No found similar image - make afresh
     wvimg.ovol = inpimg;
     wvimg.descrip = strvcat(wvimg.descrip,wvimg.ovol.descrip);
-    % set output file name by adding wt prefix
-    [p f e] = fileparts(wvimg.ovol.fname);
-    wvimg.wvol.fname = fullfile(p,[wvimg.options.wtprefix f e]);
+    wvimg.wvol.fname = out_fname;
   elseif ~isempty(inpimg) & isnumeric(inpimg)
     % maybe data passed was a matrix, we'll do our best
     sz = ones(1,3);
@@ -247,6 +293,7 @@ end
 % unset first pass options
 wvimg.options.noproc = 0;
 wvimg.options.remap = 0;
+wvimg.options.find_similar = 0;
 wvimg.options.descrip = '';
 
 return
