@@ -6,14 +6,9 @@ See the do_wtx.m file for detail
 
 If the dimension to be transformed is of odd length, then the routine
 will pad the input with an extra 0 in each column of X before doing
-the wavelet transform - as for the UviWave wt function.  This is
-slighty different behaviour from the do_iwtx.c function, which does
-_not_ remove the extra zero (in contrast to the UviWave itx function).
-This is because a) it is faster to add the 0 in c for do_wt.c, but it
-can as easily be removed in matlab for do_iwtx.c and b) because
-otherwise do_iwtx.c would need the expected output length as input.
+the wavelet transform - as for the UviWave wt function. 
 
-$Id: do_wtx.c,v 1.3 2004/07/09 23:52:14 matthewbrett Exp $
+$Id: do_wtx.c,v 1.4 2004/07/12 01:51:01 matthewbrett Exp $
 
 */ 
 
@@ -29,13 +24,10 @@ $Id: do_wtx.c,v 1.3 2004/07/09 23:52:14 matthewbrett Exp $
 /* output argument */
 #define WM      plhs[0]
 
-/* max min minifunctions */
+/* max minifunction */
 int max0(int a, int b) { /* returns max of a,b,0 */
   a = a > b ? a : b;
   return a > 0 ? a : 0;
-}
-int my_min(int a, int b) { /* returns min of a,b */
-  return a > b ? b : a;
 }
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -56,6 +48,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("Only one output returned.");
   if (mxIsComplex(M))
     mexErrMsgTxt("Cannot wt complex matrix.");
+  if (mxIsSparse(M))
+    mexErrMsgTxt("Cannot wt sparse matrix.");
   if (mxGetClassID(M) != mxDOUBLE_CLASS)
     mexErrMsgTxt("Input matrix should be of class double");
 
@@ -96,7 +90,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
       wm_ptr++;
     }
     len_x++;
-  } else /* len_x not odd, straight copy */
+  } else /* x length not odd, straight copy */
     for (i=0; i<size_m; i++)
       *(wm_ptr++) = *(m_ptr++);
 
@@ -110,10 +104,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   buf = (double *)mxCalloc(len_buf, sizeof(double));
   
   /* filter differences */
-  len_shared = my_min(len_h, len_g);
-  len_diff   = max0(len_h, len_g) - len_shared;
   h_g_same   = (len_h == len_g);
   h_bigger   = (len_h > len_g);
+  len_shared = h_bigger ? len_g : len_h;
+  len_diff   = max0(len_h, len_g) - len_shared;
 
   /* for each x column */
   col_ptr = wm;
@@ -181,7 +175,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     g_out_ptr += len_x_12;
     
   }
-
   
   /* free memory */
   mxFree(buf);
