@@ -1,7 +1,9 @@
 function fname = wvfname(obj)
 % wvfname - return wvol output filename
 %
-% $Id: wvfname.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: wvfname.m,v 1.2 2004/11/18 19:05:46 matthewbrett Exp $
+
+if prod(size(obj)) > 1, fname = 'object array'; return, end
 
 % try wvol fname first
 if ~isempty(obj.wvol.fname),fname = obj.wvol.fname;
