@@ -4,19 +4,19 @@ function [wtvols, wave]=phiw_volsub(imgvols, wtinfo)
 %
 % Input
 % imgvols      - voxel vols
-% wtinfo       - structure with info for required wt [PHIWAVE.wt]
+% wtinfo       - structure with info for required wt [PHI.wt]
 % 
 % Returns
 % wtvols       - wavelet transformed vols
 % wave         - phiw_wvimg object with wt info for these vols
 %
-% $Id: phiw_volsub.m,v 1.1 2004/06/25 15:20:42 matthewbrett Exp $
+% $Id: phiw_volsub.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 if nargin < 1
   error('Need image volume structures');
 end
 if nargin < 2
-  phiw = spm('getglobal','PHIWAVE');
+  phiw = spm('getglobal','PHI');
   wtinfo = phiw.wt;
 end
 if ~all(ismember({'scales', 'wavelet', 'wtprefix'},fieldnames(wtinfo))) | ...

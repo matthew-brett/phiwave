@@ -1,7 +1,7 @@
 function [obj, wvol] = write_wtimg(obj, fname)
 % write_wtimg - saves wvimg object as .img / .mat combination
 %
-% $Id: write_wtimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: write_wtimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
 
 if nargin < 2
   fname = [];
@@ -16,7 +16,7 @@ dim = size(obj.img);
 dim(4) = spm_type(obj.options.datatype);
 obj.wvol.dim = dim;
 obj.wvol.fname = fname;
-obj.wvol = fillafromb(obj.wvol,obj.ovol);
+obj.wvol = mars_struct('fillafromb', obj.wvol,obj.ovol);
 obj.wvol.descrip = obj.descrip;
 
 % save (might have to do something about complex images here)

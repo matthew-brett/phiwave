@@ -7,12 +7,12 @@ function phiw_display(varargin)
 % disptype        - 'orth' orthoviews or 'slices' slice view ['orth']
 % vols            - string or struct for either: activation image or
 %                   structural image followed by activation image [GUI]
-% phiw            - struct with various display defaults [PHIWAVE]
+% phiw            - struct with various display defaults [PHI]
 % defyn           - flag, if set, use all default display settings [1]
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.1 2004/06/25 15:20:40 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 [action disptype vols phiw defyn] = argfill(...
     varargin, 0,{'display', 'orth', [],[],[]}, 1);
@@ -22,7 +22,7 @@ disptype = lower(disptype);
 if ~ismember(disptype, {'orth', 'slices'})
   error('Don''t recognize display type');
 end
-phiw = phiw_options('fill',phiw, spm('getglobal', 'PHIWAVE'));
+phiw = phiw_options('fill',phiw, spm('getglobal', 'PHI'));
 if isempty(vols)
   vols = spm_get(1, 'img', 'Activation image to display');
 end

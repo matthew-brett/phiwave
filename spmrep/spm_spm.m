@@ -329,12 +329,12 @@ function spm_spm(VY,xX,xM,F_iX0,varargin)
 %_______________________________________________________________________
 % @(#)spm_spm.m	2.37 Andrew Holmes, Jean-Baptiste Poline, Karl Friston 99/11/26
 %
-% $Id: spm_spm.m,v 1.1 2004/06/25 15:20:45 matthewbrett Exp $
+% $Id: spm_spm.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
 
 SCCSid   = '2.37';
 
 % PHIWAVE changes begin here
-phiw = spm('getglobal', 'PHIWAVE');
+phiw = spm('getglobal', 'PHI');
 wvobj = phiw_wvimg(VY(1),struct('noproc',1)); % check if files are already wt'ed
 if ~isempty(phiw) & isempty(wvobj)
   fprintf('\nPhiWave analysis: model estimation\n');

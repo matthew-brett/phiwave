@@ -13,13 +13,13 @@ function [VY,xM] = phiw_vox2wvana(VY, xM, phiw)
 %
 % Matthew Brett 9/10/00
 %
-% $Id: phiw_vox2wvana.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_vox2wvana.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 if nargin < 2
   error('Need VY and xM as inputs')
 end
 if nargin < 3
-  phiw = spm('getglobal', 'PHIWAVE');  
+  phiw = spm('getglobal', 'PHI');  
 end
 
 % get stats and wt stuff

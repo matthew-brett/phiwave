@@ -12,7 +12,7 @@ function [rxCon, wave, connos, spmmat, rmsi] = phiw_write_contrasts(varargin)
 %              f - allow f contrasts only (where connos=[])
 %              s - allows a Single contrast only (where connos=[])
 %              c - don't write statistic images (i.e. con images only)
-% phiw       - phiwave structure [PHIWAVE]
+% phiw       - phiwave structure [PHI]
 % 
 % Returns
 % rxCon       - contrast structure, with Vcon, Vspm fields as vols
@@ -26,13 +26,13 @@ function [rxCon, wave, connos, spmmat, rmsi] = phiw_write_contrasts(varargin)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: phiw_write_contrasts.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_write_contrasts.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 [spmmat,connos,xCon,flags,phiw]  = argfill(varargin);
 [wave rmsi rxCon] = deal([]);
 
 if isempty(phiw)
-  phiw = spm('getglobal', 'PHIWAVE');  
+  phiw = spm('getglobal', 'PHI');  
 end
 
 % get analysis as structure

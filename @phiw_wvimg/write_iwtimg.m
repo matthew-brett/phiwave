@@ -1,7 +1,7 @@
 function [iwtvol, obj] = write_iwtimg(obj, iwtvol)
 % write_wtimg - iwt on wvimg object, save as img
 %
-% $Id: write_iwtimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: write_iwtimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
 
 if nargin < 2
   iwtvol = [];
@@ -16,7 +16,7 @@ end
 if ischar(iwtvol),iwtvol = struct('fname',iwtvol);end
 
 % fname from 1) input 2) ovol 3) wvol (+prefix) 4) default (+prefix)
-iwtvol = fillafromb(iwtvol,obj.ovol);
+iwtvol = mars_struct('fillafromb', iwtvol,obj.ovol);
 if isempty(iwtvol.fname)
   if isempty(obj.wvol.fname),iwtvol.fname = 'image';
   else iwtvol.fname = obj.wvol.fname;end
@@ -24,7 +24,7 @@ if isempty(iwtvol.fname)
   iwtvol.fname = fullfile(p, [obj.options.iwtprefix f e]);
 end
 % any missing defaults from wvol
-iwtvol = fillafromb(iwtvol,obj.wvol);
+iwtvol = mars_struct('fillafromb', iwtvol,obj.wvol);
 
 % do iwt
 if obj.options.verbose

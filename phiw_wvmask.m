@@ -1,7 +1,7 @@
 function wtobj = phiw_wvmask(voxmask,wtinfo,options)
 % phiw_wvmask - returns wavelet eqivalent mask for given voxel mask
 %
-% $Id: phiw_wvmask.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_wvmask.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 if nargin < 1
   voxmask = spm_get(1,'img','Voxel mask');
@@ -13,7 +13,8 @@ if nargin < 3
   options = struct('datatype','uint8');
 end
 
-wtinfo = fillafromb(wtinfo, struct('scales',1,'wavelet',phiw_wavelet));
+wtinfo = mars_struct('fillafromb', ...
+		     wtinfo, struct('scales',1,'wavelet',phiw_wavelet));
 
 if ischar(voxmask),voxmask=spm_vol(voxmask);end
 

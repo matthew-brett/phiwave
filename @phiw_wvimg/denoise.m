@@ -46,7 +46,7 @@ function [dnobj, dnerr, thresholds] = denoise(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: denoise.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: denoise.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least two args, sorry');
@@ -60,7 +60,7 @@ end
 
 % check stat structure
 defstat = struct('stat','Z','df',10000);
-statinf = fillafromb(statinf,defstat);
+statinf = mars_struct('fillafromb', statinf,defstat);
 
 % check denoise structure
 defdn = struct('levels',ones(1,wtobj.scales+1),...
@@ -70,7 +70,7 @@ defdn = struct('levels',ones(1,wtobj.scales+1),...
 	       'thapp','soft',...
 	       'varpoolf',0,...
 	       'alpha',0.05);
-dninf = fillafromb(dninf,defdn);
+dninf = mars_struct('fillafromb', dninf,defdn);
 if length(dninf.levels) ~= wtobj.scales+1
   error('Unexpected length of levels spec')
 end

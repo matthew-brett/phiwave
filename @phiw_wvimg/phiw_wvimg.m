@@ -56,7 +56,7 @@ function wvimg = phiw_wvimg(inpimg,options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
 
 myname = 'phiw_wvimg';
 
@@ -105,7 +105,7 @@ if isfield(options,'datatype') & ~ischar(options.datatype)
 end
 
 % get passed options from input
-inpopts = fillafromb(options,definpopts);
+inpopts = mars_struct('fillafromb', options,definpopts);
 
 % process inpimg argument
 % ----------------------------------------------
@@ -148,10 +148,10 @@ if wtf
   if isempty(waveobj), wvimg = []; return, end
   
   % fill from template
-  wvimg = fillafromb(wvimg, struct(waveobj));
+  wvimg = mars_struct('fillafromb', wvimg, struct(waveobj));
   
   % and fill options from defaults
-  wvimg.options = fillafromb(wvimg.options, defopts);
+  wvimg.options = mars_struct('fillafromb', wvimg.options, defopts);
   
   % input vol struct overrides template vol struct
   if isstruct(inpimg)
@@ -164,7 +164,7 @@ else
   % untransformed data
 
   % fill options from defaults
-  wvimg.options = fillafromb(wvimg.options, defopts);
+  wvimg.options = mars_struct('fillafromb', wvimg.options, defopts);
 
   % set ovol and ouput filename 
   if isstruct(inpimg)
@@ -193,7 +193,7 @@ else
   wvimg.scales = scales;
   
   % set bits for output image struct
-  wvimg.wvol = fillafromb(wvimg.wvol, wvimg.ovol);
+  wvimg.wvol = mars_struct('fillafromb', wvimg.wvol, wvimg.ovol);
   wvimg.wvol.dim(1:3) = outdim(wvimg.wavelet, wvimg.ovol.dim(1:3));
 end
 
@@ -205,8 +205,8 @@ end
 % fill the vol structs with empty fields 
 evol = struct('fname','','mat',eye(4),'dim',[1 1 1], ...
 	      'pinfo',ones(3,1),'descrip','');
-wvimg.ovol = fillafromb(wvimg.ovol,evol);
-wvimg.wvol = fillafromb(wvimg.wvol,evol);
+wvimg.ovol = mars_struct('fillafromb', wvimg.ovol,evol);
+wvimg.wvol = mars_struct('fillafromb', wvimg.wvol,evol);
 
 % set datatypes if missing
 if length(wvimg.ovol.dim) < 4

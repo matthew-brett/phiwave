@@ -21,7 +21,7 @@ function [Vdcon, Vderr] = phiw_get_wdimg(varargin)
 % Matthew Brett, Federico Turkheimer, 9/10/00
 % error maps added 19/11/01 - RP
 %
-% $Id: phiw_get_wdimg.m,v 1.1 2004/06/25 15:20:40 matthewbrett Exp $
+% $Id: phiw_get_wdimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 % set unpassed args to empty
 [spmmat, xCon, Ic, wdstruct, fname] = argfill(varargin);
@@ -29,9 +29,9 @@ function [Vdcon, Vderr] = phiw_get_wdimg(varargin)
 % get SPM.mat file as struct
 [spmmat swd] = phiwave('get_spmmat', spmmat);
 
-% get PHIWAVE values if not passed
+% get PHI values if not passed
 if isempty(wdstruct)
-  phiw = spm('getglobal', 'PHIWAVE');
+  phiw = spm('getglobal', 'PHI');
   wdstruct = phiw.denoise;
 end
 

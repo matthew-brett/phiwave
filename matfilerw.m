@@ -22,7 +22,7 @@ function mfcells = matfilerw(mfimgs, varargin)
 %
 % Matthew Brett 20/10/00
 %
-% $Id: matfilerw.m,v 1.1 2004/06/25 15:20:36 matthewbrett Exp $
+% $Id: matfilerw.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 if nargin < 1
   error('Need image / mat file name(s), +/- params to add')
@@ -76,7 +76,7 @@ for mfi = 1:mf.nimgs;
   mfstructi = mfstruct{mfi};
   if mf.ef
     matvars = load(mf.name);
-    mfstructi = fillafromb(mfstructi, matvars);
+    mfstructi = mars_struct('fillafromb', mfstructi, matvars);
   end
   if ~nilnewf
     savestruct(mf.name, mfstructi);

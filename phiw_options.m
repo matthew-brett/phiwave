@@ -6,7 +6,7 @@ function [phiw, msgstr] = phiw_options(varargin)
 % optstr            - option string: one of
 %                     'load','save','edit','defaults','basedefaults','fill'
 %                     [load]  
-% phiw              - phiwave options structure [PHIWAVE]
+% phiw              - phiwave options structure [PHI]
 % cfg_fname         - filename for configuration file [GUI]
 % 
 % Output
@@ -15,10 +15,10 @@ function [phiw, msgstr] = phiw_options(varargin)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.1 2004/06/25 15:20:42 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 [optstr phiw cfg_fname] = argfill(varargin, 0, ...
-				  {'load', spm('getglobal','PHIWAVE'),''});
+				  {'load', spm('getglobal','PHI'),''});
 msgstr = '';
 
 % fields, and descriptions of fields, in phiw options structure
@@ -39,7 +39,7 @@ switch lower(optstr)
     tmp = load(cfg_fname);
     if ~isempty(tmp)
       if isfield(tmp, 'phiw')
-	phiw = fillafromb(tmp.phiw, phiw);
+	phiw = mars_struct('fillafromb', tmp.phiw, phiw);
       end
     end
   end
@@ -278,11 +278,12 @@ switch lower(optstr)
 	  'Did not load phiwave config file');
     end
   end
-  phiw = fillafromb(pwdefs, phiw_options('basedefaults'));
+  phiw = mars_struct('fillafromb', ...
+		     pwdefs, phiw_options('basedefaults'));
   
    % --------------------------------------------------
  case 'fill'                             %-fill from template
-  phiw = fillafromb(phiw,cfg_fname);
+  phiw = mars_struct('fillafromb', phiw,cfg_fname);
   
  otherwise
   error('Don''t recognize options action string')

@@ -14,13 +14,13 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.1 2004/06/25 15:20:40 matthewbrett Exp $
+% $Id: phiwave.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
   
 % PhiWave version
-PWver = 0.2;  % alpha minus 
+PWver = 2.2;  % alpha 
 
 % PhiWave defaults in global variable structure
-global PHIWAVE;
+global PHI;
 
 %-Format arguments
 %-----------------------------------------------------------------------
@@ -34,7 +34,7 @@ switch lower(Action), case 'startup'             %-Start phiwave
 warning always, warning backtrace
 
 % splash screen once per session
-splashf = isempty(PHIWAVE);
+splashf = isempty(PHI);
 
 % promote spm directory to top of path, read defaults
 phiwave('on');
@@ -66,9 +66,19 @@ set([Fmenu],'Visible','on')
 case 'on'                              %-Initialise phiwave
 %=======================================================================
 
-% check paths 
+% check path for SPM 
 if isempty(which('spm'))
   error('SPM does not appear to be on the path')
+end
+
+% check path for MarsBaR
+if isempty(which('marsbar'))
+  marsbar_path = fullfile(spm('dir'), 'toolbox', 'marsbar');
+  if exist(marsbar_path, 'dir')
+    addpath(marsbar_path);
+  else
+    error('Cannot find MarsBaR - MarsBaR should be on your matlab path');
+  end
 end
 
 % promote spm_spm directory
@@ -79,10 +89,10 @@ fprintf('Phiwave analysis function prepended to path\n');
 
 % read any necessary defaults
 [pwdefs sourcestr] = phiw_options('Defaults');
-if isempty(PHIWAVE)
+if isempty(PHI)
   fprintf('PhiWave defaults loaded from %s\n',sourcestr);
 end
-PHIWAVE = phiw_options('fill',PHIWAVE, pwdefs);
+PHI = phiw_options('fill',PHI, pwdefs);
 
 %=======================================================================
 case 'off'                             %-Unload phiwave 
@@ -176,10 +186,10 @@ uicontrol(Fmenu,'Style','PopUp',...
 	  'ToolTipString','Write/display contrasts...',...
 	  'CallBack','spm(''PopUpCB'',gcbo)',...
 	  'UserData',funcs);
-funcs = {'global PHIWAVE; PHIWAVE=phiw_options(''load'');',...
+funcs = {'global PHI; PHI=phiw_options(''load'');',...
 	 'phiw_options(''save'');',...
-	 'global PHIWAVE; PHIWAVE=phiw_options(''edit'');',...
-	 ['global PHIWAVE; [PHIWAVE str]=phiw_options(''defaults'');' ...
+	 'global PHI; PHI=phiw_options(''edit'');',...
+	 ['global PHI; [PHI str]=phiw_options(''defaults'');' ...
 	  ' fprintf(''Defaults loaded from %s\n'', str)']};
 	 
 uicontrol(Fmenu,'Style','PopUp',...
