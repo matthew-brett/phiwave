@@ -2,18 +2,43 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 % MATRIX_IWT Discrete Inverse N-D Wavelet Transform.
 %
 % IWTND(WX,RH,RG,SCALES) calculates the N-D inverse wavelet transform of
-% vector WX, which should be a SCALES-scales direct wavelet transform. The
-% second argument RH is the synthesis lowpass filter and the third argument
-% RG the synthesis highpass filter.
+% vector WX, which should be a SCALES-scales direct wavelet transform. By
+% default, N, the number of dimensions to transform is the same as the
+% number of the dimensions of the input WX.  The second argument RH is the
+% synthesis lowpass filter and the third argument RG the synthesis highpass
+% filter.
 %
-% IWTND will calculate the size of the reconstructed matrix dimensions to be
-% as large as possible (maybe 1 point larger than the original) unless the
-% size is given using IWTND(WX,RH,RG,SCALES,SIZ). A value of 0 for SIZ is
-% the same as omitting it.  SIZ should either be scalar, in which case it
-% it the default size for any reconstructed dimension, or should be
-% vector with the same number of values as reconstructed dimensions (see
-% P_DIM); each value specifies an output dimension size.
+% Notes 1: Dimensions to transform
+% --------------------------------
 %
+% If the passed matrix WX has N dimensions, then the default behaviour is to
+% transform all N dimensions.  It is possible to select a subset of
+% dimensions to transform, using the P_DIMS input (see below).  For example
+% we could choose to do a 2D transform on a 3D matrix.
+% 
+% Notes 2: Output dimensions from the iwt
+% --------------------------------------- 
+%
+% The original wavelet transform may have added rows columns etc to the
+% output, because it needed dimensions divisible by 2 to do the
+% transform. In doing the inverse transform, we need to know or work out
+% what the original dimensions were. IWTND will calculate the size of the
+% reconstructed matrix dimensions to be as large as possible (maybe 1 point
+% larger than the original) unless the size is given using
+% IWTND(WX,RH,RG,SCALES,SIZ). A value of 0 for SIZ is the same as omitting
+% it.  SIZ should either be scalar, in which case it it the default size for
+% any reconstructed dimension, or should be a vector with the same number of
+% values as reconstructed dimensions (see above, and P_DIM); each value
+% specifies an output dimension size.
+% 
+% Note that iwtnd differs a little from UviWave iwt2d in its understanding
+% of dimensions.  For iwtnd, the first value in the SIZ vector refers to the
+% number of rows (M) and the second value refers to the number of columns
+% (N).  UviWave iwt2d (see help iwt2d) takes the first passed size (SIZX) as
+% the width (number of columns N) and the second passed size (SIZY) as the
+% height (number of rows, M).  In this sense iwtnd follows the matlab
+% convention (number of rows first, then number of columns).
+% 
 % IWTND can be used to perform a single process of multiresolution
 % analysis. The way to do it is by selecting the scales whose highpass bands
 % (detail signals) should be ignored for reconstruction.
@@ -35,23 +60,38 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 % for synthesis filters RH and RG. The default values of DEL1 and DEL2 are
 % calculated using the function WTCENTER.
 %
+% Note 3: Using P_DIMS
+% --------------------
+% 
 % IWTND(WX,RH,RG,SCALES,SIZ,SC_LEVELS,DEL1,DEL2,P_DIMS) adds the ability to
 % iwt over a subset of the matrix dimensions.  P_DIMS should be a matrix of
 % flag values, one value per dimension of X; each dimension with a flag
 % value of 1 is iwt'ed, dimensions of size 1 or with a 0 flag value are
-% ignored.
+% ignored.  Thus, if we have a 3D matrix, the default value for P_DIMS will
+% be [1 1 1]; if you want to transform just over the rows of this matrix,
+% you could override the default by passing a value of P_DIMS of [0 1 0].
+% P_DIMS can also be a scalar, in which case it specifies that the first
+% P_DIMS dimensions should be processed; for example, for a 3D matrix, a
+% P_DIMS value of 2 will expand to a P_DIMS vector of [1 1 0].
+%
+% Note 4: Different dimensions, different filters
+% -----------------------------------------------
 %
 % Each dimension can have its own wavelet filter; the input filters rh and
 % rg can be given as cell arrays, each cell containing a filter for the
-% matching processed dimension (first cell processes first non-zero
-% dimension in p_dims, etc).  Similarly the delays DEL1 and DEL2 can be
-% vectors, with one delay for each processed dimension.
+% matching processed dimension. For example, let use imagine you are passing
+% a 3D matrix, but only want to transform the first 2 dimensions.  You want
+% a different filter for the first and second dimensions.  You would use a
+% P_DIMS of [1 1 0] (see above), and pass a two element cell array in h and
+% in g, with the rh filter for dimension 2 in h{2}, etc.  Similarly the
+% delays DEL1 and DEL2 can be vectors, with one delay for each processed
+% dimension.
 %
 % See also: WT, WTND, WTCENTER, WTMETHOD
 %
 % Based on iwt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: iwtnd.m,v 1.5 2004/07/15 05:18:14 matthewbrett Exp $
+% $Id: iwtnd.m,v 1.6 2004/07/16 03:58:51 matthewbrett Exp $
 
 % Restrictions:
 %
@@ -137,12 +177,11 @@ sz     = size(wx);
 n_dims = length(sz);
 
 % Process p_dims 
-def_pdims = ones(1, n_dims);
 p_d_l = prod(size(p_dims));
 if p_d_l == 0  % empty
-  p_dims = def_pdims;
+  p_dims = ones(1, n_dims);
 elseif p_d_l == 1
-  p_dims = def_pdims * p_dims;
+  p_dims = [ones(1, p_dims) zeros(1, n_dims-p_dims)];
 elseif p_d_l < n_dims
   p_dims = [p_dims(:)' ones(1, n_dims-p_d_l)];
 elseif p_d_l > n_dims
@@ -162,23 +201,27 @@ if prod(size(rg))==1, rg = repmat(rg, 1, n_p_dims); end
 %    CHECK THE ORIGINAL LENGTH
 % ----------------------------------
 
-o_s_l    = prod(size(o_sz));
+% Process input sizes
 def_o_sz = zeros(1, n_dims);
-if o_s_l == 0 % empty
+def_o_sz(~p_dims) = sz(~p_dims);
+switch prod(size(o_sz));
+ case 0 % empty
   o_sz = def_o_sz;
-elseif o_s_l == 1
-  o_sz = def_o_sz + o_sz;
-elseif o_s_l ~= n_dims
-  error(['Original size vector should have one element for each ' ...
-	 'dimension of the input matrix, or be a scalar']);
+ case {1, n_p_dims} 
+  def_o_sz(p_dims) = o_sz(:)';
+  o_sz = def_o_sz;
+ case  n_dims
+  % Dimensions to be transformed will not change
+  tmp = ~p_dims & o_sz==0;
+  o_sz(tmp) = sz(tmp);
+  if any(o_sz(~p_dims) ~= sz(~p_dims))
+    error('Dimensions not being transformed should not change size');
+  end
+otherwise
+ error(['Original size vector should have one element for each ' ...
+	 'dimension of the input matrix, or one element for each '...
+	'processed dimension, or be a scalar']);
 end
-
-% Dimensions to be transformed will not change
-tmp = ~p_dims & o_sz~=0;
-if any(o_sz(tmp) ~= sz(tmp))
-  error('Dimensions not being transformed should not change size');
-end
-o_sz(~p_dims) = sz(~p_dims);
 
 % Get maximum size for any missing input sizes
 missing_dims = (o_sz == 0);
