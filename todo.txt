@@ -2,3 +2,34 @@ SPM2 compatibility!
 Add back slice_overlay functions
 Check on compilation
 Rethink check whether there is matching wt image - prefix!
+
+
+wvimg structure
+
+params 
+ovol
+wvol
+wavelet
+scales
+%         datatype  - datatype for transformed data ['float']
+%         wtprefix  - default prefix for transformed file ['wt_']
+
+Need this..
+%         iwtprefix - default prefix for inverted wt file ['iwt_']
+
+
+params
+
+%         descrip   - description (appended to fulldescrip obj field)
+%                     ['']  OCO
+%         noproc    - if not zero defer vol struct load and any wavelet
+%                     transform [0] OCO 
+%         remap     - forces remap of passed vol struct [0] OCO
+
+%         img     = contains matrix data, or SPM vol struct representing
+%                   data
+%         wtf     = set if data has been wavelet transformed 
+%         changef = set if data has been changed since passed
+%         wavelet = phiw_wavelet object giving wavelet for transform;
+%         scales  = number of coarsest scale for wt;
+%         descrip = extended text description field;

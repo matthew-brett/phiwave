@@ -4,7 +4,7 @@ function wvimg = phiw_wvimg(inpimg,options,waveobj,scales)
 % wvimg = phiw_wvimg;   no args, returns default object
 % wvimg = phiw_wvimg(wv_img); object passed, object returned
 % wvimg = phiw_wvimg(inpimg,options,wavelet,scales)
-%         Creates wavelet structure from unstransformed data
+%         Creates wavelet structure from untransformed data
 %         in inpimg (either SPM vol struct, or data matrix)
 %         and (possibly queues) transform with wavelet, scales
 % wvimg = phiw_wvimg(inpimg, [options], [twvimg])
@@ -56,12 +56,12 @@ function wvimg = phiw_wvimg(inpimg,options,waveobj,scales)
 %    'is_wted'   returns 1 if passed vol struct is for wt'ed image
 %    'orig_vol'  returns original vol struct from wt'ed vol
 %
-% This class relies on SPM 99 routines
+% This class relies on SPM routines
 % (spm_read_vols, spm_write_vol, spm_type, spm_vol, etc)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.3 2004/11/18 19:04:47 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.4 2005/03/19 22:15:22 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 
