@@ -3,19 +3,33 @@ function [phiwD] = estimate(phiwD, VY, params)
 %
 % phiwD           - SPM design object
 % VY              - Images to estimate on (default - from design)
-% params          - structure containing options as fields; at least
-%                     wtinfo - wavelet info (wavelet, scales)
+% params          - structure containing options as fields; [defaults]
+%                   'wavelet'    - phiwave wavelet object to transform
+%                      images [phiw_lemarie(2)] 
+%                   'scales'     - scales for wavelet transform [4]
+%                   'wtprefix'   - prefix for wavelet transformed files
+%                      ['wv_']
+%                   'maskthresh' - threshold for mask image [0.05]
 %
 % e.g.
 % % Estimate using images from design, lemarie wavelet
-% wtinfo = struct('scales', 4, 'wavelet', phiw_lemarie(2), ...
-%                 'wtprefix', 'wt_'); 
-% pE = estimate(pD, [], struct('wtinfo', wtinfo));
+% params = struct('scales', 4, 'wavelet', phiw_lemarie(2), ...
+%                 'wtprefix', 'wt_', 'maskthresh', 0.05); 
+% pE = estimate(pD, [], params);
 % 
-% $Id: estimate.m,v 1.1 2004/11/18 18:33:08 matthewbrett Exp $
+% $Id: estimate.m,v 1.2 2005/04/06 22:30:11 matthewbrett Exp $
+
+% Default object structure
+defparams = struct('wavelet',  phiw_lemarie(2), ...
+		   'scales',   4, ...
+		   'wtprefix', 'wv_', ...
+		   'maskthresh', 0.05);
 
 if nargin < 2
   VY = [];
+end
+if nargin < 3
+  params = [];
 end
 
 % Images not passed, use images in design
@@ -32,18 +46,20 @@ else
   phiwD = set_images(phiwD, VY);
 end
 
-if nargin < 3
-  params = [];
-end
-if ~isfield(params, 'wtinfo'), error('Need wtinfo in params struct'); end
-
 % check design is complete
 if ~can_phiw_estimate(phiwD)
   error('This design needs more information before it can be estimated');
 end
 
+% if images in design are wt'ed, get default from there
+if phiw_wvimg('is_wted', VY(1))
+  defparams  = mars_struct('ffillsplit', defparams,  ...
+			   phiw_wvimg('wtinfo', VY(1)));
+end
+params = mars_struct('ffillsplit', defparams, params);
+
 % check if files are already WT'ed, do WT if not
-phiwD = vox2wt_ana(phiwD, params.wtinfo);
+phiwD = vox2wt_ana(phiwD, params);
 
 % Do estimation
 phiwD = estimate_wted(phiwD, params);
