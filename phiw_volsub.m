@@ -10,7 +10,7 @@ function [wtvols, wave]=phiw_volsub(imgvols, wtinfo)
 % wtvols       - wavelet transformed vols
 % wave         - phiw_wvimg object with wt info for these vols
 %
-% $Id: phiw_volsub.m,v 1.3 2004/11/18 18:48:36 matthewbrett Exp $
+% $Id: phiw_volsub.m,v 1.4 2005/04/03 07:25:16 matthewbrett Exp $
   
 if nargin < 1
   error('Need image volume structures');
@@ -19,9 +19,9 @@ if nargin < 2
   phiw = spm('getglobal','PHI');
   wtinfo = phiw.wt;
 end
-if ~all(ismember({'scales', 'wavelet', 'wtprefix'},fieldnames(wtinfo))) | ...
-      isempty(wtinfo.scales) | isempty(wtinfo.wavelet) | ...
-      isempty(wtinfo.wtprefix)
+if ~(mars_struct('isthere', wtinfo, 'scales') & ...
+     mars_struct('isthere', wtinfo, 'wavelet') & ...
+     mars_struct('isthere', wtinfo, 'wtprefix'))
   error('Need wavelet, scale, prefix information in wtinfo structure')
 end
 
@@ -32,7 +32,7 @@ options = struct('noproc',1,'wtprefix',wvp);
 
 for i = 1:nimgs
 
-  % check whether these is a wv image of same scale and wavelet type
+  % check whether there is a wv image of same scale and wavelet type
   % Do transform and save if not;
   wvobj = phiw_wvimg(imgvols(i).fname,options,wtinfo.wavelet,wtinfo.scales);
   if ~exist_simimg(wvobj)
@@ -41,7 +41,7 @@ for i = 1:nimgs
     wvobj = thin(write_wtimg(wvobj));
   end
   
-  % Map and rescale
+  % Map and rescale - ** Necessary? **
   wtvols(i) = spm_vol(wvobj.wvol.fname);
   ovol = spm_vol(imgvols(i).fname);
   pinfos = [wtvols(i).pinfo imgvols(i).pinfo ovol.pinfo];
