@@ -7,9 +7,8 @@ See the do_iwtx.m file for detail
 Todo
 ----
 accept negative filter delays
-maybe remove added 0 from wt, as per wt.m in UviWave distribution
 
-$Id: do_iwtx.c,v 1.1 2004/07/08 04:26:28 matthewbrett Exp $ 
+$Id: do_iwtx.c,v 1.2 2004/07/09 16:34:38 matthewbrett Exp $ 
 
 */ 
 
@@ -26,6 +25,11 @@ $Id: do_iwtx.c,v 1.1 2004/07/08 04:26:28 matthewbrett Exp $
 /* output argument */
 #define IWM     plhs[0]
 
+/* indices for filters */
+#define HI      0
+#define GI      1
+#define N       2
+
 /* max min odd minifunctions */
 int my_max(int a, int b) {
   return a > b ? a : b;
@@ -39,14 +43,14 @@ int my_isodd(int a) {
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  double	*m, *h, *g, *iwm, *f_ptr, *buf, *iwm_out_ptr;
+  double	*m, *h, *g, *iwm, *f_ptr, *buf, *iwm_out_ptr, *filters[N], *delays[N];
   double        *m_ptr, *iwm_ptr, *col_ptr, *in_ptr, *out_ptr, *f, *pos, *f_pos;
   double        *d_start, *d_end, *d_start_h, *d_start_g, *d_end_h, *d_end_g;
   double        d, res1, res2;
   int           dlp, dhp, dlp_12, dhp_12, odd_dlp, odd_dhp, st_wrap, n_cols, col;
   int           st_wrap_h, st_wrap_g, len_mid, odd_delay, len_x_12_m, delay_p;
   int           reco_detail, len_h_12, len_g_12, delay, fno, odd_f, len_f, len_f_p; 
-  int		len_x, len_x_12, len_h, len_g, len_buf, i, j, odd_h, odd_g;
+  int		len_x, len_x_12, f_lengths[N], len_buf, i, j, odd_h, odd_g;
   long int      size_m;
   
   if (nrhs < 5) 
@@ -62,39 +66,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   else reco_detail = 1;
 
   /* Assign pointers to the parameters */
-  m        = mxGetPr(M);
-  h        = mxGetPr(RH);
-  g        = mxGetPr(RG);
+  m                = mxGetPr(M);
+  filters[HI]      = mxGetPr(RH);
+  filters[GI]      = mxGetPr(RG);
 
-  /* get delay lengths */
-  dlp      = (int)*(mxGetPr(DLP));
-  dlp_12   = dlp/2;
-  odd_dlp  = my_isodd(dlp);
-  dhp      = (int)*(mxGetPr(DHP));
-  dhp_12   = dhp/2;
-  odd_dhp  = my_isodd(dhp);
+  /* get delays */
+  delays[HI]       = (int)*(mxGetPr(DLP));
+  delays[GI]       = (int)*(mxGetPr(DHP));
 
-  /* get dimensions */
+  /* get dimensions and lengths*/
   len_x    = mxGetM(M);
   n_cols   = mxGetN(M);
   size_m   = len_x * n_cols;
-  len_h    = mxGetM(RH) * mxGetN(RH);
-  len_h_12 = len_h/2;
-  odd_h    = my_isodd(len_h);
-  len_g    = mxGetM(RG) * mxGetN(RG);
-  len_g_12 = len_g/2;
-  odd_g    = my_isodd(len_g);
+  f_lengths[HI] = mxGetM(RH) * mxGetN(RH);
+  f_lengths[GI] = mxGetM(RG) * mxGetN(RG);
 
-  /* check length divisible by 2 */
+  /* check to-be-transformed length divisible by 2 */
   if (my_isodd(len_x))
     mexErrMsgTxt("Length of x dimension must be divisible by 2.");    
   len_x_12 = len_x/2;
-     
-  /* check constants 
-  if (dlp < 0 || dlp > len_h || 
-      dhp < 0 || dhp > len_g) 
-    mexErrMsgTxt("Filter delays seem to be out of range.");
-  */
+
+  /* do delay etc calculations to save time later in main loop */
+  for (fno=0; fno<N, fno++) {
+    delays_12[fno]   = delays[fno]/2;
+    odd_dlp  = my_isodd(dlp);
+    len_h_12 = len_h/2;
+    odd_h    = my_isodd(len_h);
+    st_wrap[fno] = my_max((len_h_12 + odd_h - dlp_12 - 1), 0); 
+  }
 
   /* make output matrix */
   IWM = mxCreateNumericArray(mxGetNumberOfDimensions(M),

@@ -6,11 +6,8 @@ See the do_wtx.m file for detail
 
 Todo
 ----
-accept negative filter delays
-maybe add 0 to odd-length dimensions as per wt.m in UviWave
-distribution
 
-$Id: do_wtx.c,v 1.1 2004/07/08 04:26:47 matthewbrett Exp $
+$Id: do_wtx.c,v 1.2 2004/07/09 16:34:38 matthewbrett Exp $
 
 */ 
 
@@ -74,11 +71,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     mexErrMsgTxt("Length of x dimension must be divisible by 2.");    
   len_x_12 = len_x/2;
      
-  /* check constants */
-  if (dlp < 0 || dlp > len_h || 
-      dhp < 0 || dhp > len_g) 
-    mexErrMsgTxt("Filter delays seem to be out of range.");
-
   /* make output matrix */
   WM = mxCreateNumericArray(mxGetNumberOfDimensions(M),
 			    mxGetDimensions(M), 
