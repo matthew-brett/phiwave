@@ -43,7 +43,7 @@ function y=iwt(wx,rh,rg,scales,tam,sc_levels,del1,del2)
 %
 % See also:  WTND, WT, IWT, WTCENTER, ISPLIT.
 %
-% $Id: iwt.m,v 1.5 2004/07/16 03:50:03 matthewbrett Exp $
+% $Id: iwt.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 

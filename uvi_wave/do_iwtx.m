@@ -15,7 +15,7 @@ function t = do_iwtx(t, rh, rg, dlp, dhp, reco_detail, truncate)
 % discarded, and a new matrix returned of size N-1 in X, where N was the
 % original number of rows.
 %
-% $Id: do_iwtx.m,v 1.2 2004/07/12 01:49:15 matthewbrett Exp $
+% $Id: do_iwtx.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 %-This is the help file for the compiled routine
-error('do_iwtx.c not compiled - see make.m in phiwave directory')
+error('do_iwtx.c not compiled - try phiwave(''make'')')

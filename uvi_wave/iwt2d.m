@@ -38,7 +38,7 @@ function y=iwt2d(wx,rh,rg,scales,sizx,sizy,sc_levels,del1,del2)
 %
 % See also:  WTND, IWT, IWTND, WTCENTER, ISPLIT.
 %
-% $Id: iwt2d.m,v 1.3 2004/07/16 03:53:34 matthewbrett Exp $
+% $Id: iwt2d.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 

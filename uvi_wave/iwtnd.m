@@ -91,7 +91,7 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 %
 % Based on iwt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: iwtnd.m,v 1.6 2004/07/16 03:58:51 matthewbrett Exp $
+% $Id: iwtnd.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 % Restrictions:
 %
@@ -101,11 +101,11 @@ function y = iwtnd(wx, rh, rg, scales, o_sz, sc_levels, del1, del2, p_dims)
 % perfect vector reconstruction (or the equivalent in the case of not full
 % reconstruction).
 %
-% - The number of scales indicated in SCALES, must match the number of them
-% specified in the analysis process. Otherwise, the reconstruction will be
-% absolutely erroneous. The same applies to the original vector size SIZ,
-% but if it's not given, or it's set to zero, IWTND will give the
-% recostructed vector the largest size possible.
+% - The number of scales indicated in SCALES, must match the number of
+% scales specified in the analysis process. Otherwise, the reconstruction
+% will be completely incorrect. The same applies to the original vector size
+% SIZ, but if it's not given, or it's set to zero, IWTND will give the
+% reconstructed vector the largest size possible.
 
 %--------------------------------------------------------
 % iwt: Copyright (C) 1994, 1995, 1996, by Universidad de Vigo

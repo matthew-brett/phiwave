@@ -31,7 +31,7 @@ function y=wt2d(x,h,g,scales,del1,del2)
 %
 % See also:  WTND, IWT, IWTND, WTCENTER, ISPLIT.
 %
-% $Id: wt2d.m,v 1.4 2004/07/16 03:51:38 matthewbrett Exp $
+% $Id: wt2d.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 

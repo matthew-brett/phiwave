@@ -85,7 +85,7 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 %
 % Based on wt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: wtnd.m,v 1.7 2004/07/16 03:56:01 matthewbrett Exp $
+% $Id: wtnd.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 %--------------------------------------------------------
 % wt is Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
@@ -113,7 +113,7 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 % 
 % We do the wt by iteratively switching the matrix dimension we want to
 % process to be the first dimension (columns), then filtering. The algorithm
-% goes up to 4D, but could be extended further by adding the relevant liesn
+% goes up to 4D, but could be extended further by adding the relevant lines
 % to the switch statements, or made general by using subsref commands:
 % [n_dims = 2; d = subsref(c, struct('type', '()', 'subs', repmat({:}, 1,
 % n_dims)))]; I haven't used the subsref commands here because they can be

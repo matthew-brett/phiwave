@@ -8,7 +8,7 @@ function t = do_wtx(t, h, g, dlp, dhp)
 %  
 % dlp, dhp are the delays for the low-pass and high-pass filters.
 %
-% $Id: do_wtx.m,v 1.1 2004/07/08 04:26:47 matthewbrett Exp $
+% $Id: do_wtx.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 %-This is the help file for the compiled routine
-error('do_wtx.c not compiled - see make.m in phiwave directory')
+error('do_wtx.c not compiled - see phiwave(''make'')')

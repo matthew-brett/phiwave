@@ -8,7 +8,7 @@ If the dimension to be transformed is of odd length, then the routine
 will pad the input with an extra 0 in each column of X before doing
 the wavelet transform - as for the UviWave wt function. 
 
-$Id: do_wtx.c,v 1.5 2004/07/14 19:59:42 matthewbrett Exp $
+$Id: do_wtx.c,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 */ 
 

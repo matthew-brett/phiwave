@@ -1,25 +1,20 @@
-function d=pr_center(x,op);
+function s=maxrsize(lw,k)
 
-%  CENTER  Delay calculation for Wavelet transform alignment.
+% MAXRSIZE  Maximum recoverable size from a Wavelet transform
 %
-%          CENTER (X, OP) calculates the delay for filter in X 
-%          according to the alignment method indicated in OP. 
-%          This delay is used by Wavelet transform functions.
-%          The value of OP can be:
-%              0 : First Absolute Maxima Location
-%              1 : Zero delay in analysis (Full for synthesis).
-%              2 : Mass center (sum(m*d)/sum(m))
-%              3 : Energy center (sum(m^2 *d)/sum(m^2))
+%           MAXRSIZE (LW,K) returns the size of the largest
+%           vector that can be reconstructed from the K-scales
+%           wavelet transform of length LW. This maximum size
+%           can be the same as LW or LW+1 (because of the 
+%           transformation method)
 %
-%          If no output argument is given, then the vector X will
-%          be plotted in the current figure, and a color line will be 
-%          marking the result.(red: OP=0; green: OP=1; cyan: OP=2; 
-%          blue: OP=4)
+%	    If there's no vector whose K-scales Wavelet transform
+%           is LW samples long, the return value is 0.
 %
-%          See also: WTCENTER, WTMETHOD
+%           See also: WVLTSIZE, WT, WT2D, BANDSITE.
 %
-% $Id%
-
+%
+% $Id: maxrsize.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $
 
 %--------------------------------------------------------
 % Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
@@ -44,31 +39,20 @@ function d=pr_center(x,op);
 %--------------------------------------------------------
 
 
-lx=length(x);
-l=1:lx;
+s=0;
+l=0;
+x=floor(lw/2);
 
-if op==1
-	d=0;
-else
-	if op==2
-		xx=abs(x(:)');
-		L=l;
-	end
-	if op==3
-		xx=x(:)'.^2;
-		L=l;
-	end
-	if op==0
-		[mx,d]=max(abs(x));
-	else 
-		
-		d=sum(xx.*L)/sum(xx);
-	end
-end
+while (s==0) & (l<=k),
+	testsize = x-l;	
+	lo(1)=2*testsize;
 
-if nargout==0,
-  cad='rgcbk';
-  plot(x)
-  l=line([d,d],[min(x),max(x)]);
-  set(l,'Color',cad(op+1));
+	for i=1:k
+        	lo(i+1)=floor((lo(i)+1)/2);	
+	end
+	check=sum(lo(2:k+1))+lo(k+1);
+	if check==lw,
+		s=testsize*2;
+	end
+	l=l+1;
 end

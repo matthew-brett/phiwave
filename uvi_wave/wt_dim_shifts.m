@@ -31,7 +31,7 @@ function [shifts, end_shift] = wt_dim_shifts(p_dims, sz)
 % x3 = permute(x2, [2 3 1]);  % Z->X; shift(3) of -1
 % x  = permute(x3, [2 3 1]);  % X->X; end_shift of -1
 % 
-% $Id: wt_dim_shifts.m,v 1.2 2004/07/15 04:26:18 matthewbrett Exp $ 
+% $Id: wt_dim_shifts.m,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $ 
 
 n_dims = length(p_dims);
 fpd  = find(p_dims);

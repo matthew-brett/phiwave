@@ -4,7 +4,7 @@ do first scale inverse wavelet transform in x dimension of matrix
 FORMAT t = do_iwtx(t, h, g, dlp, dhp, reco_detail, truncate)
 See the do_iwtx.m file for detailed help
 
-$Id: do_iwtx.c,v 1.6 2004/07/14 20:01:14 matthewbrett Exp $ 
+$Id: do_iwtx.c,v 1.1 2004/09/26 04:00:24 matthewbrett Exp $ 
 
 */ 
 
