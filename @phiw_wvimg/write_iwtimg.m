@@ -1,10 +1,16 @@
 function [iwtvol, obj] = write_iwtimg(obj, iwtvol)
 % write_wtimg - iwt on wvimg object, save as img
 %
-% $Id: write_iwtimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: write_iwtimg.m,v 1.3 2005/04/03 06:55:08 matthewbrett Exp $
 
 if nargin < 2
   iwtvol = [];
+end
+if isempty(iwtvol)
+  error('Need output filename or vol struct');
+end
+if ischar(iwtvol)
+  iwtvol = struct('fname',iwtvol); 
 end
 
 if ~obj.wtf
@@ -13,17 +19,10 @@ else
   obj = doproc(obj);
 end
 
-if ischar(iwtvol),iwtvol = struct('fname',iwtvol);end
+% fill missing fields in vol struct first from origincal vol struct
+iwtvol = mars_struct('fillafromb', iwtvol, obj.ovol);
 
-% fname from 1) input 2) ovol 3) wvol (+prefix) 4) default (+prefix)
-iwtvol = mars_struct('fillafromb', iwtvol,obj.ovol);
-if isempty(iwtvol.fname)
-  if isempty(obj.wvol.fname),iwtvol.fname = 'image';
-  else iwtvol.fname = obj.wvol.fname;end
-  [p f e] = fileparts(iwtvol.fname);
-  iwtvol.fname = fullfile(p, [obj.options.iwtprefix f e]);
-end
-% any missing defaults from wvol
+% then get any missing defaults from wvol
 iwtvol = mars_struct('fillafromb', iwtvol,obj.wvol);
 
 % do iwt
