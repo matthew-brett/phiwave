@@ -46,6 +46,12 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 % one value per dimension of X; each dimension with a flag value of 1 is
 % wt'ed, dimensions of size 1 or with a 0 flag value are ignored.
 % 
+% Each dimension can have its own wavelet filter; the input filters h and
+% g can be given as cell arrays, each cell containing a filter for the
+% matching processed dimension (first cell processes first non-zero
+% dimension in p_dims, etc).  Similarly the delays DEL1 and DEL2 can be
+% vectors, with one delay for each processed dimension.
+%
 % Returns
 % Y           - transformed matrix
 % SCALES      - number of scales transformed
@@ -53,14 +59,13 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 % 
 %      See also:  IWT, WT2D, IWT2D, WTCENTER, ISPLIT.
 %
-% Based in part on wt.m from UviWave 3.0, with thanks - see below
+% Based on wt.m from UviWave 3.0, with thanks - see below
 %
-% $Id: wtnd.m,v 1.5 2004/07/15 04:27:51 matthewbrett Exp $
+% $Id: wtnd.m,v 1.6 2004/07/15 05:17:20 matthewbrett Exp $
 
 %--------------------------------------------------------
-% Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
-%                                                      
-%                                                      
+% wt is Copyright (C) 1994, 1995, 1996, by Universidad de Vigo 
+%                                                     
 % Uvi_Wave is free software; you can redistribute it and/or modify it      
 % under the terms of the GNU General Public License as published by the    
 % Free Software Foundation; either version 2, or (at your option) any      
@@ -80,12 +85,15 @@ function [y, scales] = wtnd(x, h, g, scales, del1, del2, p_dims)
 %       e-mail: Uvi_Wave@tsc.uvigo.es
 %--------------------------------------------------------
 
-% Do the wt by iteratively switching matrix dimension to be processed to be
-% the X dimension (columns), then filtering. The algorithm goes up to 4D,
-% but could be extended further using subsref commands [n_dims = 2;
-% subsref(c, struct('type', '()', 'subs', repmat({:}, 1, n_dims)))]; I
-% haven't used these here because they can be considerably slower than
-% direct [c(:,:)] type referencing
+% Programmers' notes
+% 
+% We do the wt by iteratively switching the matrix dimension we want to
+% process to be the X dimension (columns), then filtering. The algorithm
+% goes up to 4D, but could be extended further by adding the relevant liesn
+% to the switch statements, or made general by using subsref commands:
+% [n_dims = 2; d = subsref(c, struct('type', '()', 'subs', repmat({:}, 1,
+% n_dims)))]; I haven't used the subsref commands here because they can be
+% considerably slower than direct [c(:,:)] type referencing
   
 % -----------------------------------
 %    CHECK PARAMETERS AND OPTIONS
