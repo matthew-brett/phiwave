@@ -1,10 +1,16 @@
-function [o, others] = phido(des, params, passf)
+function [o, others] = phido(params, others, passf)
 % phido - class constructor for MarsBaR design object
 % inputs [defaults]
-% des     - SPM design, which can be a mardo object, or another SPM
-%           design format recognized by the mardo constructor - see help mardo for
-%           details.
-% params  - structure containing fields for phido object, which are
+% params  -  one of:            
+%            - string, specifying SPM design file, OR
+%            - mardo object OR
+%            - structure, which can:
+%               contain SPM/MarsBaR design OR
+%               contain fields for mardo object or phido object.
+%               Fields should include 'des_struct', containing design
+%               structure
+% others  - any other fields for mardo object or phido object or children
+%           Fields for phido object are:
 %           - wavelet     - phiwave wavelet object to transform images
 %           - scales      - scales for wavelet transform
 %           - wtprefix    - prefix for wavelet transformed files
@@ -14,13 +20,12 @@ function [o, others] = phido(des, params, passf)
 %
 % outputs
 % o       - phido object
-% others  - any unrecognized fields from params, for processing by
-%           children
+% others  - any unrecognized fields from params, others
 %
 % phido is pronounced like Fido, the dog's name.
 % 
 % phido is the parent for containers of mardo designs - see the mardo
-% constructor functions for details. The phido object itself if only a
+% constructor functions for details. The phido object itself is only a
 % placeholder for various settings - contained in the object fields.  The
 % SPM / MarsBaR design is passed to the children of this class, either
 % phido_99 or phido_2.  If the design is not suitable for either, the phido
@@ -37,36 +42,53 @@ function [o, others] = phido(des, params, passf)
 % constructor with passf set to 0 in order for the constructor merely to
 % make a phido object, without passing back to the other classes. 
 % 
-% $Id: phido.m,v 1.6 2004/09/19 03:15:31 matthewbrett Exp $
+% $Id: phido.m,v 1.7 2004/09/22 05:58:24 matthewbrett Exp $
 
 myclass = 'phido';
+cvs_v   = mars_cvs_version(myclass);
+
+% Default object structure
 defstruct = struct('wavelet',  phiw_lemarie(2), ...
 		   'scales',   4, ...
 		   'wtprefix', 'wv_', ...
 		   'maskthresh', 0.05);
 
 if nargin < 1
-  des = [];
+  defstruct.cvs_version = cvs_v;
+  o = class(defstruct, myclass);
+  others = [];
+  return
 end
 if nargin < 2
-  params = [];
+  others = [];
 end
-if nargin < 2
+if nargin < 3
   passf = 1;
 end
-if isa(des, myclass)
-  o = des;
+
+% Deal with passed objects of this (or child) class
+if isa(params, myclass)
+  o = params;
+  % Check for simple form of call
+  if isempty(others), return, end
+
+  % Otherwise, we are being asked to set fields of object
+  [p others] = mars_struct('split', others, defstruct);
+  if isfield(p, 'wavelet'), o.wavelet = p.wavelet; end
+  if isfield(p, 'scales'), o.scales = p.scales; end
+  if isfield(p, 'wtprefix'), o.wtprefix = p.wtprefix; end
+  if isfield(p, 'maskthresh'), o.maskthresh = p.maskthresh; end
   return
 end
 
 % send design to mardo
-[mardo_o params] = mardo(des, params);
+[mardo_o others] = mardo(params, others);
 
 % fill params with defaults, parse into fields for this object, children
-[params, others] = mars_struct('ffillsplit', defstruct, params);
+[params, others] = mars_struct('ffillsplit', defstruct, others);
 
 % add cvs tag
-params.cvs_version = mars_cvs_version(myclass);
+params.cvs_version = cvs_v;
 
 % set the phido object
 o  = class(params, myclass);
