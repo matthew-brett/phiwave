@@ -17,19 +17,16 @@ function [o, others] = phiw_daub(params, others)
 % others    - optional structure with any other fields for the object
 %             (see phiw_wavelet) 
 % 
-% $Id: phiw_daub.m,v 1.2 2004/09/24 19:25:51 matthewbrett Exp $
+% $Id: phiw_daub.m,v 1.3 2004/09/26 03:56:50 matthewbrett Exp $
 
 myclass = 'phiw_daub'; 
 cvs_v   = mars_cvs_version(myclass);
 
 % Default object structure; Daub filter with 4 coefficients
-defstruct = struct('params', 4);
+defstruct = struct('num_coeffs', 4);
 
 if nargin < 1
-  defstruct.cvs_version = cvs_v;
-  o = class(defstruct, myclass);
-  others = [];
-  return
+  params  = [];
 end
 if nargin < 2
   others = [];
@@ -43,20 +40,21 @@ if isa(params, myclass)
   % Otherwise, we are being asked to set fields of object
   % (There aren't any for now, so just sort out input args)
   [p others] = mars_struct('split', others, defstruct);
+  if isfield(p, 'num_coeffs'), o = num_coeffs(o, p.num_coeffs), end
   return
 end
 
 % Check params input argument
-if ~isfield(params, 'params'), params = struct('params', params); end
-n_c = mars_struct('getifthere', params, 'params');
+if isempty(params), params = defstruct; end
+if ~isfield(params, 'num_coeffs'), params = struct('num_coeffs', params); end
+n_c = mars_struct('getifthere', params, 'num_coeffs');
 if isempty(n_c)
   error('Need params field in input struct, or scalar');
 end
-if ~isnumeric(others) | prod(size(others)) > 1
+if ~isnumeric(n_c) | prod(size(n_c)) > 1
   error('params argument should be a scalar');
 end
 
-% cvs version
 params.cvs_version = cvs_v;
 
 % set the phiw_wavelet object
