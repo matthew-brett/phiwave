@@ -33,6 +33,7 @@ function [o, others] = phiw_wavelet(params, varargin)
 %            Fields can be 
 %             - detail_right - flag, if == 1 specifies detail coeffs to
 %                              right of vector (UviWave) [1]
+%             - verbose      - flag, if == 1, gives messages sometimes
 %             - wtcentermethod - method to determine wavelet centre
 %                                method, see center.m function for
 %                                definitions.  Can be integer from 0 to 3
@@ -40,7 +41,7 @@ function [o, others] = phiw_wavelet(params, varargin)
 % As usual, any unrecognized fields in input structures are passed out
 % for other (child) objects to parse if they like
 %
-% $Id: phiw_wavelet.m,v 1.4 2004/09/26 03:56:16 matthewbrett Exp $
+% $Id: phiw_wavelet.m,v 1.5 2004/09/26 07:50:40 matthewbrett Exp $
 
 myclass = 'phiw_wavelet'; 
 
@@ -64,6 +65,7 @@ cvs_v   = mars_cvs_version(myclass);
 wtcm = phiw_wavelet('classdata', 'wtcentermethod');
 defstruct = struct('filters', struct('H',1,'G',1,'RH',1,'RG',1),...
 		   'detail_right', 1, ...
+		   'verbose', 1, ...
 		   'wtcentermethod', wtcm);
 
 if nargin < 1
@@ -86,8 +88,9 @@ if isa(params, myclass)
 
   % Otherwise, we are being asked to set fields of object
   [p others] = mars_struct('split', others, defstruct);
-  if isfield(p, 'detail_right'), o.detail_right = p.detail_right; end
   if isfield(p, 'filters'), o = set_filters(o, p.filters); end
+  if isfield(p, 'detail_right'), o.detail_right = p.detail_right; end
+  if isfield(p, 'verbose'), o.verbose = p.verbose; end
   if isfield(p, 'wtcentermethod'), o.wtcentermethod = p.wtcentermethod; end
   return
 end
