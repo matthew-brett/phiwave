@@ -55,7 +55,6 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %
 % The constructor can also be called to give class functions, where the
 % name of the class function is a character string which is one of:
-%    'is_wted'   returns 1 if passed vol struct is for wt'ed image
 %    'orig_vol'  returns original vol struct from wt'ed vol
 %
 % This class relies on lots of SPM routines
@@ -63,7 +62,7 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.6 2005/04/03 08:53:19 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.7 2005/04/03 10:00:34 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 
