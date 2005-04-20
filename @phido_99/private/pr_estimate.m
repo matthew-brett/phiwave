@@ -272,7 +272,7 @@ function SPM = pr_estimate(SPM, VY)
 %_______________________________________________________________________
 % @(#)spm_spm.m	2.37 Andrew Holmes, Jean-Baptiste Poline, Karl Friston 99/11/26
 %
-% $Id: pr_estimate.m,v 1.1 2004/11/18 18:36:32 matthewbrett Exp $
+% $Id: pr_estimate.m,v 1.2 2005/04/20 15:16:40 matthewbrett Exp $
 
 %-Condition arguments
 %-----------------------------------------------------------------------
@@ -299,7 +299,7 @@ else
 end
 
 % Check images are wt'ed
-wvobj = phiw_wvimg(VY(1), struct('no_proc', 1));
+wvobj = phiw_wvimg(VY(1), struct('noproc', 1));
 if isempty(wvobj), error('Images do not appear to have been WTed'), end
 wti = wtinfo(wvobj);
 wtp = wti.wtprefix;
@@ -442,8 +442,8 @@ end
 %-----------------------------------------------------------------------
 xCon  = spm_FcUtil('Set',F_iX0(1).name,'F','iX0',F_iX0(1).iX0,xX.xKXs);
 for i = 2:length(F_iX0)
-	xcon = spm_FcUtil('Set',F_iX0(i).name,'F','iX0',F_iX0(i).iX0,xX.xKXs);
-	xCon = [xCon xcon];
+  xcon = spm_FcUtil('Set',F_iX0(i).name,'F','iX0',F_iX0(i).iX0,xX.xKXs);
+  xCon = [xCon xcon];
 end
 
 %-Parameters for saving in Y.mad (based on first F-contrast)
@@ -456,37 +456,36 @@ h             = spm_FcUtil('Hsqr',xCon(1),xX.xKXs);
 %-----------------------------------------------------------------------
 if nVar > 1
 
-	fprintf('%s%30s',sprintf('\b')*ones(1,30),'...multivariate prep')%-#
-
-	% pseudoinverse of null partition KX0
-	%---------------------------------------------------------------
-	KX0         = spm_FcUtil('X0',xCon(1),xX.xKXs);
-	pKX0        = pinv(KX0);
-
-	%-Modify Contrast structure for multivariate inference
-	%---------------------------------------------------------------
-	str       = 'Canonical variate';
-	xCon      = spm_FcUtil('Set',str,'F','iX0',xCon.iX0,xX.xKXs);
-
-	%-Degrees of freedom (Rao 1951)
-	%---------------------------------------------------------------
-	h         = rank(spm_FcUtil('X1o',xCon(1),xX.xKXs));
-	p         = nVar;
-	r         = erdf;
-	a         = r - (p - h + 1)/2;
-	if (p + h) == 3;
-		b = 1;
-	else
-		b = sqrt((p^2 * h^2 - 4)/(p^2 + h^2 - 5));
-	end
-	c         = (p*h - 2)/2;
-	erdf      = a*b - c;
-	eidf      = p*h;
-	xCon.eidf = eidf;
+  fprintf('%s%30s',sprintf('\b')*ones(1,30),'...multivariate prep')%-#
+  
+  % pseudoinverse of null partition KX0
+  %---------------------------------------------------------------
+  KX0         = spm_FcUtil('X0',xCon(1),xX.xKXs);
+  pKX0        = pinv(KX0);
+  
+  %-Modify Contrast structure for multivariate inference
+  %---------------------------------------------------------------
+  str       = 'Canonical variate';
+  xCon      = spm_FcUtil('Set',str,'F','iX0',xCon.iX0,xX.xKXs);
+  
+  %-Degrees of freedom (Rao 1951)
+  %---------------------------------------------------------------
+  h         = rank(spm_FcUtil('X1o',xCon(1),xX.xKXs));
+  p         = nVar;
+  r         = erdf;
+  a         = r - (p - h + 1)/2;
+  if (p + h) == 3;
+    b = 1;
+  else
+    b = sqrt((p^2 * h^2 - 4)/(p^2 + h^2 - 5));
+  end
+  c         = (p*h - 2)/2;
+  erdf      = a*b - c;
+  eidf      = p*h;
+  xCon.eidf = eidf;
 end
 
 fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
-
 
 %-Initialise output images
 %=======================================================================
@@ -515,6 +514,7 @@ Vbeta_tmp = deal(struct(...
 			'mat',		M,...
 			'pinfo',	[1 0 0]',...
 			'descrip',	''));
+
 for i = 1:nBeta
 	Vbeta_tmp.fname   = sprintf('%sbeta_%04d.img', wtp, i);
 	Vbeta_tmp.descrip = sprintf('phiwave:beta (%04d) - %s',i,xX.Xnames{i});
@@ -532,8 +532,7 @@ VResMS = struct(	'fname',	[wtp 'ResMS.img'],...
 			'descrip',	'phiwave:Residual sum-of-squares');
 VResMS = spm_create_image(VResMS);
 
-
-%-Intialise residual sum of squares image file
+%-Intialise multivariate SPMF file
 %-----------------------------------------------------------------------
 if nVar > 1
 	Vspm   = struct('fname',	[wtp 'mvSPMF.img'],...
