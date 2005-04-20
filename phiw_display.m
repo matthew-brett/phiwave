@@ -1,4 +1,4 @@
-function phiw_display(varargin)
+function phiw_display(action, disptype, vols, phiw, defyn)
 % displays activation image on structural image
 % FORMAT phiw_display(action, disptype, vols, phiw, defyn)
 %
@@ -12,10 +12,24 @@ function phiw_display(varargin)
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.3 2004/11/18 18:47:34 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.4 2005/04/20 20:21:39 matthewbrett Exp $
   
-[action disptype vols phiw defyn] = argfill(...
-    varargin, 0,{'display', 'orth', [],[],[]}, 1);
+if nargin < 1
+  action = 'display';
+end
+if nargin < 2
+  distype = 'orth';
+end
+if nargin < 3
+  vols = [];
+end
+if nargin < 4
+  phiw = [];
+end
+if nargin < 5
+  defyn = [];
+end
+
 switch lower(action)
 case 'display'
 disptype = lower(disptype);

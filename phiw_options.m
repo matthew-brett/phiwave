@@ -1,4 +1,4 @@
-function [phiw, msgstr] = phiw_options(varargin)
+function [phiw, msgstr] = phiw_options(opstr, phiw, cfg_fname)
 % options utility routines
 % FORMAT [phiw msgstr] = phiw_options(opstr, phiw, cfg_fname)
 %
@@ -15,10 +15,19 @@ function [phiw, msgstr] = phiw_options(varargin)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.3 2004/11/18 18:46:38 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.4 2005/04/20 20:21:39 matthewbrett Exp $
   
-[optstr phiw cfg_fname] = argfill(varargin, 0, ...
-				  {'load', spm('getglobal','PHI'),''});
+if nargin < 1
+  optstr = 'load';
+end
+if nargin < 2
+  phiw = [];
+end
+if nargin < 3
+  cfg_fname = '';
+end
+if isempty(phiw), phiw = spm('getglobal','PHI'); end
+
 msgstr = '';
 
 % fields, and descriptions of fields, in phiw options structure
