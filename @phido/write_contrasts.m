@@ -1,6 +1,6 @@
 function [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags) 
 % Writes contrast and statistic images
-% FORMAT [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags) 
+% FORMAT [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags) 
 % 
 % Inputs
 % phiwD      - phido design object
@@ -24,7 +24,7 @@ function [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: write_contrasts.m,v 1.3 2005/04/20 15:14:06 matthewbrett Exp $
+% $Id: write_contrasts.m,v 1.4 2005/04/20 20:22:37 matthewbrett Exp $
 
 if ~is_phiw_estimated(phiwD), error('Need phiwave estimated design'); end
 changef = 0;
