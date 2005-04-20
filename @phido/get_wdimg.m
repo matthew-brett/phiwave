@@ -1,6 +1,6 @@
 function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname) 
 % calculates and returns denoised image in voxel space
-% FORMAT [Vdcon Vderr] = get_wdimg(pD, Ic, wdstruct, fname)
+% FORMAT [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname) 
 %   
 % Inputs (defaults in [square brackets])
 % pD         - phido design object
@@ -26,10 +26,13 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 % Matthew Brett, Federico Turkheimer, 9/10/00
 % error maps added 19/11/01 - RP
 %
-% $Id: get_wdimg.m,v 1.1 2005/04/20 20:25:58 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.2 2005/04/20 21:26:38 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
+end
+if length(Ic) > 1
+  error('Can only get one denoised contrast at a time');
 end
 if nargin < 3
   wdstruct = [];
@@ -68,21 +71,18 @@ DIM   = VY(1).dim(1:3);
 if isempty(Ic)
   % only single t contrast allowed for the moment
   [Ic, pD, changef] = ui_get_contrasts(pD, ...
-				       'T',1,...
-				       'Select contrast...',..
-				       '',...
+				       'T', ...
+				       1, ...
+				       'Select contrast...', ...
+				       '', ...
 				       wOK);
 end
 
 % get filename if necessary
 %=======================================================================
-if length(Ic)==1
-  str  = sprintf('con%04d_%s',Ic,xCon(Ic).name);
-else
-  str  = [sprintf('contrasts {%d',Ic(1)),...
-	  sprintf(',%d',Ic(2:end)),'}'];
-end
+xCon = get_contrasts(pD);
 if isempty(fname)
+  str  = sprintf('con%04d_%s',Ic,xCon(Ic).name);
   fname = spm_input('Filename for contrast', 1, 's', ...
 		    ['phiw_' mars_utils('str2fname',str)]);
 end
@@ -94,24 +94,27 @@ end
 
 % write con and statistic images
 %=======================================================================
-[pD, Ic, changef, rmsi] = write_contrasts(pD,Ic);
+[pD, Ic, changef, rmsi] = write_contrasts(pD, Ic);
 
 % get contrasts 
-xCon = get_contrasts(pD);
+if changef, xCon = get_contrasts(pD); end
+xC1  = xCon(Ic);
 erdf = error_df(pD);
-edf   = [xCon(Ic(1)).eidf erdf];
+edf   = [xC1.eidf erdf];
 
 % get contrast and error image
-wvcon = phiw_wvimg(xCon(Ic(1)).Vcon,struct('noproc',0),wave);
-wverr = phiw_wvimg(spmmat.VResMS,struct('noproc',1),wave);
-wverr.img = sqrt(rmsi.*(xCon(Ic(1)).c'*xX.Bcov*xCon(Ic(1)).c));
+wave = get_wave(pD);
+wvcon = phiw_wvimg(xC1.Vcon,struct('noproc',0), wave);
+VResMS = get_vol_field(pD, 'VResMS');
+wverr = phiw_wvimg(VResMS,struct('noproc',1), wave);
+wverr.img = sqrt(rmsi.*(xC1.c'*xX.Bcov*xC1.c));
 
 % do wavelet denoise/inversion
 %=======================================================================
 % denoising (which also removes NaNs)
 fprintf('\t%-32s: %30s','Wavelet image','...denoising')         %-#
 statinf = struct('stat','T','df',edf(2));
-[wvcond wverr] = denoise(wvcon,wverr,statinf,phiw.denoise);
+[wvcond th_img] = denoise(wvcon, statinf, wdstruct);
 fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
 
 % default error map return
@@ -131,7 +134,7 @@ Vdcon = struct(...
     'mat',    wave.ovol.mat,...
     'pinfo',  [1,0,0]',...
     'descrip',sprintf('PhiWave{%c} - %s',...
-		      xCon(1).STAT,str));
+		      xC1.STAT,str));
 Vdcon = write_iwtimg(wvcond,Vdcon);
 fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
 
@@ -139,7 +142,7 @@ fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
 write_descrip(wvcond,Vdcon);
 
 % Create error map, if we have used linear thresholding
-if strcmp(phiw.denoise.thapp, 'linear')
+if strcmp(wdstruct.thapp, 'linear') & 0 % return to this later **
   [pn fn ext] = fileparts(fname);
   efname = fullfile(pn, ['err_' fn ext]);
   % inverse wavelet transform and save error image
@@ -149,7 +152,7 @@ if strcmp(phiw.denoise.thapp, 'linear')
       'mat',    wave.ovol.mat,...
       'pinfo',  [1,0,0]',...
       'descrip',sprintf('PhiWave{%c} - error:%s',...
-			xCon(1).STAT,str));
+			xC1.STAT,str));
   Vderr = write_iwtimg(wverr,Vderr);
   fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
 end
