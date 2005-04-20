@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.6 2004/11/18 18:51:38 matthewbrett Exp $
+% $Id: phiwave.m,v 1.7 2005/04/20 15:25:17 matthewbrett Exp $
   
 % PhiWave version
 PWver = 2.2;  % alpha 
@@ -81,6 +81,9 @@ if isempty(which('marsbar'))
   end
 end
 
+% start marsbar
+marsbar('on');
+
 % promote uvi_wave directory
 pwpath = fileparts(which('phiwave.m'));
 phwd = fullfile(pwpath, 'uvi_wave');
@@ -101,8 +104,7 @@ case 'off'                             %-Unload phiwave
 %-----------------------------------------------------------------------
 % remove phiwave spm_spm directory
 pwpath = fileparts(which('phiwave.m'));
-phwd = fullfile(pwpath, 'spmrep');
-rmpath(phwd);
+marsbar('off')
 fprintf('Phiwave analysis function removed from path\n');
 
 %=======================================================================
