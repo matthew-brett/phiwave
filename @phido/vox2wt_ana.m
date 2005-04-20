@@ -22,7 +22,7 @@ function [phiwD] = vox2wt_ana(phiwD, params)
 %
 % Matthew Brett 9/10/00
 %
-% $Id: vox2wt_ana.m,v 1.2 2005/04/06 22:38:18 matthewbrett Exp $
+% $Id: vox2wt_ana.m,v 1.3 2005/04/20 15:12:46 matthewbrett Exp $
   
 % Default object structure
 defparams = struct('wavelet',  phiw_lemarie(2), ...
@@ -40,7 +40,9 @@ if ~has_images(phiwD), error('Need images in design'); end
 VY = get_images(phiwD);
 
 % Get wt'ed and non wt'ed images from vols
-g_wt_opts = struct('reproc', 1, 'verbose', verbose(phiwD));
+g_wt_opts = struct('reproc', 1, ...
+		   'verbose', verbose(phiwD), ...
+		   'find_similar', 1);
 for i = 1:prod(size(VY))
   [VY_wt(i) VY_o(i)] = sf_get_wted(VY(i), params, g_wt_opts);
 end
@@ -54,9 +56,12 @@ if isempty(xM), error('Need masking structure'), end
 % Check if the mask matches the current wt information. If not, we will need
 % the original images to calculate the mask from.
 if isfield(xM, 'wave')
-  if ~same_wtinfo(xM.wave, params)
-    xM = sf_make_mask(xM, VY_o, params);
-  end
+  redo_mask = ~same_wtinfo(xM.wave, params)
+else
+  redo_mask = 1;
+end
+if redo_mask
+  xM = sf_make_mask(xM, VY_o, params);
 end
 
 % return new design
@@ -70,7 +75,7 @@ return
 
 function [Vw, Vo] = sf_get_wted(V, params, options)
 % Takes vol struct, returned WT'ed, non WT'ed vol structs
-% FORMAT [Vw, Vo] = sf_get_wted(V, wtinfo, options)
+% FORMAT [Vw, Vo] = sf_get_wted(V, params, options)
 % 
 % Input 
 % V        - WT'ed or non WT'ed vol struct
@@ -89,7 +94,7 @@ function [Vw, Vo] = sf_get_wted(V, params, options)
 % Voxel images with matching WT'ed image -> return WT'ed object
 
 f_s = mars_struct('getifthere', options, 'find_similar');  
-wv_opts = struct('noproc', 1, 'wtprefix', wtinfo.wtprefix, ...
+wv_opts = struct('noproc', 1, 'wtprefix', params.wtprefix, ...
 		 'find_similar', f_s);
 
 % Flag whether to reprocess if already WT'ed but with wrong parameters
@@ -206,7 +211,7 @@ spm_write_vol(VM, mask);
 fprintf('...done\n');
 
 % Transform, do processing for wavelet space mask
-wvVM = phiw_wvmask(VM,params);
+wvVM = pr_wvmask(VM, params);
 
 % save new mask
 fprintf(' Saving the wavelet transformed mask as %s...', wvVM.wvol.fname);
@@ -218,7 +223,7 @@ xM = struct(...
     'TH',ones(size(VY))*-Inf,...
     'T', -Inf,...
     'I', 0,...
-    'VM',wvVM.wvol, ...
+    'VM',wvm.wvol, ...
     'xs', struct(...
 	'Analysis_threshold','None (-Inf)',...
 	'Explicit_masking', 'Yes'),...
