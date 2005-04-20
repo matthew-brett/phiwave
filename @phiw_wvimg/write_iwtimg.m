@@ -1,7 +1,7 @@
 function [iwtvol, obj] = write_iwtimg(obj, iwtvol)
 % write_wtimg - iwt on wvimg object, save as img
 %
-% $Id: write_iwtimg.m,v 1.3 2005/04/03 06:55:08 matthewbrett Exp $
+% $Id: write_iwtimg.m,v 1.4 2005/04/20 15:19:22 matthewbrett Exp $
 
 if nargin < 2
   iwtvol = [];
@@ -29,7 +29,13 @@ iwtvol = mars_struct('fillafromb', iwtvol,obj.wvol);
 if obj.options.verbose
   fprintf('Inverting transform on %s...\n', obj.wvol.fname);
 end
-img = invert(obj.img, obj.wavelet, obj.scales, obj.oimgi);
+
+% set NaN's to zero...
+img = obj.img;
+img(isnan(img)) = 0;
+
+% Do inverse transform
+img = invert(img, obj.wavelet, obj.scales, obj.oimgi);
 
 % set up iwtvol
 iwtvol.dim(1:3) = size(img);
