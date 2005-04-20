@@ -17,9 +17,9 @@ function [phiwD] = estimate(phiwD, VY, params)
 %                 'wtprefix', 'wt_', 'maskthresh', 0.05); 
 % pE = estimate(pD, [], params);
 % 
-% $Id: estimate.m,v 1.2 2005/04/06 22:30:11 matthewbrett Exp $
+% $Id: estimate.m,v 1.3 2005/04/20 15:10:33 matthewbrett Exp $
 
-% Default object structure
+% Default parameters
 defparams = struct('wavelet',  phiw_lemarie(2), ...
 		   'scales',   4, ...
 		   'wtprefix', 'wv_', ...
@@ -37,6 +37,7 @@ if isempty(VY)
   if ~has_images(phiwD)
     error('Need data in design or passed as argument');
   end
+  VY = get_images(phiwD);
 else
   % Images passed, check and put in design
   if size(VY, 1) == 1, VY = VY'; end
