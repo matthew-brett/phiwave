@@ -1,8 +1,8 @@
-function [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags) 
+function [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags) 
 % Writes contrast and statistic images
-% FORMAT [phiwD, connos] = write_contrasts(phiwD, flags) 
-% phiw_write_contrasts(spmmat,connos,xCon,flags,phiw)
+% FORMAT [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags) 
 % 
+% Inputs
 % phiwD      - phido design object
 % connos     - vector of contrasts to write (fetched by GUI if empty)
 % flags      - flags containing none or more of
@@ -16,19 +16,25 @@ function [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags)
 % phiwD      - modified design object
 % connos     - vector of contrast numbers (as input, or from GUI)
 % changef    - set to 1 is phiwD object has changed
-% 
+% rmsi       - residual mean squared image as 3D matrix
+%
 % Based (very) closely on spm_getSPM from the spm99 distribution
-% (spm_getSPM, v2.35 Andrew Holmes, Karl Friston & Jean-Baptiste Poline 00/01/2)
+% (spm_getSPM, v2.35 Andrew Holmes, Karl Friston & Jean-Baptiste Poline
+% 00/01/2)  
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: write_contrasts.m,v 1.2 2005/04/03 06:55:43 matthewbrett Exp $
+% $Id: write_contrasts.m,v 1.3 2005/04/20 15:14:06 matthewbrett Exp $
 
 if ~is_phiw_estimated(phiwD), error('Need phiwave estimated design'); end
 changef = 0;
 if nargin < 2
   connos = [];
 end
+if nargin < 3
+  flags = '';
+end
+rmsi = [];
 
 % flags decoding
 if isempty(flags), flags = ' '; end
@@ -46,43 +52,22 @@ else
   ncons = Inf;
 end
 
-% Get SPM structure
-SPM = des_struct(phiwD);
+% get needed stuff from design
+Vbeta  = get_vol_field(phiwD, 'Vbeta');
+VResMS = get_vol_field(phiwD, 'VResMS');
+VY  = get_images(phiwD);
+xM  = masking_struct(phiwD);
+erdf = error_df(phiwD);
+M    = VY(1).mat;
+DIM  = VY(1).dim(1:3);
+xX   = design_structure(phiwD);
+swd  = swd(phiwD);
 
-% wave file prefix *** FIXME ***
-wvobj = phiw_wvimg(SPM
-wvp = 
-
-% map filenames -> vols
-if ~isstruct(spmmat.Vbeta)
-  spmmat.Vbeta  = ...
-      spm_vol([repmat([swd,filesep],length(spmmat.Vbeta),1), ...
-	       char(spmmat.Vbeta)]);
-end
-if ~isstruct(spmmat.VResMS)
-  spmmat.VResMS = spm_vol(fullfile(swd,spmmat.VResMS));
-end
-
-%-Get mm<->voxel matrices & image dimensions & design from SPM.mat
+%-See if can write to current directory 
 %-----------------------------------------------------------------------
-M     = spmmat.M;
-DIM   = spmmat.DIM;
-xX    = spmmat.xX;			%-Design definqition structure
-
-%-Load contrast definitions (if needed and available)
-%-----------------------------------------------------------------------
-if isempty(xCon) & exist(fullfile(swd,'xCon.mat'),'file')
-  load(fullfile(swd,'xCon.mat'))
-end
-
-%-See if can write to current directory (by trying to resave xCon.mat)
-%-----------------------------------------------------------------------
-try
-  save(fullfile(swd,'xCon.mat'),'xCon')
-catch
-  wOK = 0;
+wOK = swd_writable(phiwD);
+if ~wOK
   str = {'Can''t write to the results directory:',...
-	 '(problem saving xCon.mat)',...
 	 ['        ',swd],...
 	 ' ','-> results restricted to contrasts already computed'};
   spm('alert!',str,mfilename,1);
@@ -90,30 +75,26 @@ end
 
 %-Get contrasts if needed (if multivariate there is only one structure)
 %-----------------------------------------------------------------------
-nVar    = size(spmmat.VY,2);
+nVar    = size(VY,2);
 if nVar > 1 
   connos == 1;
 elseif isempty(connos) 
-  [connos,xCon] = spm_conman(xX,xCon,statstr,ncons,...
-			 '	Select contrasts...','to compute',wOK);
+  [connos, phiwD, changef] = ui_get_contrasts(phiwD, statstr, ncons,...
+			 '	Select contrasts...','to compute', wOK);
 end
 
 if isempty(connos)
   return
 end
+xCon = get_contrasts(phiwD);
 
 % get wave transform parameters
-if isfield(spmmat.xM, 'wave') % set in modified spm_spm version
-  wave = spmmat.xM.wave;
-else
-  % try to get wave info 
-  options = struct('noproc',1);
-  wave = phiw_wvimg(spmmat.VY(1),options);
-  if isempty(wave)
-    error(['No wave info for first image - unlikely to be wavelet' ...
-	   ' analysis'])
-  end
+wave = get_wave(phiwD);
+if isempty(wave)
+  error(['No wave info for first image - unlikely to be wavelet' ...
+	 ' analysis'])
 end
+wvp = getfield(wtinfo(wave), 'wtprefix');
 
 %-Compute & store contrast parameters, contrast/ESS images, & stat images
 %=======================================================================
@@ -133,10 +114,11 @@ for ii = 1:length(I)
   
   %-Canonicalise contrast structure with required fields
   %-------------------------------------------------------------------
-  if ~isfield(xCon(i),'eidf') | isempty(xCon(i).eidf)
-    [trMV,trMVMV] = spm_SpUtil('trMV',...
-			       spm_FcUtil('X1o',xCon(i),xX.xKXs),xX.V);
-    xCon(i).eidf  = trMV^2/trMVMV;
+  eidf = mars_struct('getifthere', xCon(i), 'eidf');
+  if isempty(eidf)
+    X1o           = spm_FcUtil('X1o',xCon(ic),SPM.xX.xKXs);
+    [trMV,trMVMV] = spm_SpUtil('trMV',X1o,SPM.xX.V);
+    xCon(ic).eidf = trMV^2/trMVMV;
   else
     trMV = []; trMVMV = [];
   end
@@ -146,9 +128,13 @@ for ii = 1:length(I)
   
   %-Write contrast/ESS images?
   %-------------------------------------------------------------------
-  if ~isfield(xCon(i),'Vcon') | isempty(xCon(i).Vcon) | ...
-        ~exist(fullfile(swd,xCon(i).Vcon),'file')
-        
+  Vcon = full_vol(phiwD, ...
+		  mars_struct('getifthere', xCon(i), 'Vcon'));
+  if isempty(Vcon.dim)
+
+    % We're going to change the contrast structure
+    changef = 1;
+    
     %-Bomb out (nicely) if can't write to results directory
     %---------------------------------------------------------------
     if ~wOK, spm('alert*',{	'Can''t write to the results directory:',...
@@ -166,16 +152,16 @@ for ii = 1:length(I)
 	      '(spm_add)','...initialising') %-#
       
       Q     = find(abs(xCon(i).c) > 0);
-      V     = spmmat.Vbeta(Q);
+      V     = Vbeta(Q);
       for j = 1:length(Q)
 	V(j).pinfo(1,:) = V(j).pinfo(1,:)*xCon(i).c(Q(j));
       end
       
       %-Prepare handle for contrast image
       %-----------------------------------------------------------
-      xCon(i).Vcon = struct(...
+      Vcon = struct(...
 	  'fname',  fullfile(swd,sprintf('%scon_%04d_%s.img',wvp,i,fsuff)),...
-	  'dim',    [DIM',16],...
+	  'dim',    [DIM,16],...
 	  'mat',    M,...
 	  'pinfo',  [1,0,0]',...
 	  'descrip',sprintf('PhiWave contrast - %d: %s',i,xCon(i).name));
@@ -183,13 +169,12 @@ for ii = 1:length(I)
       %-Write image
       %-----------------------------------------------------------
       fprintf('%s%20s',sprintf('\b')*ones(1,20),'...computing')%-#
-      xCon(i).Vcon            = spm_create_image(xCon(i).Vcon);
-      xCon(i).Vcon.pinfo(1,1) = spm_add(V,xCon(i).Vcon);
-      xCon(i).Vcon            = spm_create_image(xCon(i).Vcon);
+      Vcon            = spm_create_image(Vcon);
+      Vcon.pinfo(1,1) = spm_add(V, Vcon);
+      Vcon            = spm_create_image(Vcon);
             
       fprintf('%s%30s\n',sprintf('\b')*ones(1,30),sprintf(...
-	  '...written %s',spm_str_manip(xCon(i).Vcon.fname,'t')))%-#
-
+	  '...written %s',spm_str_manip(Vcon.fname,'t')))%-#
      case 'F'  %-Implement ESS as sum of squared weighted beta images
       fprintf('\t%-32s: %30s',sprintf('ESS image %2d',i),...
 	      '...computing') %-#
@@ -200,9 +185,9 @@ for ii = 1:length(I)
       
       %-Prepare handle for ESS image
       %-----------------------------------------------------------
-      xCon(i).Vcon = struct(...
+      Vcon = struct(...
 	  'fname',  fullfile(swd,sprintf('%sess_%04d_%s.img',wvp,i,fsuff)),...
-	  'dim',    [DIM',16],...
+	  'dim',    [DIM 16],...
 	  'mat',    M,...
 	  'pinfo',  [1,0,0]',...
 	  'descrip',sprintf('PhiWave ESS - contrast %d: %s',i,xCon(i).name));
@@ -210,9 +195,9 @@ for ii = 1:length(I)
       %-Write image
       %-----------------------------------------------------------
       fprintf('%s',sprintf('\b')*ones(1,30))                   %-#
-      xCon(i).Vcon  = spm_create_image(xCon(i).Vcon);
-      xCon(i).Vcon  = spm_resss(spmmat.Vbeta,xCon(i).Vcon,h);
-      xCon(i).Vcon  = spm_create_image(xCon(i).Vcon);
+      Vcon  = spm_create_image(xCon(i).Vcon);
+      Vcon  = spm_resss(Vbeta,xCon(i).Vcon,h);
+      Vcon  = spm_create_image(xCon(i).Vcon);
       
      otherwise
       %---------------------------------------------------------------
@@ -220,29 +205,29 @@ for ii = 1:length(I)
       
     end % (switch(xCon...)
     
+    % Put into structure array
+    xCon(i).Vcon = design_vol(phiwD, Vcon);
+
     % Write wave info for file
-    putwave(xCon(i).Vcon.fname,wave);
-    
-  elseif isfield(xCon(i),'Vcon') & ~isempty(xCon(i).Vcon) & ...
-        exist(fullfile(swd,xCon(i).Vcon),'file')  
- 
-    %-Already got contrast/ESS image - remap it w/ full pathname
-    %---------------------------------------------------------------
-    xCon(i).Vcon = spm_vol(fullfile(swd,xCon(i).Vcon));
-    
-  end % (if isfield...)
+    putwave(Vcon.fname,wave);
+        
+  end % (if isempty...)
 
   spm_progress_bar('Set',100*(2*ii-1)/(2*length(I)+2))             %-#
   
   %-Write statistic image(s)
   %-------------------------------------------------------------------
-  if ~any(flags=='c') & (~isfield(xCon(i),'Vspm') | isempty(xCon(i).Vspm) | ...
-        ~exist(fullfile(swd,xCon(i).Vspm),'file'))
+  Vspm = full_vol(phiwD, ...
+		  mars_struct('getifthere', xCon(i), 'Vspm'));
+  if ~any(flags=='c') & isempty(Vspm.dim)
+    
+    % We're going to change the contrast structure
+    changef = 1;
     
     % Read Residual mean squared image if necessary
     if isempty(rmsi)
       fprintf('\t%-32s: %30s','ResMS file...','...done');
-      rmsi = spm_read_vols(spmmat.VResMS);
+      rmsi = spm_read_vols(VResMS);
       fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
       rmsi(abs(rmsi)<eps) = NaN;
     end
@@ -262,19 +247,19 @@ for ii = 1:length(I)
     switch(xCon(i).STAT)
      case 'T'                                  %-Compute {t} image
       
-      Z   = spm_read_vols(xCon(i).Vcon)./...
+      Z   = spm_read_vols(Vcon)./...
 	    (sqrt(rmsi * (xCon(i).c'*xX.Bcov*xCon(i).c) ));
       
-      str = sprintf('[%.2g]',xX.erdf);
+      str = sprintf('[%.2g]',erdf);
       
      case 'F'                                  %-Compute {F} image
       
       if isempty(trMV)
 	trMV = spm_SpUtil('trMV',spm_FcUtil('X1o',xCon(i),xX.xKXs),xX.V);
       end
-      Z =(spm_read_vols(xCon(i).Vcon)/trMV)./rmsi;
+      Z =(spm_read_vols(Vcon)/trMV)./rmsi;
       
-      str = sprintf('[%.2g,%.2g]',xCon(i).eidf,xX.erdf);
+      str = sprintf('[%.2g,%.2g]',xCon(i).eidf,erdf);
             
      otherwise
       %---------------------------------------------------------------
@@ -284,64 +269,50 @@ for ii = 1:length(I)
     %-Write full statistic image
     %---------------------------------------------------------------
     fprintf('%s%30s',sprintf('\b')*ones(1,30),'...writing')      %-#
-    xCon(i).Vspm = struct(...
-	'fname',  fullfile(swd,sprintf('%s%c_%04d_%s.img',wvp,xCon(i).STAT,i,fsuff)),...
-	'dim',    [DIM',16],...
+    Vspm = struct(...
+	'fname',  fullfile(swd,sprintf('%sphiw%c_%04d_%s.img',wvp,xCon(i).STAT,i,fsuff)),...
+	'dim',    [DIM 16],...
 	'mat',    M,...
 	'pinfo',  [1,0,0]',...
 	'descrip',sprintf('PhiWave{%c_%s} - contrast %d: %s',...
 			  xCon(i).STAT,str,i,xCon(i).name));
         
-    xCon(i).Vspm       = spm_write_vol(xCon(i).Vspm,Z);
+    Vspm       = spm_write_vol(Vspm,Z);
     
     % Write wave part of mat file
-    putwave(xCon(i).Vcon.fname,wave);
+    putwave(Vspm.fname,wave);
     
     fprintf('%s%30s\n',sprintf('\b')*ones(1,30),sprintf(...
-	'...written %s',spm_str_manip(xCon(i).Vspm.fname,'t')))  %-#
-    
-  elseif isfield(xCon(i),'Vspm') & ~isempty(xCon(i).Vspm) & ...
-        exist(fullfile(swd,xCon(i).Vspm),'file')  
-    %-Already got statistic image - remap it w/ full pathname
-    %---------------------------------------------------------------
-    xCon(i).Vspm = spm_vol(fullfile(swd,xCon(i).Vspm));
-    
-  end % (if isfield...)
+	'...written %s',spm_str_manip(Vspm.fname,'t')))  %-#
+        
+  end % (if ~ flags 'c' & isemptu...)
   
+  % Put into structure array
+  xCon(i).Vspm = design_vol(phiwD, Vspm);
+
+  % Write wave info for file
+  putwave(Vspm.fname,wave);
+        
   spm_progress_bar('Set',100*(2*ii-0)/(2*length(I)+2))             %-#
 
 end % (for ii = 1:length(I))
 
 spm_progress_bar('Set',100)                                          %-#
 
-% xCon for return has filenames
-rxCon = xCon;
-
 % Read Residual mean squared image if necessary
 if nargout > 4 & isempty(rmsi)
   fprintf('\t%-32s: %30s','ResMS file...','...done');
-  rmsi = spm_read_vols(spmmat.VResMS);
+  rmsi = spm_read_vols(VResMS);
   fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
   rmsi(abs(rmsi)<eps) = NaN;
 end
 
-%-Save contrast structure (if wOK), with relative pathnames to image files
+%- put contrasts back into design
 %=======================================================================
-if wOK
-  for i = I;
-    if ~isempty(xCon(i).Vcon)
-      xCon(i).Vcon = spm_str_manip(xCon(i).Vcon.fname,'t');
-    end
-    if ~isempty(xCon(i).Vspm)
-      xCon(i).Vspm = spm_str_manip(xCon(i).Vspm.fname,'t');
-    end
-  end
-  save(fullfile(swd,'xCon.mat'),'xCon')
-  fprintf('\t%-32s: %30s\n','contrast structure','...saved to xCon.mat')%-#
-end
+phiwD = set_contrasts(phiwD, xCon);
 
 spm_progress_bar('Clear')                                          %-#
 
 return
 
-% thank you
+% thank you, really
