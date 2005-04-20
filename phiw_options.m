@@ -1,6 +1,6 @@
-function [phiw, msgstr] = phiw_options(opstr, phiw, cfg_fname)
+function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 % options utility routines
-% FORMAT [phiw msgstr] = phiw_options(opstr, phiw, cfg_fname)
+% FORMAT [phiw msgstr] = phiw_options(optstr, phiw, cfg_fname)
 %
 % Input [default]
 % optstr            - option string: one of
@@ -15,7 +15,7 @@ function [phiw, msgstr] = phiw_options(opstr, phiw, cfg_fname)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.4 2005/04/20 20:21:39 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.5 2005/04/20 21:25:54 matthewbrett Exp $
   
 if nargin < 1
   optstr = 'load';
