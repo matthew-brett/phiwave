@@ -16,7 +16,9 @@ function obj = paint(obj, params)
 % paint attaches the object used for painting to the 'UserData' field of
 % the figure handle, unless instructed not to with 0 in userdata flag
 %
-% $Id: paint.m,v 1.1 2005/04/20 15:05:36 matthewbrett Exp $ 
+% $Id: paint.m,v 1.2 2005/05/06 22:59:56 matthewbrett Exp $ 
+
+fig_struct_fields = {'Position', 'Units'};
 
 if nargin < 2
   params = [];
@@ -53,9 +55,14 @@ if ~isempty(obj.cbar)
   minnpanels = minnpanels+cbars;
 end
 
-% get figure data
-% if written to, the axes may be specified already
+% Get figure data.  The figure may be dead, in which case we may want to
+% revive it.  If so, we set position etc as stored.
+% If written to, the axes may be specified already
+dead_f = ~ishandle(obj.figure);
 figno = figure(obj.figure);
+if dead_f
+  set(figno, obj.figure_struct);
+end
 
 % (re)initialize axes and stuff
 
@@ -335,6 +342,9 @@ for i = 1:cbars
 	'YData', axlims(idxs),...     
 	'CData', reshape(cbari.cmap,[cml,1,3]));
 end % colourbars
+
+% Get stuff for figure, in case it dies later
+obj.figure_struct = mars_struct('split', get(figno), fig_struct_fields);
 
 return
 

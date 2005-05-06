@@ -8,7 +8,7 @@ function obj = fill_defaults(obj)
 % Output
 % obj    - object filled
 %
-% $Id: fill_defaults.m,v 1.1 2005/04/20 15:05:36 matthewbrett Exp $
+% $Id: fill_defaults.m,v 1.2 2005/05/06 22:59:56 matthewbrett Exp $
 
 % Some default structures
 def_labs = struct('colour',[1 1 1],'size',0.075,'format', '%+3.0f');
@@ -19,12 +19,19 @@ def_area = struct('position', [0 0 1 1], ...
 		  'halign', 'center',...
 		  'valign', 'middle');
 
-% figure
+% Figure.  We allow the figure to be dead, if we are going to resurrect
+% it later.
+dead_f = 0;
 if ~isempty(obj.figure)
+  % Is it dead?
   if ~ishandle(obj.figure)
-    error('Figure handle is not a valid figure')
-  end
-  if ~strcmp(get(obj.figure,'Type'),'figure')
+    % Do we want to revive it?
+    if ~obj.resurrectf
+      error('Figure handle is not a valid figure')
+    end
+    dead_f = 1;
+    obj.refreshf = 1;
+  elseif ~strcmp(get(obj.figure,'Type'),'figure')
     error('Figure handle is not a figure')
   end
 else
@@ -35,9 +42,11 @@ else
   end
 end
 % set defaults for SPM figure 
-if strcmp(get(obj.figure, 'Tag'),'Graphics')
-  % position figure nicely for SPM
-  obj.area = mars_struct('fillafromb', obj.area, def_fig);
+if ~dead_f
+  if strcmp(get(obj.figure, 'Tag'),'Graphics')
+    % position figure nicely for SPM
+    obj.area = mars_struct('fillafromb', obj.area, def_fig);
+  end
 end
 
 % orientation; string or 4x4 matrix
