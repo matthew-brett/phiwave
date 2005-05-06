@@ -7,10 +7,10 @@ function [XYZ, Z, M] = pr_get_spm_results;
 % Z      - values at points in XYZ
 % M      - 4x4 voxel -> world transformation matrix 
 % 
-% $Id: pr_get_spm_results.m,v 1.1 2005/04/20 15:05:00 matthewbrett Exp $ 
+% $Id: pr_get_spm_results.m,v 1.2 2005/05/06 22:57:40 matthewbrett Exp $ 
   
 errstr = '''Cannot find SPM results in workspace''';
-[XYZ X M] = deal([]);
+[XYZ Z M] = deal([]);
 
 V = spm('ver');
 switch V(4:end)
