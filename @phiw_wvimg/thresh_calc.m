@@ -1,8 +1,8 @@
-function [dnobj, dnerr, thresholds] = denoise(wtobj,errobj,statinf,dninf)
-% denoise - denoise wt object
-% FORMAT [dnobj dnerr thresholds] = denoise(wtobj,errobj,statinf,dninf)
-% Denoising assumes that a t statistic is made by dividing the data in
-% the phiw_wvimg object wtobj by that in errobj
+function [thresh_obj, ths, ns] = thresh_calc(wtobj,errobj,statinf,dninf)
+% calculate thresholding from wt'ed statistic volumes
+% FORMAT [thresh_obj, ths, ns] = thresh_calc(wtobj,errobj,statinf,dninf)
+% Threshold calculation assumes that a t statistic is made by dividing
+% the data in the phiw_wvimg object wtobj by that in errobj
 %
 % Inputs 
 %   wtobj   - top half of t statistic
@@ -35,19 +35,20 @@ function [dnobj, dnerr, thresholds] = denoise(wtobj,errobj,statinf,dninf)
 %		  'fdr':	false discovery rate correction
 %		  'hoch':	Hoch correction
 %             .thapp - threshold application method
-%	          'hard':	Kill the coeff. under threshold
-%		  'soft':	Shrink the coeff under threshold
-%		  'linear':	Linear shrinkage
+%                 'hard'        all cooefficients under thresh = 0
+%                 'soft'        sign(y)(abs(y)-thresh)_+
+%                 'linear'      y*thresh
 %             .alpha - alpha level for p value threshold methods
 %             .varpoolf - flag, if non zero, apply variance pooling
 %
 % Outputs
-%   thvol      - volume with 
-%   thresholds - matrix of thresholds applied (one per thlev block)
+%   thvol      - volume with hard and soft thresholding
+%   ths        - thresholds applied, one per level
+%   ns         - Ns used for thresholding per level
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: denoise.m,v 1.4 2005/05/07 01:19:20 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.1 2005/05/07 01:19:20 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least two args, sorry');
@@ -58,6 +59,9 @@ end
 if nargin < 4
   dninf = [];
 end
+
+% Make object for return
+th_obj = wtobj;
 
 % check stat structure
 defstat = struct('stat','Z','df',10000);
@@ -216,24 +220,8 @@ for li = 1:length(l)
       error('Don''t recognize threshold calculation')
     end
     
-    % apply thresholds
-    suprath = abs(stblk) >= thresh;
-    switch dninf.thapp 
-     case 'linear'
-      stblk = stblk * thresh;
-      eblk = eblk * thresh; % error thresholding
-     case 'soft'
-      gt0 = (stblk(suprath) > 0)*2-1;
-      stblk(suprath) = stblk(suprath) - gt0 * thresh;
-      stblk(~suprath) = 0;
-     case 'hard'
-      stblk(~suprath) = 0;
-     otherwise
-      error('Don''t recognize threshold application type')
-    end
-
     % store threshold
-    thresholds(li,qi) = thresh;
+    ths(li,qi) = thresh;
     ns(li,qi) = n;
     
     % restore data to object
@@ -249,7 +237,7 @@ end
 % description of denoising
 dndescrip = ['Denoising by ' dninf.thlev ...
 	     '; null hypothesis calc = ' dninf.ncalc ...
-	     '; threshold calc = ' dninf.thcalc ...
+	     '; threshold calc = ' dninf.thcalc ...;
 	     '; threshold app = ' dninf.thapp ];
 if any(strcmp(dninf.thcalc,{'fdr','hoch','bonf'}))
   dndescrip = strvcat(dndescrip, ['Alpha level: ' num2str(dninf.alpha)]);
