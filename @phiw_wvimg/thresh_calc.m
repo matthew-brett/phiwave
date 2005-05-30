@@ -1,8 +1,11 @@
-function [thresh_obj, ths, ns] = thresh_calc(wtobj,errobj,statinf,dninf)
+function [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
 % calculate thresholding from wt'ed statistic volumes
-% FORMAT [thresh_obj, ths, ns] = thresh_calc(wtobj,errobj,statinf,dninf)
-% Threshold calculation assumes that a t statistic is made by dividing
-% the data in the phiw_wvimg object wtobj by that in errobj
+% FORMAT [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
+%
+% Threshold calculation assumes that a t statistic is made by dividing the
+% data in the phiw_wvimg object wtobj by that in errobj.  We need both the
+% numerator and the denominator because we may want to pool the error over
+% levels.
 %
 % Inputs 
 %   wtobj   - top half of t statistic
@@ -42,16 +45,15 @@ function [thresh_obj, ths, ns] = thresh_calc(wtobj,errobj,statinf,dninf)
 %             .varpoolf - flag, if non zero, apply variance pooling
 %
 % Outputs
-%   thvol      - volume with hard and soft thresholding
-%   ths        - thresholds applied, one per level
-%   ns         - Ns used for thresholding per level
+%   th_obj     - wv_img object with thresholding
+%   dndescrip  - text description of denoising applied
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: thresh_calc.m,v 1.1 2005/05/07 01:19:20 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.2 2005/05/30 16:43:30 matthewbrett Exp $
 
 if nargin < 2
-  error('Need at least two args, sorry');
+  error('Need at least top and bottom of t statistic, sorry');
 end
 if nargin < 3
   statinf = [];
@@ -65,7 +67,7 @@ th_obj = wtobj;
 
 % check stat structure
 defstat = struct('stat','Z','df',10000);
-statinf = mars_struct('fillafromb', statinf,defstat);
+statinf = mars_struct('ffillsplit', defstat,  statinf);
 
 % check denoise structure
 defdn = struct('levels',ones(1,wtobj.scales+1),...
@@ -75,7 +77,7 @@ defdn = struct('levels',ones(1,wtobj.scales+1),...
 	       'thapp','soft',...
 	       'varpoolf',0,...
 	       'alpha',0.05);
-dninf = mars_struct('fillafromb', dninf,defdn);
+dninf = mars_struct('ffillsplit', defdn, dninf);
 if length(dninf.levels) ~= wtobj.scales+1
   error('Unexpected length of levels spec')
 end
@@ -147,6 +149,8 @@ for li = 1:length(l)
     % get data
     dblk = subsref(wtobj, s);
     eblk = subsref(errobj, s);
+    full_thblk = zeros(size(dblk));
+    
     idx = isfinite(dblk) & dblk~= 0 & isfinite(eblk) & eblk ~=0;
     if ~any(idx), break,end
     eblk = eblk(idx);
@@ -220,17 +224,23 @@ for li = 1:length(l)
       error('Don''t recognize threshold calculation')
     end
     
-    % store threshold
-    ths(li,qi) = thresh;
-    ns(li,qi) = n;
+    % apply thresholding to t image
+    switch dninf.thapp 
+     case 'linear'
+      thblk = stblk * thresh;
+     case 'soft'
+      thblk = sign(stblk) .* max(0,(abs(stblk)-thresh))
+     case 'hard'
+      thblk = stblk;
+      thblk(abs(thblk) < thresh) = 0;
+     otherwise
+      error('Don''t recognize threshold application type')
+    end
+    full_thblk(idx) = thblk ./ stblk;
     
     % restore data to object
-    dblk(idx) = stblk .* eblk;
-    dblk(~idx) = 0;
-    wtobj = subsasgn(wtobj,s,dblk);
+    th_obj = subsasgn(th_obj,s,full_thblk);
     
-    % and error map
-    errobj = subsasgn(errobj,s,eblk);
   end
 end
 
@@ -249,7 +259,4 @@ if ~isempty(letlevs)
   strvcat(dndescrip, [num2str(letlevs) ' levels not thresholded']);
 end
 
-dnobj = wtobj;
-dnobj.descrip = strvcat(dnobj.descrip,dndescrip);
-dnerr = errobj;
-dnerr.descrip = strvcat(errobj.descrip,dndescrip);
+th_obj.descrip = strvcat(th_obj.descrip,dndescrip);

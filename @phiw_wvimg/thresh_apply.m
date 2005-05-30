@@ -1,43 +1,35 @@
-function [objs] = thresh_apply(objs, th_type, th_bin, th_th)
+function [objs] = thresh_apply(objs, th_obj, dndescrip)
+% apply thresholding calculated previously 
+% FORMAT [objs] = thresh_apply(objs, th_obj, dndescrip)
+% 
+% Inputs
+% objs       - wv_img objects to apply thresholding to
+% th_obj     - thresholding wv_img object from thresh_calc
+% dndescrip  - optional denoising description string
+% 
+% Outputs
+% objs       - thresholded objects
+%
+% $Id: thresh_apply.m,v 1.2 2005/05/30 16:43:30 matthewbrett Exp $ 
 
-%             th_type - threshold application method
-%	          'hard':	Kill the coeff. under threshold
-%		  'soft':	Shrink the coeff under threshold
-%		  'linear':	Linear shrinkage
-
+if nargin < 2
+  error('Need objects to threshold and threshold object');
+end
 if nargin < 3
-  error('Need objects to threshold and threshold type');
+  dndescrip = [];
 end
-if nargin < 4
-  th_th = [];
-end
-if isempty(th_bin)
-  if ~strcmp(th_type, 'linear')
-    error('Need threshold mask to apply this threshold method');
-  end
-end
-if isempty(th_th)
-  if ~strcmp(th_type, 'hard')
-    error('Need thresholds to apply this threshold method');
-  end
-end
+
+% get whole thresholding object as image
+th_obj = doproc(th_obj);
+th_img = th_obj.img;
+clear th_obj;
 
 % apply thresholds
 for oi = 1:prod(size(objs))
-  obj(oi) = doproc(obj(oi));
-  
-  suprath = abs(stblk) >= thresh;
-  switch dninf.thapp 
-   case 'linear'
-    stblk = stblk * thresh;
-    eblk = eblk * thresh; % error thresholding
-   case 'soft'
-    gt0 = (stblk(suprath) > 0)*2-1;
-    stblk(suprath) = stblk(suprath) - gt0 * thresh;
-    stblk(~suprath) = 0;
-   case 'hard'
-    stblk(~suprath) = 0;
-   otherwise
-    error('Don''t recognize threshold application type')
-  end
+  obj = objs(oi);
+  obj = doproc(obj);
+  in_mask = isfinite(obj.img);
+  obj.img(in_mask) = obj.img(in_mask) ./ th_img(in_mask);
+  obj.descrip = strvcat(obj.descrip, dndescrip);
+  objs(oi) = obj;
 end
