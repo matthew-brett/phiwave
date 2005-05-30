@@ -5,12 +5,14 @@ function [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags)
 % Inputs
 % phiwD      - phido design object
 % connos     - vector of contrasts to write (fetched by GUI if empty)
-% flags      - flags containing none or more of
-%              n - forbids new contrasts being entered (where connos=[])
-%              t - allow t contrasts only (where connos=[])
-%              f - allow f contrasts only (where connos=[])
-%              s - allows a Single contrast only (where connos=[])
-%              c - don't write statistic images (i.e. con images only)
+% flags      - flags containing none or more of fields
+%              'no_new' - if not 0 forbids new contrasts being entered
+%              (when connos=[])  
+%              't_only' - not 0 -> allow t contrasts only (where connos=[])
+%              'f_only' - not 0 -> allow f contrasts only (where connos=[])
+%              'single' - not 0, allows a Single contrast only (where
+%              connos=[])
+%              'con_only' - don't write statistic images (i.e. con images only)
 % 
 % Returns
 % phiwD      - modified design object
@@ -24,29 +26,39 @@ function [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: write_contrasts.m,v 1.4 2005/04/20 20:22:37 matthewbrett Exp $
+% $Id: write_contrasts.m,v 1.5 2005/05/30 16:47:29 matthewbrett Exp $
 
+def_flags = struct(...
+    'no_new', 0,...
+    't_only', 0,...
+    'f_only', 0,...
+    'single', 0,...
+    'con_only', 0);
+  
 if ~is_phiw_estimated(phiwD), error('Need phiwave estimated design'); end
 changef = 0;
 if nargin < 2
   connos = [];
 end
 if nargin < 3
-  flags = '';
+  fnames = '';
+end
+if nargin < 4
+  flags = [];
 end
 rmsi = [];
 
 % flags decoding
-if isempty(flags), flags = ' '; end
-wOK = ~any(flags == 'n'); % forbid new contrasts
-if any(flags=='t')    % only F, only t flags for contrast selection
+flags = mars_struct('ffillsplit', def_flags, flags);
+wOK = flags.no_new;   % forbid new contrasts
+if flags.t_only  % only F, only t flags for contrast selection
   statstr = 'T';
-elseif any(flags=='f')
+elseif flags.f_only
   statstr = 'F';
 else
   statstr = 'T|F';
 end
-if any(flags == 's')  % only one contrast at a time
+if flags.single  % only one contrast at a time
   ncons = 1;
 else
   ncons = Inf;
@@ -55,8 +67,8 @@ end
 % get needed stuff from design
 Vbeta  = get_vol_field(phiwD, 'Vbeta');
 VResMS = get_vol_field(phiwD, 'VResMS');
-VY  = get_images(phiwD);
-xM  = masking_struct(phiwD);
+VY   = get_images(phiwD);
+xM   = masking_struct(phiwD);
 erdf = error_df(phiwD);
 M    = VY(1).mat;
 DIM  = VY(1).dim(1:3);
@@ -116,9 +128,9 @@ for ii = 1:length(I)
   %-------------------------------------------------------------------
   eidf = mars_struct('getifthere', xCon(i), 'eidf');
   if isempty(eidf)
-    X1o           = spm_FcUtil('X1o',xCon(ic),SPM.xX.xKXs);
-    [trMV,trMVMV] = spm_SpUtil('trMV',X1o,SPM.xX.V);
-    xCon(ic).eidf = trMV^2/trMVMV;
+    X1o           = spm_FcUtil('X1o',xCon(i),xX.xKXs);
+    [trMV,trMVMV] = spm_SpUtil('trMV',X1o,xX.V);
+    xCon(i).eidf = trMV^2/trMVMV;
   else
     trMV = []; trMVMV = [];
   end
@@ -219,7 +231,7 @@ for ii = 1:length(I)
   %-------------------------------------------------------------------
   Vspm = full_vol(phiwD, ...
 		  mars_struct('getifthere', xCon(i), 'Vspm'));
-  if ~any(flags=='c') & isempty(Vspm.dim)
+  if ~flags.con_only & isempty(Vspm.dim)
     
     % We're going to change the contrast structure
     changef = 1;
@@ -285,7 +297,7 @@ for ii = 1:length(I)
     fprintf('%s%30s\n',sprintf('\b')*ones(1,30),sprintf(...
 	'...written %s',spm_str_manip(Vspm.fname,'t')))  %-#
         
-  end % (if ~ flags 'c' & isemptu...)
+  end % (if ~flags.con_only & isemptu...)
   
   % Put into structure array
   xCon(i).Vspm = design_vol(phiwD, Vspm);
