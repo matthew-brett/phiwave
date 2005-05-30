@@ -16,7 +16,7 @@ function wtobj = pr_wvmask(voxmask, params, options)
 % Outputs
 % wtobj       - phiw_wvimg object with transformed mask
 % 
-% $Id: pr_wvmask.m,v 1.1 2005/04/20 15:09:08 matthewbrett Exp $
+% $Id: pr_wvmask.m,v 1.2 2005/05/30 16:48:19 matthewbrett Exp $
   
 if nargin < 1
   voxmask = spm_get(1,'img','Voxel mask');
@@ -35,7 +35,7 @@ def_struct = struct('scales',1, ...
 		    'maskthresh', 0.05, ...
 		    'datatype','uint8');
 
-params = mars_struct('fillafromb', params, def_struct);
+params = mars_struct('ffillmerge', def_struct, params);
 
 if ischar(voxmask),voxmask=spm_vol(voxmask);end
 
