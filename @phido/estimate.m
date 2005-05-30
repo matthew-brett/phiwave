@@ -10,20 +10,23 @@ function [phiwD] = estimate(phiwD, VY, params)
 %                   'wtprefix'   - prefix for wavelet transformed files
 %                      ['wv_']
 %                   'maskthresh' - threshold for mask image [0.05]
+%                   'write_res'  - flag, if not 0, writes residual images
 %
 % e.g.
 % % Estimate using images from design, lemarie wavelet
 % params = struct('scales', 4, 'wavelet', phiw_lemarie(2), ...
-%                 'wtprefix', 'wt_', 'maskthresh', 0.05); 
+%                 'wtprefix', 'wt_', 'maskthresh', 0.05, ...
+%                 'write_res', 1); 
 % pE = estimate(pD, [], params);
 % 
-% $Id: estimate.m,v 1.3 2005/04/20 15:10:33 matthewbrett Exp $
+% $Id: estimate.m,v 1.4 2005/05/30 16:46:10 matthewbrett Exp $
 
 % Default parameters
 defparams = struct('wavelet',  phiw_lemarie(2), ...
 		   'scales',   4, ...
 		   'wtprefix', 'wv_', ...
-		   'maskthresh', 0.05);
+		   'maskthresh', 0.05, ...
+		   'write_res', 1);
 
 if nargin < 2
   VY = [];
@@ -58,6 +61,9 @@ if phiw_wvimg('is_wted', VY(1))
 			   phiw_wvimg('wtinfo', VY(1)));
 end
 params = mars_struct('ffillsplit', defparams, params);
+
+% Put params into to-be-estimated design structure
+phiwD.xPhi = params;
 
 % check if files are already WT'ed, do WT if not
 phiwD = vox2wt_ana(phiwD, params);
