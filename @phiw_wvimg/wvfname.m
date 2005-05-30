@@ -1,16 +1,17 @@
 function fname = wvfname(obj)
 % wvfname - return wvol output filename
 %
-% $Id: wvfname.m,v 1.2 2004/11/18 19:05:46 matthewbrett Exp $
+% $Id: wvfname.m,v 1.3 2005/05/30 16:42:48 matthewbrett Exp $
 
 if prod(size(obj)) > 1, fname = 'object array'; return, end
 
 % try wvol fname first
-if ~isempty(obj.wvol.fname),fname = obj.wvol.fname;
-else
+fname = mars_struct('getifthere', obj, 'wvol', 'fname');
+if isempty(fname)
   % then try ovol fname 
-  fname = 'image.img';
-  if ~isempty(obj.ovol.fname),fname = obj.ovol.fname;end
+  fname = mars_struct('getifthere', obj, 'ovol', 'fname');
+  if isempty(fname), fname = 'image.img'; end
   [p f e] = fileparts(fname);
-  fname = fullfile(p,[obj.options.wtprefix f e]);
+  wtp = mars_struct('getifthere', obj, 'options', 'wtprefix');
+  fname = fullfile(p,[wtp f e]);
 end
