@@ -18,15 +18,14 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 % Vdcon      - spm vol struct for denoised image
 % Vderr      - spm vol struct for error image
 % pD         - possibly modified phido object (contrasts entereed)
-% changef    - whether the object was modified or not
+% changef    - whether the design object was modified or not
 %
 % Based on spm_getSPM from the spm99 distribution
 % (spm_getSPM, v2.35 Andrew Holmes, Karl Friston & Jean-Baptiste Poline 00/01/2)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
-% error maps added 19/11/01 - RP
 %
-% $Id: get_wdimg.m,v 1.2 2005/04/20 21:26:38 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.3 2005/05/30 16:56:16 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -41,6 +40,10 @@ if nargin < 4
   fname = '';
 end
 
+% default return values
+[Vdcon, Vderr] = deal([]);
+changef = 0;
+
 % default denoising - see comments above
 def_struct = struct(...
     'thcalc', 'stein', ...
@@ -48,7 +51,7 @@ def_struct = struct(...
     'ncalc', 'n', ...
     'alpha', 0.05);
 
-wdstruct = mars_struct('fillafromb', def_struct, wdstruct);
+wdstruct = mars_struct('ffillsplit', def_struct, wdstruct);
 
 % check if can write to current directory
 if ~swd_writable(pD)
@@ -61,7 +64,7 @@ xX     = design_structure(pD);
 
 %-Get/Compute mm<->voxel matrices & image dimensions from SPM.mat
 %-----------------------------------------------------------------------
-VY = get_images(pD);
+VY    = get_images(pD);
 M     = VY(1).mat;
 iM    = inv(M);
 DIM   = VY(1).dim(1:3);
@@ -75,7 +78,7 @@ if isempty(Ic)
 				       1, ...
 				       'Select contrast...', ...
 				       '', ...
-				       wOK);
+				       1);
 end
 
 % get filename if necessary
@@ -111,49 +114,68 @@ wverr.img = sqrt(rmsi.*(xC1.c'*xX.Bcov*xC1.c));
 
 % do wavelet denoise/inversion
 %=======================================================================
-% denoising (which also removes NaNs)
-fprintf('\t%-32s: %30s','Wavelet image','...denoising')         %-#
+% calculate denoising (which also removes NaNs)
 statinf = struct('stat','T','df',edf(2));
-[wvcond th_img] = denoise(wvcon, statinf, wdstruct);
+fprintf('\t%-32s: %30s','Wavelet image','...calculate denoising')         %-#
+[th_obj, dndescrip] = thresh_calc(wvcon, wverr, statinf, wdstruct);
 fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
 
-% default error map return
-Vderr = [];
-
 % check there is still some signal
-if all(wvcond(:)==0)
+if all_null(th_obj)
   warning('No wavelet coefficients survive thresholding')
-  Vdcon = [];
   return
 end
 
+% Apply thresholding to contrast image 
+wvcond = thresh_apply(wvcon, th_obj, dndescrip);
+
 % inverse wavelet transform and save denoised image
+d_swd = swd(pD);
 Vdcon = struct(...
-    'fname',  fullfile(swd,fname),...
+    'fname',  fullfile(d_swd,fname),...
     'dim',    [1 1 1,16],...
     'mat',    wave.ovol.mat,...
     'pinfo',  [1,0,0]',...
     'descrip',sprintf('PhiWave{%c} - %s',...
-		      xC1.STAT,str));
+		      xC1.STAT,xC1.name));
 Vdcon = write_iwtimg(wvcond,Vdcon);
 fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
 
 % Write description into text file
 write_descrip(wvcond,Vdcon);
 
-% Create error map, if we have used linear thresholding
-if strcmp(wdstruct.thapp, 'linear') & 0 % return to this later **
-  [pn fn ext] = fileparts(fname);
-  efname = fullfile(pn, ['err_' fn ext]);
-  % inverse wavelet transform and save error image
+% Create error map, if we have saved residuals
+VResI = get_vol_field(pD, 'VResI');
+if ~isempty(VResI)
+  % Quite a lot of work to do here
+  nScan = prod(size(VResI));
+  oi = oimgi(wave);
+  odim = diff(oi)+1;
+  err_img = zeros(odim);
+  sum_img = err_img;
+  tmp = as_matrix(wvcond);
+  out_msk = isnan(tmp);
+  for i = 1:nScan
+    obj = phiw_wvimg(VResI(i), [], wave);
+    img = as_matrix(obj);
+    img(out_msk) = 0;
+    img = invert(img, wave.wavelet, wave.scales, oi);
+    sum_img = sum_img + img;
+    err_img = err_img + img .^2;
+  end
+  xX = design_structure(pD);
+  err_img = (err_img - (sum_img .^2 / nScan)) / xX.trRV;
+  
+  % save error image
+  efname = fullfile(d_swd, ['err_' fname]);
   Vderr = struct(...
-      'fname',  fullfile(swd,efname),...
-      'dim',    [1 1 1,16],...
+      'fname',  fullfile(d_swd,efname),...
+      'dim',    [odim,16],...
       'mat',    wave.ovol.mat,...
       'pinfo',  [1,0,0]',...
       'descrip',sprintf('PhiWave{%c} - error:%s',...
-			xC1.STAT,str));
-  Vderr = write_iwtimg(wverr,Vderr);
+			xC1.STAT,xC1.name));
+  Vderr = spm_write_vol(Vderr, err_img);
   fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
 end
 return
