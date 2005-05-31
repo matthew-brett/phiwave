@@ -50,7 +50,7 @@ function [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: thresh_calc.m,v 1.2 2005/05/30 16:43:30 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.3 2005/05/31 00:50:39 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least top and bottom of t statistic, sorry');
@@ -229,7 +229,7 @@ for li = 1:length(l)
      case 'linear'
       thblk = stblk * thresh;
      case 'soft'
-      thblk = sign(stblk) .* max(0,(abs(stblk)-thresh))
+      thblk = sign(stblk) .* max(0,(abs(stblk)-thresh));
      case 'hard'
       thblk = stblk;
       thblk(abs(thblk) < thresh) = 0;
