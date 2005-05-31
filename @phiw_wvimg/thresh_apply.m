@@ -10,7 +10,7 @@ function [objs] = thresh_apply(objs, th_obj, dndescrip)
 % Outputs
 % objs       - thresholded objects
 %
-% $Id: thresh_apply.m,v 1.2 2005/05/30 16:43:30 matthewbrett Exp $ 
+% $Id: thresh_apply.m,v 1.3 2005/05/31 00:49:20 matthewbrett Exp $ 
 
 if nargin < 2
   error('Need objects to threshold and threshold object');
@@ -29,7 +29,7 @@ for oi = 1:prod(size(objs))
   obj = objs(oi);
   obj = doproc(obj);
   in_mask = isfinite(obj.img);
-  obj.img(in_mask) = obj.img(in_mask) ./ th_img(in_mask);
+  obj.img(in_mask) = obj.img(in_mask) .* th_img(in_mask);
   obj.descrip = strvcat(obj.descrip, dndescrip);
   objs(oi) = obj;
 end
