@@ -1,24 +1,23 @@
-function [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags) 
-% Writes contrast and statistic images
-% FORMAT [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags) 
+function [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags) 
+% Writes contrast and maybe statistic images
+% FORMAT [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags)
 % 
 % Inputs
 % phiwD      - phido design object
 % connos     - vector of contrasts to write (fetched by GUI if empty)
 % flags      - flags containing none or more of fields
 %              'no_new' - if not 0 forbids new contrasts being entered
-%              (when connos=[])  
+%                 (when connos=[])  
 %              't_only' - not 0 -> allow t contrasts only (where connos=[])
 %              'f_only' - not 0 -> allow f contrasts only (where connos=[])
 %              'single' - not 0, allows a Single contrast only (where
-%              connos=[])
+%                 connos=[])
 %              'con_only' - don't write statistic images (i.e. con images only)
 % 
 % Returns
 % phiwD      - modified design object
 % connos     - vector of contrast numbers (as input, or from GUI)
 % changef    - set to 1 is phiwD object has changed
-% rmsi       - residual mean squared image as 3D matrix
 %
 % Based (very) closely on spm_getSPM from the spm99 distribution
 % (spm_getSPM, v2.35 Andrew Holmes, Karl Friston & Jean-Baptiste Poline
@@ -26,7 +25,7 @@ function [phiwD, connos, changef, rmsi] = write_contrasts(phiwD, connos, flags)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: write_contrasts.m,v 1.5 2005/05/30 16:47:29 matthewbrett Exp $
+% $Id: write_contrasts.m,v 1.6 2005/05/31 23:59:48 matthewbrett Exp $
 
 def_flags = struct(...
     'no_new', 0,...
@@ -310,14 +309,6 @@ for ii = 1:length(I)
 end % (for ii = 1:length(I))
 
 spm_progress_bar('Set',100)                                          %-#
-
-% Read Residual mean squared image if necessary
-if nargout > 4 & isempty(rmsi)
-  fprintf('\t%-32s: %30s','ResMS file...','...done');
-  rmsi = spm_read_vols(VResMS);
-  fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
-  rmsi(abs(rmsi)<eps) = NaN;
-end
 
 %- put contrasts back into design
 %=======================================================================
