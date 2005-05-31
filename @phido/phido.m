@@ -40,7 +40,7 @@ function [o, others] = phido(params, others, passf)
 % constructor with passf set to 0 in order for the constructor merely to
 % make a phido object, without passing back to the other classes. 
 % 
-% $Id: phido.m,v 1.8 2005/04/06 22:36:49 matthewbrett Exp $
+% $Id: phido.m,v 1.9 2005/05/31 11:11:32 matthewbrett Exp $
 
 myclass = 'phido';
 cvs_v   = mars_cvs_version(myclass);
@@ -91,7 +91,9 @@ if passf
    case 'spm99'
     [o others] = phido_99(mardo_o, others, o);
    case 'spm2'
-    [o others] = phido_2(mardo_o, others, o);
+    % [o others] = phido_2(mardo_o, others, o);
+    mardo_o = mardo_99(mardo_o);
+    [o others] = phido_99(mardo_o, others, o);
   end
 end
 
