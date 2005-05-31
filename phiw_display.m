@@ -1,24 +1,24 @@
-function phiw_display(action, disptype, vols, phiw, defyn)
+function phiw_display(action, disp_type, vols, phiw, defyn)
 % displays activation image on structural image
-% FORMAT phiw_display(action, disptype, vols, phiw, defyn)
+% FORMAT phiw_display(action, disp_type, vols, phiw, defyn)
 %
 % Inputs [default]
-% action          - 'display' or 'orthcb'
-% disptype        - 'orth' orthoviews or 'slices' slice view ['orth']
+% action          - 'display' or 'orthcb' ['display']
+% disp_type       - 'orth' orthoviews or 'slices' slice view [GUI]
 % vols            - string or struct for either: activation image or
 %                   structural image followed by activation image [GUI]
-% phiw            - struct with various display defaults [PHI]
-% defyn           - flag, if set, use all default display settings [1]
+% phiw            - struct with various display defaults [PHI.OPTIONS]
+% defyn           - flag, if set, use all default display settings [GUI]
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.4 2005/04/20 20:21:39 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.5 2005/05/31 23:49:14 matthewbrett Exp $
   
 if nargin < 1
   action = 'display';
 end
 if nargin < 2
-  distype = 'orth';
+  disp_type = [];
 end
 if nargin < 3
   vols = [];
@@ -30,13 +30,27 @@ if nargin < 5
   defyn = [];
 end
 
+phiw_global = spm('getglobal', 'PHI');
+phiw = mars_struct('ffillsplit', ...
+		   mars_struct('getifthere', phiw_global, 'OPTIONS'), ...
+		   phiw);
+
 switch lower(action)
 case 'display'
-disptype = lower(disptype);
-if ~ismember(disptype, {'orth', 'slices'})
+[Finter,Fgraph,CmdLine] = spm('FnUIsetup','Display functional image');
+dist_opts = {'slices', 'orth'};
+  
+if isempty(disp_type)
+  tmp = spm_input('Display image', 1, 'b', ...
+		  'Slices|Sections|Cancel', [1 2 0], 1);
+  if ~tmp, return, end
+  disp_type = dist_opts{tmp};
+end
+
+disp_type = lower(disp_type);
+if ~ismember(disp_type, dist_opts)
   error('Don''t recognize display type');
 end
-phiw = phiw_options('fill',phiw, spm('getglobal', 'PHI'));
 if isempty(vols)
   vols = spm_get(1, 'img', 'Activation image to display');
 end
@@ -49,8 +63,6 @@ else
   structv = [];
 end
 
-[Finter,Fgraph,CmdLine] = spm('FnUIsetup','Display functional image');
-  
 cmap=[];
 if isempty(defyn)
   defyn = spm_input('Display type', '+1', 'b', 'Default|Custom', [1 0], 1);
@@ -65,16 +77,16 @@ if ~defyn
     end
   end
   if ~isempty(structv)
-    [mx mn] = slice_overlay('volmaxmin', structv);
-    phiw.structural.range = spm_input('Img range for structural','+1', 'e', [mn mx], ...
-		       2);
+    [mx mn] = slover('volmaxmin', structv);
+    phiw.structural.range = spm_input('Img range for structural','+1', ...
+				      'e', [mn mx], 2);
   end
   tmp = spm_input('Colormap for contrast', '+1', 'b', 'Default|Custom', ...
 		  [0 1], 1);
   if tmp
     ypos = spm_input('!NextPos');
     while isempty(cmap)
-      [cmap w]= slice_overlay('getcmap',...
+      [cmap w]= slover('getcmap',...
 			      spm_input('Activation colormap',ypos,'s', ...
 					phiw.display.cmapname));
       if isempty(cmap), disp(w);end
@@ -83,7 +95,7 @@ if ~defyn
   phiw.display.actprop = spm_input('Activation intensity',...
 		      '+1', 'e',phiw.display.actprop);
 
-  if strcmp(disptype, 'slices')
+  if strcmp(disp_type, 'slices')
     phiw.display.transform = deblank(spm_input('Image orientation', '+1', ...
 				     ['Axial|Coronal|Sagittal'], ...
 				     strvcat('axial','coronal', ...
@@ -97,7 +109,7 @@ if ~defyn
   end
 else % if defyn==1
   if ~isempty(structv)
-    [mx mn] = slice_overlay('volmaxmin', structv);
+    [mx mn] = slover('volmaxmin', structv);
     phiw.structural.range = [mn mx];  
   end
 end
@@ -105,11 +117,11 @@ if isempty(structv)
   structv = spm_vol(phiw.structural.fname);
 end
 if isempty(cmap)
-  cmap = slice_overlay('getcmap', phiw.display.cmapname);
+  cmap = slover('getcmap', phiw.display.cmapname);
 end
 
 % Range for cmap
-[mx mn] = slice_overlay('volmaxmin', actvol);
+[mx mn] = slover('volmaxmin', actvol);
 amx = max(abs([mx mn]));
 range = [-amx amx];
 promptstr = sprintf('Range for cmap %0.2f:%0.2f',mn,mx); 
@@ -119,7 +131,7 @@ while ~finf
   finf = diff(range);
 end
 
-switch lower(disptype)
+switch lower(disp_type)
  case 'orth'
   global st
   spm_image('init', structv.fname);
@@ -127,27 +139,27 @@ switch lower(disptype)
 		range(2), range(1));
   st.callback = 'phiw_display(''orthcb'');';
  case 'slices'
-  clear global SO
-  global SO
-  SO.img(2) = struct(...
-      'type', 'truecolour',...
-      'prop', 1-phiw.display.actprop,...
-      'range', phiw.structural.range,...
-      'vol', structv,...
-      'cmap', gray);
-  SO.img(1) = struct(...
+  o = slover;
+  img(1) = struct(...
       'type', 'truecolour',...
       'prop', phiw.display.actprop,...
       'range', range,...
       'vol', actvol,...
       'cmap', cmap);
-  SO.cbar = 1;
-  SO.slices=phiw.display.slices;
-  SO.transform=phiw.display.transform;
+  img(2) = struct(...
+      'type', 'truecolour',...
+      'prop', 1-phiw.display.actprop,...
+      'range', phiw.structural.range,...
+      'vol', structv,...
+      'cmap', gray);
+  o.img = img;
+  o.cbar = 1;
+  o.slices=phiw.display.slices;
+  o.transform=phiw.display.transform;
 
   % use SPM figure window, and display
-  SO.figure = spm_figure('GetWin', 'Graphics'); 
-  slice_overlay;
+  o.figure = spm_figure('GetWin', 'Graphics'); 
+  o = paint(o);
  
  otherwise
   error('Don''t recognize display type');
