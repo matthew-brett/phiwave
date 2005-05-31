@@ -9,9 +9,12 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %              contrasts should be in orthogonalization order
 % wdstruct   - structure with info for wavelet denoising.  Fields are:
 %              'thcalc' - wavelet denoising type ['stein']
-%              'thapp' - form of wavelet denoising ['linear']
-%              'ncalc' - null hypothesis calculation ['n']
-%              'alpha' - alpha for t etc Bonferroni etc correction [0.05]
+%              'thapp'  - form of wavelet denoising ['linear']
+%              'ncalc'  - null hypothesis calculation ['n']
+%              'alpha'  - alpha for t etc Bonferroni etc correction [0.05]
+%              't2z'    - if not 0, does T to Z transform on t data
+%              'no_err' - if not 0, supresses writing of error image 
+%
 % fname      - filename for denoised image [via GUI]
 %
 % Returns
@@ -25,7 +28,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.4 2005/05/30 17:01:53 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.5 2005/05/31 00:52:25 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -49,7 +52,9 @@ def_struct = struct(...
     'thcalc', 'stein', ...
     'thapp', 'linear', ...
     'ncalc', 'n', ...
-    'alpha', 0.05);
+    'alpha', 0.05,...
+    't2z', 0, ...
+    'no_err', 0);
 
 wdstruct = mars_struct('ffillsplit', def_struct, wdstruct);
 
@@ -116,6 +121,7 @@ wverr.img = sqrt(rmsi.*(xC1.c'*xX.Bcov*xC1.c));
 %=======================================================================
 % calculate denoising (which also removes NaNs)
 statinf = struct('stat','T','df',edf(2));
+if wdstruct.t2z, statinf.stat = 'TZ'; end
 fprintf('\t%-32s: %30s','Wavelet image','...calculate denoising')         %-#
 [th_obj, dndescrip] = thresh_calc(wvcon, wverr, statinf, wdstruct);
 fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
@@ -146,7 +152,7 @@ write_descrip(wvcond,Vdcon);
 
 % Create error map, if we have saved residuals
 VResI = get_vol_field(pD, 'VResI');
-if ~isempty(VResI)
+if ~isempty(VResI) & ~wdstruct.no_err
   % Quite a lot of work to do here
   nScan = prod(size(VResI));
   oi = oimgi(wave);
@@ -155,6 +161,7 @@ if ~isempty(VResI)
   sum_img = err_img;
   tmp = as_matrix(wvcond);
   out_msk = isnan(tmp);
+  clear tmp
   for i = 1:nScan
     obj = phiw_wvimg(VResI(i), [], wave);
     img = as_matrix(obj);
@@ -176,6 +183,6 @@ if ~isempty(VResI)
       'descrip',sprintf('PhiWave{%c} - error:%s',...
 			xC1.STAT,xC1.name));
   Vderr = spm_write_vol(Vderr, err_img);
-  fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
+  fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done');
 end
 return
