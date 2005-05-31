@@ -19,7 +19,7 @@ function [phiwD] = estimate(phiwD, VY, params)
 %                 'write_res', 1); 
 % pE = estimate(pD, [], params);
 % 
-% $Id: estimate.m,v 1.4 2005/05/30 16:46:10 matthewbrett Exp $
+% $Id: estimate.m,v 1.5 2005/05/31 00:51:26 matthewbrett Exp $
 
 % Default parameters
 defparams = struct('wavelet',  phiw_lemarie(2), ...
@@ -62,12 +62,13 @@ if phiw_wvimg('is_wted', VY(1))
 end
 params = mars_struct('ffillsplit', defparams, params);
 
-% Put params into to-be-estimated design structure
-phiwD.xPhi = params;
-
 % check if files are already WT'ed, do WT if not
 phiwD = vox2wt_ana(phiwD, params);
 
 % Do estimation
 phiwD = estimate_wted(phiwD, params);
 
+% Put params into design structure
+SPM = des_struct(phiwD);
+SPM.xPhi = mars_struct('fillafromb', SPM.xPhi, params);
+phiwD = des_struct(phiwD, SPM);
