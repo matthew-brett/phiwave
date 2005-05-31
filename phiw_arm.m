@@ -5,7 +5,7 @@ function varargout = phiw_arm(action, varargin)
 % This only to make the marsbar.m code prettier
 % See the help for the marmoire object for details
 % 
-% $Id: phiw_arm.m,v 1.1 2004/09/14 03:37:17 matthewbrett Exp $
+% $Id: phiw_arm.m,v 1.2 2005/05/31 23:37:17 matthewbrett Exp $
 
 global PHI
 if ~isfield(PHI, 'ARMOIRE')
@@ -37,8 +37,25 @@ switch lower(action)
   [varargout{1} o] = save_item_data_ui(o, varargin{:});
  case 'isempty'
   varargout{1} = isempty_item_data(o, varargin{:});
+ case 'item_exists'
+  varargout{1} = item_exists(o, varargin{:});
+ case 'show_summary'
+  if nargin < 2, error('Need item name'); end
+  item_name = varargin{1};
+  if ~item_exists(o, item_name)
+    error(['What is ' item_name '?']);
+  end
+  if phiw_arm('isempty', item_name)
+    S = {'[Empty]'};
+  else
+    S  = summary(get_item_data(o, item_name));
+    fn = get_item_param(o, item_name, 'file_name');
+    if isempty(fn), fn = '[Not set]'; end
+    S  = [{['Filename: ' fn]} S];
+  end  
+  mars_utils('graphic_text', S, get_item_param(o, item_name, 'title'));
  otherwise
-  error('Weird');
+  error(['Weird: ' action]);
 end
 
 PHI.ARMOIRE = o;
