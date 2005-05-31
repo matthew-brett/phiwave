@@ -15,7 +15,7 @@ function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.5 2005/04/20 21:25:54 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.6 2005/05/31 23:56:24 matthewbrett Exp $
   
 if nargin < 1
   optstr = 'load';
@@ -26,8 +26,9 @@ end
 if nargin < 3
   cfg_fname = '';
 end
-if isempty(phiw), phiw = spm('getglobal','PHI'); end
-
+if isempty(phiw)
+  phiw = mars_struct('getifthere', spm('getglobal','PHI'), 'OPTIONS');
+end
 msgstr = '';
 
 % fields, and descriptions of fields, in phiw options structure
@@ -100,8 +101,9 @@ switch lower(optstr)
   % alpha for t etc Bonferroni etc correction
   phiw.denoise.alpha = 0.05;
   
-  % default structural image for display
-  phiw.structural.fname = fullfile(spm('Dir'), 'canonical', 'avg152T1.img');
+    % default structural image for display
+  phiw.structural.fname = fullfile(spm('Dir'), 'canonical', ...
+				   ['avg152T1' mars_veropts('template_ext')]);
   
   % range for structural
   phiw.structural.range = [0 400000];
@@ -116,7 +118,7 @@ switch lower(optstr)
   phiw.display.transform = 'axial';
   
   % default slices to display (mm)
-  phiw.display.slices = -66:6:78;
+  phiw.display.slices = -60:6:78;
 
   % --------------------------------------------------
  case 'edit'
@@ -217,8 +219,9 @@ switch lower(optstr)
 
     % display stuff - default structural scan
    case 'structural'
-    phiw.structural.fname = spm_get(1, 'img', 'Default structural image', ...
-			       fileparts(phiw.structural.fname));
+    phiw.structural.fname = spm_get(1, mars_veropts('get_img_ext'),...
+				    'Default structural image', ...
+				    fileparts(phiw.structural.fname));
     
     % intensity range for structural
     [mx mn] = slice_overlay('volmaxmin', spm_vol(phiw.structural.fname));
