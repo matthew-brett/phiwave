@@ -28,7 +28,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.5 2005/05/31 00:52:25 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.6 2005/05/31 11:11:01 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -159,13 +159,20 @@ if ~isempty(VResI) & ~wdstruct.no_err
   odim = diff(oi)+1;
   err_img = zeros(odim);
   sum_img = err_img;
-  tmp = as_matrix(wvcond);
-  out_msk = isnan(tmp);
-  clear tmp
+    
+  % get whole thresholding object as image, find mask
+  th_img = as_matrix(th_obj);
+  tmp = isfinite(th_img) & ~(th_img == 0);
+  in_mask = find(tmp);
+  out_mask = find(~tmp);
+  th_img = th_img(in_mask);
+  clear th_obj tmp;
+
   for i = 1:nScan
     obj = phiw_wvimg(VResI(i), [], wave);
     img = as_matrix(obj);
-    img(out_msk) = 0;
+    img(out_mask) = 0;
+    img(in_mask) = img(in_mask) .* th_img;
     img = invert(img, wave.wavelet, wave.scales, oi);
     sum_img = sum_img + img;
     err_img = err_img + img .^2;
