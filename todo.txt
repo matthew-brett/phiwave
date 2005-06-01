@@ -1,3 +1,2 @@
-SPM2 compatibility!
-Add back slice_overlay functions
-Check on compilation
+Better SPM2 compatibility, maybe
+Check end.m in phiw_wvimg, looks odd to me
