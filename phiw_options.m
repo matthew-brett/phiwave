@@ -5,8 +5,8 @@ function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 % Input [default]
 % optstr            - option string: one of
 %                     'load','save','edit','defaults','basedefaults','fill'
-%                     [load]  
-% phiw              - phiwave options structure [PHI]
+%                     ['load']  
+% phiw              - phiwave options structure [PHI.OPTIONS]
 % cfg_fname         - filename for configuration file [GUI]
 % 
 % Output
@@ -15,7 +15,7 @@ function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.6 2005/05/31 23:56:24 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.7 2005/06/01 09:35:51 matthewbrett Exp $
   
 if nargin < 1
   optstr = 'load';
