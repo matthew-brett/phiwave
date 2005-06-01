@@ -50,7 +50,7 @@ function [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: thresh_calc.m,v 1.4 2005/06/01 00:06:10 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.5 2005/06/01 09:24:23 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least top and bottom of t statistic, sorry');
@@ -179,7 +179,7 @@ for li = 1:length(l)
     
     % calculate statistic and p values
     if pvalf
-      if stat == 'T'
+      if strcmp(stat, 'T')
 	pblk = spm_Tcdf(-abs(stblk),df)*2;
       else
 	pblk = spm_Ncdf(-abs(stblk))*2;
@@ -213,16 +213,16 @@ for li = 1:length(l)
      case 'visu'
       thresh = sqrt(2*log(n));
      case 'bonf'
-      if stat == 'T'
+      if strcmp(stat,'T')
 	thresh = -spm_invTcdf(alpha/2/n,df);
       else
 	thresh = -spm_invNcdf(alpha/2/n);
       end
      case 'hoch'
-      H = hoch(pblk,alpha,n,1);
+      H = pr_hoch(pblk,alpha,n,1);
       thresh = min([Inf,min(abs(stblk(pidx(logical(H)))))]);
      case 'fdr'
-      H = fdr(pblk,alpha,n,1);
+      H = pr_fdr(pblk,alpha,n,1);
       thresh = min([Inf,min(abs(stblk(pidx(logical(H)))))]);
      otherwise 
       error('Don''t recognize threshold calculation')
