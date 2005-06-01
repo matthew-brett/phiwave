@@ -12,7 +12,7 @@ function phiw_display(action, disp_type, vols, phiw, defyn)
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.5 2005/05/31 23:49:14 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.6 2005/06/01 10:57:22 matthewbrett Exp $
   
 if nargin < 1
   action = 'display';
@@ -115,6 +115,10 @@ else % if defyn==1
 end
 if isempty(structv)
   structv = spm_vol(phiw.structural.fname);
+  if isempty(phiw.structural.range)
+    [mx mn] = slover('volmaxmin', structv);
+    phiw.structural.range = [mn mx];  
+  end    
 end
 if isempty(cmap)
   cmap = slover('getcmap', phiw.display.cmapname);

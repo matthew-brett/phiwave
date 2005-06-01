@@ -15,7 +15,7 @@ function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 %
 % Matthew Brett 20/10/00,2/6/01
 %
-% $Id: phiw_options.m,v 1.8 2005/06/01 10:34:31 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.9 2005/06/01 10:57:22 matthewbrett Exp $
   
 if nargin < 1
   optstr = 'load';
@@ -105,8 +105,8 @@ switch lower(optstr)
   phiw.structural.fname = fullfile(spm('Dir'), 'canonical', ...
 				   ['avg152T1' mars_veropts('template_ext')]);
   
-  % range for structural
-  phiw.structural.range = [0 400000];
+  % range for structural (empty means set from image range)
+  phiw.structural.range = [];
   
   % name of default activation colormap for display routines
   phiw.display.cmapname = 'flow.lut';
@@ -245,7 +245,7 @@ switch lower(optstr)
     % intensity range for structural
     [mx mn] = slover('volmaxmin', spm_vol(phiw.structural.fname));
     phiw.structural.range = spm_input('Img range for structural','+1', ...
-				      'e', [mn mx],2);
+				      'e', [mn mx], 2);
     
     % display stuff - color overlays
    case 'display'
