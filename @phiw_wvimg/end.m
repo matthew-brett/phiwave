@@ -7,7 +7,7 @@ function e = end(obj,K,N)
 % For three, (wvimg(2, 5, 10)) the voxel value is returned for the
 % contained object.
 %
-% $Id: end.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: end.m,v 1.2 2005/06/01 09:28:27 matthewbrett Exp $
 
 if N == 3
   % img case
@@ -15,5 +15,5 @@ if N == 3
 elseif K == 1  % levels 
   e = obj.scales+1;
 else  % two indices, K == 2 -> quadrants
-  e = 2^ndims2(obj.wvol.dim(1:3))-1;
+  e = 2^3-1;
 end
