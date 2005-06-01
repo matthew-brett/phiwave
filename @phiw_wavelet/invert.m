@@ -11,14 +11,14 @@ function data = invert(wimg, w, scales, oimgi)
 % Output
 % data    - wavelet inverted data, in resized data matrix if necessary
 %
-% $Id: invert.m,v 1.2 2005/04/20 15:18:23 matthewbrett Exp $
+% $Id: invert.m,v 1.3 2005/06/01 09:29:59 matthewbrett Exp $
  
 if nargin < 4
   oimgi = []; % do not reembed in original matrix
 end
 
 wdims = size(wimg);
-numdims = ndims2(wdims);
+numdims = pr_ndims2(wdims);
 
 % interting transform
 levs = levels(w, wdims, scales);
@@ -31,7 +31,7 @@ wimg = iwtnd(wimg, RH, RG, scales);
 
 % restore to original dimensions as necessary
 if ~isempty(oimgi)
-  data = subsref(wimg,lims2subs(oimgi));
+  data = subsref(wimg, phiw_lims('subs', oimgi));
 else
   data = wimg;
 end

@@ -10,14 +10,14 @@ function [wimg, oimgi] = transform(data, w, scales)
 % oimgi   - index limits to retrieve original data from (inverted) wimg
 %           matrix
 %
-% $Id: transform.m,v 1.3 2004/11/18 19:03:11 matthewbrett Exp $
+% $Id: transform.m,v 1.4 2005/06/01 09:29:59 matthewbrett Exp $
   
 % embed data in appropriate size matrix for wt
 [newdims oimgi] = inp2out(w, size(data));
 wimg = zeros(newdims);
-numdims = ndims2(newdims);
+numdims = pr_ndims2(newdims);
 % do assign in funny way to generalize for dimensions
-wimg = subsasgn(wimg, lims2subs(oimgi), data);
+wimg = subsasgn(wimg, phiw_lims('subs', oimgi), data);
   
 % transform
 levs = levels(w, newdims, scales);
