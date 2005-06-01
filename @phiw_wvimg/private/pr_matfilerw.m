@@ -1,7 +1,7 @@
-function mfcells = matfilerw(mfimgs, varargin)
+function mfcells = pr_matfilerw(mfimgs, varargin)
 % gets / sets parameters from / to mat file(s)
-% FORMAT mfcells = matfilerw(mfimgs, mfvnames, mfvvals) OR
-% FORMAT mfcells = matfilerw(mfimgs, mfstruct) 
+% FORMAT mfcells = pr_matfilerw(mfimgs, mfvnames, mfvvals) OR
+% FORMAT mfcells = pr_matfilerw(mfimgs, mfstruct) 
 %
 % mfimgs can be filenames of images, or mat files, or vol structs
 % mfvnames is cell array containing names of variables to save
@@ -22,7 +22,7 @@ function mfcells = matfilerw(mfimgs, varargin)
 %
 % Matthew Brett 20/10/00
 %
-% $Id: matfilerw.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: pr_matfilerw.m,v 1.1 2005/06/01 09:26:53 matthewbrett Exp $
   
 if nargin < 1
   error('Need image / mat file name(s), +/- params to add')

@@ -1,7 +1,7 @@
 function wave = putwave(vol,wave)
 % putwave - associates wave object with mat file
 %
-% $Id: putwave.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: putwave.m,v 1.2 2005/06/01 09:26:53 matthewbrett Exp $
 
 if nargin < 2
   error('Need vol and wave as args');
@@ -11,4 +11,4 @@ if ~ischar(vol), return, end
 if ~isa(wave,'phiw_wvimg')
   error('Need phiw_wvimg as input');
 end
-matfilerw(vol,'wave',wave);
+pr_matfilerw(vol,'wave',wave);
