@@ -1,7 +1,7 @@
 function [blks, subs, sz] = procsubs(wvlt,imsz,scales,subs)
 % procsubs - returns elements and processed subs arg for indexing
 %
-% $Id: procsubs.m,v 1.1 2004/06/25 15:20:44 matthewbrett Exp $
+% $Id: procsubs.m,v 1.2 2005/06/01 09:32:34 matthewbrett Exp $
 
 if nargin < 4
   error('Need four args')
@@ -39,5 +39,5 @@ end
 bno = length(blks);
 sz = zeros(bno,1);
 for b = 1:bno
-  sz(b) = lims2sz(blks{b});
+  sz(b) = phiw_lims('size', blks{b});
 end

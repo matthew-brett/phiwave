@@ -1,7 +1,7 @@
 function R = subsref(obj, s)
 %SUBSREF Method to overload subscripted references
 %
-% $Id: subsref.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: subsref.m,v 1.2 2005/06/01 09:32:34 matthewbrett Exp $
 
 if nargin < 2
   error('Crazy no of args')
@@ -47,7 +47,7 @@ switch s(1).type
   iR = 1;
   for b = 1:length(blks)
     e = iR + sz(b);
-    R(iR:e-1) = subsref(obj.img, lims2subs(blks{b}));
+    R(iR:e-1) = subsref(obj.img, phiw_lims('subs', blks{b}));
     iR = e;
   end
 end

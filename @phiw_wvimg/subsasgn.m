@@ -1,7 +1,7 @@
 function obj = subsasgn(obj, s, rhs)
 %SUBSASGN  Method to overload subsasgn for phiw_wvimg object
 %
-% $Id: subsasgn.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: subsasgn.m,v 1.2 2005/06/01 09:32:34 matthewbrett Exp $
 
 if nargin < 3
   error('Crazy no of args')
@@ -60,8 +60,10 @@ switch s(1).type
   iR = 1;
   for b = 1:length(blks)
     e = iR + sz(b);
-    obj.img = subsasgn(obj.img, lims2subs(blks{b}), ...
-		       reshape(rhs(iR:e-1),lims2dims(blks{b})));
+    obj.img = subsasgn(obj.img, phiw_lims('subs', blks{b}), ...
+		       reshape(...
+			   rhs(iR:e-1),...
+			   phiw_lims('dims', blks{b})));
     iR = e;
   end
 end

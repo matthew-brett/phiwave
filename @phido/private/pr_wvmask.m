@@ -16,7 +16,7 @@ function wtobj = pr_wvmask(voxmask, params, options)
 % Outputs
 % wtobj       - phiw_wvimg object with transformed mask
 % 
-% $Id: pr_wvmask.m,v 1.2 2005/05/30 16:48:19 matthewbrett Exp $
+% $Id: pr_wvmask.m,v 1.3 2005/06/01 09:32:34 matthewbrett Exp $
   
 if nargin < 1
   voxmask = spm_get(1,'img','Voxel mask');
@@ -60,7 +60,7 @@ for l = 1:params.scales+1
     % at top level -> only one quadrant
     nquads = 2;
   end
-  dims = lims2dims(qs{l}{1});
+  dims = phiw_lims('dims', qs{l}{1});
   for q = 1:nquads-1
     dblk = reshape(wtobj(l,q),dims);
     wtobj(l,q) = pr_expand(dblk,ex);
