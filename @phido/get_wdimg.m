@@ -7,14 +7,18 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 % Ic         - vector of contrast numbers defining statistic image [GUI]
 %              if length(Ic)>1 = conjunction. In this case the
 %              contrasts should be in orthogonalization order
-% wdstruct   - structure with info for wavelet denoising.  Fields are:
+% wdstruct   - structure with info for wavelet denoising.  
+%              Most fields are passed directly to the thresh_calc
+%              routine, see that routine for detailed comments.
+%              Fields are:
+%              'levels' - levels to calulcate / apply  thresholding [](=all)
+%              'thlev'  - level at which to apply threshold ['level']             
 %              'thcalc' - wavelet denoising type ['stein']
 %              'thapp'  - form of wavelet denoising ['linear']
 %              'ncalc'  - null hypothesis calculation ['n']
 %              'alpha'  - alpha for t etc Bonferroni etc correction [0.05]
-%              't2z'    - if not 0, does T to Z transform on t data
-%              'no_err' - if not 0, supresses writing of error image 
-%
+%              't2z'    - if not 0, does T to Z transform on T data [0]
+%              'no_err' - if not 0, supresses writing of error image [0]
 % fname      - filename for denoised image [via GUI]
 %
 % Returns
@@ -28,7 +32,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.6 2005/05/31 11:11:01 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.7 2005/06/01 00:01:58 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -49,9 +53,12 @@ changef = 0;
 
 % default denoising - see comments above
 def_struct = struct(...
+    'levels', [], ...
+    'thlev','level',...
     'thcalc', 'stein', ...
     'thapp', 'linear', ...
     'ncalc', 'n', ...
+    'varpoolf',0,...
     'alpha', 0.05,...
     't2z', 0, ...
     'no_err', 0);
@@ -93,6 +100,7 @@ if isempty(fname)
   str  = sprintf('con%04d_%s',Ic,xCon(Ic).name);
   fname = spm_input('Filename for contrast', 1, 's', ...
 		    ['phiw_' mars_utils('str2fname',str)]);
+  if isempty(fname), return, end
 end
 Qdir = spm_str_manip(fname,'Hv');
 fname = [spm_str_manip(fname,'stv'),'.img'];
@@ -102,7 +110,7 @@ end
 
 % write con and statistic images
 %=======================================================================
-[pD, Ic, changef, rmsi] = write_contrasts(pD, Ic);
+[pD, Ic, changef] = write_contrasts(pD, Ic);
 
 % get contrasts 
 if changef, xCon = get_contrasts(pD); end
@@ -110,12 +118,17 @@ xC1  = xCon(Ic);
 erdf = error_df(pD);
 edf   = [xC1.eidf erdf];
 
-% get contrast and error image
+% get contrast image
 wave = get_wave(pD);
 wvcon = phiw_wvimg(xC1.Vcon,struct('noproc',0), wave);
+
+% get and process error image
 VResMS = get_vol_field(pD, 'VResMS');
-wverr = phiw_wvimg(VResMS,struct('noproc',1), wave);
-wverr.img = sqrt(rmsi.*(xC1.c'*xX.Bcov*xC1.c));
+wverr = phiw_wvimg(VResMS,[], wave);
+rmsi = as_matrix(wverr);
+rmsi(abs(rmsi)<eps) = NaN;
+rmsi = sqrt(rmsi.*(xC1.c'*xX.Bcov*xC1.c));
+wverr = as_matrix(wverr, rmsi);
 
 % do wavelet denoise/inversion
 %=======================================================================
