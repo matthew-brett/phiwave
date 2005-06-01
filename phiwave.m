@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.8 2005/05/31 23:58:11 matthewbrett Exp $
+% $Id: phiwave.m,v 1.9 2005/06/01 09:34:45 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -640,7 +640,7 @@ end
 
 
 %=======================================================================
-case 'writecons'                                  %-write contrast(s)
+case 'writecons'                                     %-write contrast(s)
 %=======================================================================
 % phiwave('writecons')
 %-----------------------------------------------------------------------
@@ -659,7 +659,7 @@ if changef
 end
 
 %=======================================================================
-case 'denoisecon'                                  %-denoise contrast
+case 'denoisecon'                                     %-denoise contrast
 %=======================================================================
 % phiwave('denoisecon')
 %-----------------------------------------------------------------------
@@ -735,7 +735,7 @@ catch
 end 
  
 %=======================================================================
-case 'error_log'                  %- makes file to help debugging errors
+case 'error_log'                   %-makes file to help debugging errors
 %=======================================================================
 % fname = phiwave('error_log', fname);
 %-----------------------------------------------------------------------
