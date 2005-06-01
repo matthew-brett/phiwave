@@ -1,4 +1,3 @@
-
 % PhiWave is copyright, distributed under the GNU General Public Licence.
 %_______________________________________________________________________
 %
@@ -361,4 +360,4 @@
 %_______________________________________________________________________
 % Copied from @(#)spm_LICENCE.man	2.4 FIL 99/05/16
 % 
-% $Id: phiw_licence.man,v 1.2 2004/09/14 05:14:41 matthewbrett Exp $
+% $Id: phiw_licence.man,v 1.3 2005/06/01 09:36:17 matthewbrett Exp $
