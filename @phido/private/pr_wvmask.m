@@ -1,5 +1,5 @@
 function wtobj = pr_wvmask(voxmask, params, options)
-% pr_wvmask - returns wavelet eqivalent mask for given voxel mask
+% returns wavelet eqivalent mask for given voxel mask
 % FORMAT wtobj = pr_wvmask(voxmask, params, options)
 %
 % Inputs
@@ -16,7 +16,7 @@ function wtobj = pr_wvmask(voxmask, params, options)
 % Outputs
 % wtobj       - phiw_wvimg object with transformed mask
 % 
-% $Id: pr_wvmask.m,v 1.3 2005/06/01 09:32:34 matthewbrett Exp $
+% $Id: pr_wvmask.m,v 1.4 2005/06/05 04:23:40 matthewbrett Exp $
   
 if nargin < 1
   voxmask = spm_get(1,'img','Voxel mask');
@@ -49,10 +49,13 @@ wtobj = phiw_wvimg(voxmask, ...
 		   params.scales);
 
 % levels, quadrants
-[tmp qs nquads] = levels(wv1,size(wtobj.img),params.scales);
+img_dims = size(wtobj.img);
+[tmp qs nquads] = levels(wv1, img_dims, params.scales);
 
-% expansion required
-ex = width(params.wavelet)/2;
+% expand by width of wavelet for all 3 dimensions
+for d = 1:length(img_dims)
+  ex(d) = width(params.wavelet, img_dims(d));
+end
 
 % cycle over blocks to do smoothing
 for l = 1:params.scales+1
