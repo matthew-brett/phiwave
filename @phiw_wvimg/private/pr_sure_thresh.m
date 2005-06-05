@@ -1,18 +1,19 @@
-function thresh = ValSUREThresh(x)
+function thresh = pr_sure_thresh(x)
 % Adaptive Threshold Selection Using Principle of SURE
-% Usage 
-%    thresh = ValSUREThresh(y)
+% FORMAT thresh = pr_sure_thresh(x)
+%
 % Inputs 
-%    y        Noisy Data with Std. Deviation = 1
+% y        - Noisy Data with Std. Deviation = 1
+% 
 % Outputs 
-%    thresh   Value of Threshold
+% thresh   - Value of Threshold
 %
 % Description
-%    SURE refers to Stein's Unbiased Risk Estimate.
+% SURE refers to Stein's Unbiased Risk Estimate.
 %
 % Federico Turkheimer
 %
-% $Id: ValSUREThresh.m,v 1.1 2004/06/25 15:20:44 matthewbrett Exp $
+% $Id: pr_sure_thresh.m,v 1.1 2005/06/05 04:17:42 matthewbrett Exp $
 
   a = sort(abs(x)).^2 ;
   b = cumsum(a);

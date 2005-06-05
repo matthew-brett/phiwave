@@ -1,11 +1,12 @@
-function w = ValSEAThresh(X)
+function w = pr_seat_thresh(X)
 % Thresholding by Signal Estimation Algorithm
-% Usage
-%   w = ValSEAThresh(wp,s12,s3,type) 
+% FORMAT w = pr_seat_thresh(X)
+%
 % Inputs
-%   X        vector of wavelet coefficients (variance is supposed 1);
+% X        - vector of wavelet coefficients (variance is supposed 1);
+% 
 % Outputs
-%   w        threshold
+% w        - threshold
 %             
 %  Reference
 %    Polchlopek HM, Noonan JP (1997) "Wavelets, Detection, Estimation
@@ -14,7 +15,7 @@ function w = ValSEAThresh(X)
 %	Federico E. Turkheimer
 %	August 13th, 1998
 %
-% $Id: ValSEAThresh.m,v 1.1 2004/06/25 15:20:44 matthewbrett Exp $
+% $Id: pr_seat_thresh.m,v 1.1 2005/06/05 04:17:42 matthewbrett Exp $
         
   X    = abs(X);
   n    = length(X);

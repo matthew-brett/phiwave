@@ -1,21 +1,22 @@
-function [nullh,nullhint]=pplot(p,alpha,sortf)
-%	PPLOT - Sparsity estimation with pplot
+function [nullh,nullhint]=pr_pplot(p,alpha,sortf)
+% Sparsity estimation with pplot
+% FORMAT [nullh,nullhint]=pr_pplot(p,alpha,sortf)
 %
-%	Usage:	[nullh,nullhint] = pplotpar(p,alpha,sortf)
-%	Input:
-%		p	= pvalues (column vector)
-%		alpha   = probability for confidence intervals
-%               sortf   = if p values are sorted ascending
-%	Output:
-%		nullh	= estimated number of null coefficients
-%			  The solution is constrained to between 0 and length(p).
-%		nullhint= 100(1-alpha) confidence intervals. These incorporate
-%			  the uncertainty due to the Least Squares procedure,
-%			  not that due to the selection procedure.
+% Input:
+% p        - pvalues (column vector)
+% alpha    - probability for confidence intervals
+% sortf    - non-zero if p values are sorted ascending
+% 
+% Output:
+% nullh	   - estimated number of null coefficients
+%            The solution is constrained to between 0 and length(p).
+% nullhint - 100(1-alpha) confidence intervals. These incorporate the
+%             uncertainty due to the Least Squares procedure, not that due
+%             to the selection procedure.
 %
 % 	Federico E. Turkheimer, June 15th, 2000
 %
-% $Id: pplot.m,v 1.1 2004/06/25 15:20:44 matthewbrett Exp $
+% $Id: pr_pplot.m,v 1.1 2005/06/05 04:17:42 matthewbrett Exp $
 
 if nargin < 1
   error('Need p values');

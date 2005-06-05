@@ -1,7 +1,8 @@
-function [blks, subs, sz] = procsubs(wvlt,imsz,scales,subs)
-% procsubs - returns elements and processed subs arg for indexing
+function [blks, subs, sz] = pr_procsubs(wvlt,imsz,scales,subs)
+% returns elements and processed subs arg for indexing
+% FORMAT [blks, subs, sz] = pr_procsubs(wvlt,imsz,scales,subs)
 %
-% $Id: procsubs.m,v 1.2 2005/06/01 09:32:34 matthewbrett Exp $
+% $Id: pr_procsubs.m,v 1.1 2005/06/05 04:17:42 matthewbrett Exp $
 
 if nargin < 4
   error('Need four args')
