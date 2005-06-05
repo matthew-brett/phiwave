@@ -1,0 +1,24 @@
+Phiwave installation
+--------------------
+
+First download and install the latest version of MarsBaR
+(http://marsbar.sourceforge.net)
+
+Next download Phiwave (http://phiwave.sourceforge.net).
+
+Unpack Phiwave into a directory somewhere.  This will probably give
+you a new directory called something like phiwave-3.0 (where 3.0 is
+the current version number).
+
+Put this directory on your matlab path.
+
+Make sure that mex file compilation is properly set up for matlab.
+
+In the matlab console, compile the Phiwave routines with 
+
+>> phiwave make
+
+Now you can start phiwave with
+
+>> phiwave
+
