@@ -1,11 +1,18 @@
 function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
-% options utility routines
+% options utility routines for phiwave
 % FORMAT [phiw msgstr] = phiw_options(optstr, phiw, cfg_fname)
 %
 % Input [default]
 % optstr            - option string: one of
-%                     'load','save','edit','defaults','basedefaults','fill'
-%                     ['load']  
+%                     'load' - load options from file
+%                     'save' - save options to file
+%                     'edit' - GUI interface to edit options
+%                     'basedefaults' - return hardcoded factory defaults
+%                     'defaults' - return values from default config
+%                        file, or hardcoded defaults, if not present
+%                     'fill' - fill candidate options from passed new
+%                        structure
+%                     [Default optstr is 'load']
 % phiw              - phiwave options structure [PHI.OPTIONS]
 % cfg_fname         - filename for configuration file [GUI]
 % 
@@ -13,9 +20,7 @@ function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 % phiw              - possible modified phiwave structure
 % msgstr            - any relevant messages
 %
-% Matthew Brett 20/10/00,2/6/01
-%
-% $Id: phiw_options.m,v 1.9 2005/06/01 10:57:22 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.10 2005/06/05 04:30:38 matthewbrett Exp $
   
 if nargin < 1
   optstr = 'load';
@@ -33,7 +38,8 @@ msgstr = '';
 
 % fields, and descriptions of fields, in phiw options structure
 optfields = {'wt','denoise','structural','display','statistics'}; 
-optlabs =  {'Wavelet transform','Denoising','Default structural','Image display','Statistics'};
+optlabs =  {'Wavelet transform','Denoising','Default structural', ...
+	    'Image display','Statistics'};
 
 switch lower(optstr)
  
@@ -86,6 +92,9 @@ switch lower(optstr)
   % threshold for statistics mask post wt
   phiw.statistics.maskthresh = 0.05;
   
+  % whether to write residual images during estimation
+  phiw.statistics.write_res = 1;
+  
   % wavelet denoising unit
   phiw.denoise.thlev = 'quadrant';
   
@@ -101,7 +110,10 @@ switch lower(optstr)
   % alpha for t etc Bonferroni etc correction
   phiw.denoise.alpha = 0.05;
   
-    % default structural image for display
+  % whether to supress variance images from denoising
+  phiw.denoise.write_err = 0;
+  
+  % default structural image for display
   phiw.structural.fname = fullfile(spm('Dir'), 'canonical', ...
 				   ['avg152T1' mars_veropts('template_ext')]);
   
@@ -129,9 +141,9 @@ switch lower(optstr)
     % get defaults area
     [Finter,Fgraph,CmdLine] = spm('FnUIsetup','PhiWave Defaults');
     % fields, and descriptions of fields, in phiw options structure
-    optfields = {'wt','denoise','structural','display'}; 
-    optlabs =  {'Wavelet transform','Denoising','Default structural',...
-		'Image display'};
+    optfields = {'wt','statistics', 'denoise','structural','display'}; 
+    optlabs =  {'Wavelet transform', 'Statistics', 'Denoising', ...
+		'Default structural', 'Image display'};
 		
     defarea = char(...
       spm_input('Defaults area', '+1', 'm',{optlabs{:} 'Quit'},...
@@ -144,8 +156,9 @@ switch lower(optstr)
     return
    case 'wt'
     % scales for analysis
-    phiw.wt.scales = spm_input('Scales for analysis', '+1', 'e', phiw.wt.scales, ...
-				1);
+    phiw.wt.scales = spm_input('Scales for analysis',  ...
+			       '+1', 'e', phiw.wt.scales, ...
+			       1);
     
     % wavelet transform
     wlabs =  {'Battle-Lemarie', 'Daubechies'};
@@ -176,8 +189,25 @@ switch lower(optstr)
 			      phiw.wt.wtprefix);
      
     
-     % denoising defaults
+
+   case 'statistics'
+    % statistics / estimation defaults 
+    
+    % In-brain mask definition threshold for WT brain mask
+    phiw.statistics.maskthresh = spm_input('Threshold for WT brain mask', '+1', ...
+					   'e', ...
+					   phiw.statistics.maskthresh, ...
+					   1);
+    
+
+    % Whether to write out residual images
+    phiw.statistics.write_res = spm_input('Write residual images?', '+1', ...
+					  'b', 'Yes|No', [1 0], ...
+					  2 - phiw.statistics.write_res*-1);
+
    case 'denoise'
+    % denoising defaults
+
     % denoising threshold calculation
     phiw.denoise = getdefs(...
 	phiw.denoise,...
@@ -236,6 +266,11 @@ switch lower(optstr)
       phiw.denoise.ncalc = 'n';
     end
 
+    % Whether to write out variance image from denoising
+    phiw.denoise.write_err = spm_input('Write denoised variance?', '+1', ...
+				       'b', 'Yes|No', [0 1], ...
+				       2 - phiw.denoise.write_err*-1);
+    
     % display stuff - default structural scan
    case 'structural'
     phiw.structural.fname = spm_get(1, mars_veropts('get_img_ext'),...
@@ -314,13 +349,16 @@ switch lower(optstr)
   
    % --------------------------------------------------
  case 'fill'                             %-fill from template
-  phiw = mars_struct('fillafromb', phiw,cfg_fname);
+  phiw = mars_struct('fillafromb', phiw, cfg_fname);
   
  otherwise
   error('Don''t recognize options action string')
 end
 return
 
+% ---------------------------------------------
+% Subfunctions
+% ---------------------------------------------
 
 function s = getdefs(s, defval, fieldn, prompt, vals, labels)
 % sets field in structure given values, labels, etc
