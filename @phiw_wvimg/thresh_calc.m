@@ -50,7 +50,7 @@ function [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: thresh_calc.m,v 1.5 2005/06/01 09:24:23 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.6 2005/06/05 04:36:38 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least top and bottom of t statistic, sorry');
@@ -192,7 +192,7 @@ for li = 1:length(l)
      case 'n'
       n = length(stblk);
      case 'pplot'
-      n = pplot(pblk,alpha,1);
+      n = pr_pplot(pblk,alpha,1);
      otherwise
       error('Don''t recognize ncalc method')
     end
@@ -205,7 +205,7 @@ for li = 1:length(l)
       if(ss<=crit)
 	thresh =sqrt(2*log(n));
       else
-	thresh =min([ValSUREThresh(stblk') sqrt(2*log(n))]); 
+	thresh =min([pr_sure_thresh(stblk') sqrt(2*log(n))]); 
       end 
      case 'stein'                     	
       thresh = 1-n/sum(stblk.^2);
