@@ -18,7 +18,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %              'ncalc'  - null hypothesis calculation ['n']
 %              'alpha'  - alpha for t etc Bonferroni etc correction [0.05]
 %              't2z'    - if not 0, does T to Z transform on T data [0]
-%              'no_err' - if not 0, supresses writing of error image [0]
+%              'write_err' - if not 0, writes variance image [1]
 % fname      - filename for denoised image [via GUI]
 %
 % Returns
@@ -32,7 +32,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.7 2005/06/01 00:01:58 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.8 2005/06/05 04:40:26 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -61,7 +61,7 @@ def_struct = struct(...
     'varpoolf',0,...
     'alpha', 0.05,...
     't2z', 0, ...
-    'no_err', 0);
+    'write_err', 1);
 
 wdstruct = mars_struct('ffillsplit', def_struct, wdstruct);
 
@@ -165,7 +165,7 @@ write_descrip(wvcond,Vdcon);
 
 % Create error map, if we have saved residuals
 VResI = get_vol_field(pD, 'VResI');
-if ~isempty(VResI) & ~wdstruct.no_err
+if ~isempty(VResI) & wdstruct.write_err
   % Quite a lot of work to do here
   nScan = prod(size(VResI));
   oi = oimgi(wave);
