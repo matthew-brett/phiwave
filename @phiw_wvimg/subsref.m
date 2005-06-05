@@ -1,7 +1,7 @@
 function R = subsref(obj, s)
-%SUBSREF Method to overload subscripted references
+% SUBSREF Method to overload subscripted references
 %
-% $Id: subsref.m,v 1.2 2005/06/01 09:32:34 matthewbrett Exp $
+% $Id: subsref.m,v 1.3 2005/06/05 04:37:48 matthewbrett Exp $
 
 if nargin < 2
   error('Crazy no of args')
@@ -41,7 +41,7 @@ switch s(1).type
     R = subsref(obj.img,s);
     return
   end
-  [blks s.subs sz] = procsubs(obj.wavelet,obj.wvol.dim(1:3),obj.scales, ...
+  [blks s.subs sz] = pr_procsubs(obj.wavelet,obj.wvol.dim(1:3),obj.scales, ...
 			       s.subs);
   R = zeros(sum(sz),1);
   iR = 1;
