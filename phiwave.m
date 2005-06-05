@@ -1,12 +1,12 @@
 function varargout=phiwave(varargin) 
-% Startup, callback and utility routine for PhiWave
+% Startup, callback and utility routine for Phiwave
 %
-% PhiWave: Functional image wavelet analysis 
+% Phiwave: Functional image wavelet analysis 
 %
-% PhiWave (the collection of files listed by Contents.m) is copyright under
+% Phiwave (the collection of files listed by Contents.m) is copyright under
 % the GNU general public license.  Please see phiw_licence.man for details.
 % 
-% PhiWave written by 
+% Phiwave written by 
 % John Aston, Matthew Brett, Rainer Hinz and Federico Turkheimer
 %
 % Data structures, programming style and portions of the code rely heavily
@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.10 2005/06/01 09:58:23 matthewbrett Exp $
+% $Id: phiwave.m,v 1.11 2005/06/05 04:25:54 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -241,7 +241,7 @@ funcs = {...
     'phiwave(''ana_cd'')',...
     'phiwave(''ana_desmooth'')',...
     'phiwave(''def_from_est'')',...
-    'phiw_arm(''set_ui'', ''def_design'');',...
+    'phiwave(''set_def'');',...
     ['phiw_arm(''save_ui'', ''def_design'', ' fw_st ');'],...
     'phiw_arm(''show_summary'', ''def_design'')'};
 
@@ -308,7 +308,7 @@ uicontrol(Fmenu,'Style','PopUp',...
 	  'String',['Options...'...
 		  '|Load options|Save options|Edit options|Restore defaults'],...
 	  'Position',[bx by(3) bw bh].*WS,...
-	  'ToolTipString','Load/save/edit PhiWave options',...
+	  'ToolTipString','Load/save/edit Phiwave options',...
 	  'CallBack','spm(''PopUpCB'',gcbo)',...
 	  'UserData',funcs);
 
@@ -491,6 +491,14 @@ phiwE = phiw_arm('get', 'est_design');
 if isempty(phiwE), return, end;
 errf = phiw_arm('set', 'def_design', phiwE);
 if ~errf, phiwave('design_report'); end
+
+%=======================================================================
+case 'set_def'                           %-sets default design using GUI
+%=======================================================================
+% phiwave('set_def')
+%-----------------------------------------------------------------------
+if phiw_arm('set_ui', 'def_design'), return, end
+phiwave('design_report');
 
 %=======================================================================
 case 'design_report'                         %-does explore design thing
@@ -682,7 +690,7 @@ case 'make'                                                       %-make
 %=======================================================================
 % phiwave('make' [,optfile])
 %-----------------------------------------------------------------------
-% runs PhiWave mex file compilation   
+% runs Phiwave mex file compilation   
 % 
 % Inputs
 % optfile    - optional options (mexopts) file to use for compile
