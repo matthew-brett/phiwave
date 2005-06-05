@@ -1,5 +1,5 @@
 function [o, others] = phiw_lemarie(dim_div, others)
-% phiw_lemarie - class constructor
+% class constructor for phiw_lemarie object
 % FORMAT [o, others] = phiw_lemarie(dim_div, others)
 % inherits from phiw_wavelet
 % 
@@ -17,7 +17,7 @@ function [o, others] = phiw_lemarie(dim_div, others)
 % others    - optional structure with any other fields for phiw_wavelet
 %             (see phiw_wavelet) 
 % 
-% $Id: phiw_lemarie.m,v 1.3 2004/09/26 07:51:46 matthewbrett Exp $
+% $Id: phiw_lemarie.m,v 1.4 2005/06/05 04:42:22 matthewbrett Exp $
 
 myclass = 'phiw_lemarie'; 
 

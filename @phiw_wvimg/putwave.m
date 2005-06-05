@@ -1,7 +1,7 @@
 function wave = putwave(vol,wave)
-% putwave - associates wave object with mat file
+% associates wave object with mat file
 %
-% $Id: putwave.m,v 1.2 2005/06/01 09:26:53 matthewbrett Exp $
+% $Id: putwave.m,v 1.3 2005/06/05 04:42:22 matthewbrett Exp $
 
 if nargin < 2
   error('Need vol and wave as args');

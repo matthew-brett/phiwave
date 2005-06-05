@@ -1,7 +1,15 @@
 function [obj, wvol] = write_wtimg(obj, fname)
-% write_wtimg - saves wvimg object as .img / .mat combination
+% saves wvimg object as .img / .mat combination
+% 
+% Input
+% obj         - wvimg object
+% fname       - output filename
+% 
+% Output
+% obj         - returned object
+% wvol        - output vol struct
 %
-% $Id: write_wtimg.m,v 1.2 2004/06/25 16:18:22 matthewbrett Exp $
+% $Id: write_wtimg.m,v 1.3 2005/06/05 04:42:22 matthewbrett Exp $
 
 if nargin < 2
   fname = [];

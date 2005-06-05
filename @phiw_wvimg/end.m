@@ -1,5 +1,5 @@
 function e = end(obj,K,N)
-% end - for phiw_wvimg object
+% end method for phiw_wvimg object
 % The indexing for the wvimg object works thus:
 % For one index (eg wvimg(2)) the whole level is returned (as a vector)
 % For two (eg wvimg(2,4) the quadrant from the level is returned (as a
@@ -7,7 +7,7 @@ function e = end(obj,K,N)
 % For three, (wvimg(2, 5, 10)) the voxel value is returned for the
 % contained object.
 %
-% $Id: end.m,v 1.2 2005/06/01 09:28:27 matthewbrett Exp $
+% $Id: end.m,v 1.3 2005/06/05 04:42:22 matthewbrett Exp $
 
 if N == 3
   % img case

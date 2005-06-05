@@ -1,7 +1,7 @@
 function wave = pr_getwave(vol)
-% getwave - returns wave object for vol, if available (empty if not)
+% returns wave object for vol, if available (empty if not)
 %
-% $Id: pr_getwave.m,v 1.2 2005/06/01 09:26:53 matthewbrett Exp $
+% $Id: pr_getwave.m,v 1.3 2005/06/05 04:42:22 matthewbrett Exp $
 
 if nargin < 1
   error('Need vol as arg');

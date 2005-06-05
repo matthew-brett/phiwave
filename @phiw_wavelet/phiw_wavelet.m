@@ -1,5 +1,5 @@
 function [o, others] = phiw_wavelet(params, varargin)
-% phiw_wavelet - class constructor
+% class constructor for phiw_wavelet object
 % FORMAT [o, others] = phiw_wavelet(params, varargin)
 %
 % Synopsis
@@ -41,7 +41,7 @@ function [o, others] = phiw_wavelet(params, varargin)
 % As usual, any unrecognized fields in input structures are passed out
 % for other (child) objects to parse if they like
 %
-% $Id: phiw_wavelet.m,v 1.5 2004/09/26 07:50:40 matthewbrett Exp $
+% $Id: phiw_wavelet.m,v 1.6 2005/06/05 04:42:22 matthewbrett Exp $
 
 myclass = 'phiw_wavelet'; 
 

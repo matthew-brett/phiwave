@@ -1,10 +1,10 @@
 function wvimg = doproc(wvimg)
-% doproc - performs any necessary processing
+% performs any necessary processing on wvimg object
 %
 % Processing is reading image, if currently only a vol struct, and
 % performing wavelet transform, if not already done.
 % 
-% $Id: doproc.m,v 1.2 2005/04/03 08:32:55 matthewbrett Exp $
+% $Id: doproc.m,v 1.3 2005/06/05 04:42:22 matthewbrett Exp $
 
 % read the data if it's a vol struct
 if isstruct(wvimg.img)

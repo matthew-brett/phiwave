@@ -1,11 +1,11 @@
 function varargout = phiw_arm(action, varargin)
-% wrapper function for MarsBaR marmoire object
+% wrapper function for Phiwave marmoire object
 % FORMAT varargout = phiw_arm(action, varargin)
 % 
-% This only to make the marsbar.m code prettier
+% This only to make the phiwave.m code prettier
 % See the help for the marmoire object for details
 % 
-% $Id: phiw_arm.m,v 1.2 2005/05/31 23:37:17 matthewbrett Exp $
+% $Id: phiw_arm.m,v 1.3 2005/06/05 04:42:22 matthewbrett Exp $
 
 global PHI
 if ~isfield(PHI, 'ARMOIRE')

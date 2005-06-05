@@ -21,11 +21,12 @@ function SPM = pr_estimate(SPM, VY, params)
 %       - defaults to images stored in design
 %
 % params - structure containing options
+%       'write_res'  if 1, write residual images
 %
 % For detailed help on the mathematics, structures etc, see spm_spm.m in
 % the SPM99 distribution - version string above.
 %
-% $Id: pr_estimate.m,v 1.3 2005/05/30 16:53:19 matthewbrett Exp $
+% $Id: pr_estimate.m,v 1.4 2005/06/05 04:42:22 matthewbrett Exp $
 
 %-Condition arguments
 %-----------------------------------------------------------------------
@@ -298,18 +299,19 @@ VResMS = spm_create_image(VResMS);
 %-Intialise residual images
 %-----------------------------------------------------------------------
 if params.write_res
-  VResI(1:nScan) = deal(struct(...
+  VResI_shell = struct(...
       'fname',  [],...
       'dim',    [DIM',spm_type('double')],...
       'mat',    M,...
       'pinfo',  [1 0 0]',...
-      'descrip','spm_spm:Residual image'));
+      'descrip','spm_spm:Residual image');
   
   for i = 1:nScan
-    VResI(i).fname   = sprintf('%sResI_%05d.img', wtp, i);
-    VResI(i).descrip = sprintf('spm_spm:ResI (%04d)', i);
-    spm_unlink(VResI(i).fname);
-    VResI(i) = spm_create_image(VResI(i));
+    vr_i = VResI_shell;
+    vr_i.fname   = sprintf('%sResI_%05d.img', wtp, i);
+    vr_i.descrip = sprintf('spm_spm:ResI (%04d)', i);
+    spm_unlink(vr_i.fname);
+    VResI(i) = spm_create_image(vr_i);
   end
 else
   VResI = [];

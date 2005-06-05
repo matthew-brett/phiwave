@@ -9,10 +9,18 @@ function phiw_display(action, disp_type, vols, phiw, defyn)
 %                   structural image followed by activation image [GUI]
 % phiw            - struct with various display defaults [PHI.OPTIONS]
 % defyn           - flag, if set, use all default display settings [GUI]
+% 
+% The routine is a bit off-message from the point of view of the phiwave
+% design philosophy, because it uses the PHI global structure directly to
+% get defaults for the display.   It should probably be better considered
+% as part of the phiwave.m function, but there we go.
+%
+% For example:
+% phiw_display('display', 'my_con.img');
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.6 2005/06/01 10:57:22 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.7 2005/06/05 04:42:22 matthewbrett Exp $
   
 if nargin < 1
   action = 'display';

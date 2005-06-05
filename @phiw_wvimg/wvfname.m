@@ -1,7 +1,7 @@
 function fname = wvfname(obj)
-% wvfname - return wvol output filename
+% return wvol output filename
 %
-% $Id: wvfname.m,v 1.4 2005/05/31 00:48:30 matthewbrett Exp $
+% $Id: wvfname.m,v 1.5 2005/06/05 04:42:22 matthewbrett Exp $
 
 if prod(size(obj)) > 1, fname = 'object array'; return, end
 

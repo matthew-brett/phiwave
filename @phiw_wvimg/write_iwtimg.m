@@ -1,7 +1,16 @@
 function [iwtvol, obj] = write_iwtimg(obj, iwtvol)
-% write_wtimg - iwt on wvimg object, save as img
+% iwt on wvimg object, save as img
+% FORMAT [iwtvol, obj] = write_iwtimg(obj, iwtvol)
+% 
+% Input
+% obj        - wvimg object
+% iwtvol     - image name or vol struct to output
+% 
+% Output
+% iwtvol     - written vol struct
+% obj        - possibly modified wvimg object
 %
-% $Id: write_iwtimg.m,v 1.4 2005/04/20 15:19:22 matthewbrett Exp $
+% $Id: write_iwtimg.m,v 1.5 2005/06/05 04:42:22 matthewbrett Exp $
 
 if nargin < 2
   iwtvol = [];

@@ -1,7 +1,7 @@
 function display(obj)
-% display - placeholder display for phiw_wavelet
+% placeholder display method for phiw_wavelet
 %
-% $Id: display.m,v 1.1 2004/11/18 18:41:04 matthewbrett Exp $
+% $Id: display.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
   
 X = struct(obj);
 src = descrip(obj);

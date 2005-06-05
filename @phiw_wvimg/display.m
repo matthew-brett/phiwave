@@ -1,7 +1,7 @@
 function display(obj)
-% display - placeholder display for wvimg
+% placeholder display for wvimg object
 %
-% $Id: display.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: display.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
   
 X = struct(obj);
 src = ['[phiw_wvimg object - ' wvfname(obj) ']'];

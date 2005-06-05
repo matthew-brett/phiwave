@@ -1,7 +1,7 @@
 function r = eq(obj1, obj2)
-% eq - == overloaded 
+% eq - == overloaded method
 %
-% $Id: eq.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: eq.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
 
 r = 0;
 if all(obj1.wvol.dim(1:3)-obj2.wvol.dim(1:3))

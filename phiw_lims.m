@@ -1,19 +1,26 @@
 function r = phiw_lims(action, lims, type)
-% process limit values 
+% multifunction function to process limit values
+% Limits are beginning, end index pairs for matrix dimensions
+% 
+% Inputs
+% action      - action string
+% lims        - index limits, 2 by number of matrix dimensions
+% type        - maybe necessary third argument...
+%
+% Output
+% r           - its the output
 %
 % FORMAT s = phiw_lims('to_subs', lims, type)
-% returns subs struct for limits given in lims matrix (2 by no of
-% dimensions) useful in indexing in subsasgn, subsref
+% returns subs struct for limits given in lims matrix useful in indexing in
+% subsasgn, subsref
 %
 % FORMAT szs = phiw_lims('size', lims)
-% returns data size for limits limits given in lims matrix (2 by no of
-% dimensions)
+% returns data size for limits given in lims matrix
 %
 % FORMAT dims = phiw_lims('dims', lims)
-% returns data dimensions for limits limits given in lims matrix (2 by no of
-% dimensions)
+% returns data dimensions for limits limits given in lims matrix
 %
-% $Id: phiw_lims.m,v 1.1 2005/06/01 09:32:34 matthewbrett Exp $
+% $Id: phiw_lims.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
   
 if nargin < 1
   error('Need action');

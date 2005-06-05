@@ -22,7 +22,7 @@ function [phiwD] = vox2wt_ana(phiwD, params)
 %
 % Matthew Brett 9/10/00
 %
-% $Id: vox2wt_ana.m,v 1.3 2005/04/20 15:12:46 matthewbrett Exp $
+% $Id: vox2wt_ana.m,v 1.4 2005/06/05 04:42:22 matthewbrett Exp $
   
 % Default object structure
 defparams = struct('wavelet',  phiw_lemarie(2), ...
@@ -44,7 +44,8 @@ g_wt_opts = struct('reproc', 1, ...
 		   'verbose', verbose(phiwD), ...
 		   'find_similar', 1);
 for i = 1:prod(size(VY))
-  [VY_wt(i) VY_o(i)] = sf_get_wted(VY(i), params, g_wt_opts);
+  [v1 v2] = sf_get_wted(VY(i), params, g_wt_opts);
+  [VY_wt(i) VY_o(i)] = deal(v1, v2);
 end
 VY_wt = reshape(VY_wt, size(VY));
 VY_o  = reshape(VY_o, size(VY));

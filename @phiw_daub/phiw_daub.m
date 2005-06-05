@@ -1,5 +1,5 @@
 function [o, others] = phiw_daub(num_coeffs, others)
-% phiw_daub - class constructor
+% class constructor for phiw_daub object
 % FORMAT [o, others] = phiw_daub(num_coeffs, others)
 % inherits from phiw_wavelet
 % 
@@ -13,7 +13,7 @@ function [o, others] = phiw_daub(num_coeffs, others)
 % others    - optional structure with any other fields for phiw_wavelet
 %             (see phiw_wavelet) 
 % 
-% $Id: phiw_daub.m,v 1.4 2004/09/26 07:53:43 matthewbrett Exp $
+% $Id: phiw_daub.m,v 1.5 2005/06/05 04:42:22 matthewbrett Exp $
 
 myclass = 'phiw_daub'; 
 

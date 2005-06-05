@@ -1,5 +1,5 @@
 function [o, others] = phido(params, others, passf)
-% phido - class constructor for MarsBaR design object
+% class constructor for phiwave design object
 % FORMAT [o, others] = phido(params, others, passf)
 % inputs [defaults]
 % params  -  one of:            
@@ -40,7 +40,7 @@ function [o, others] = phido(params, others, passf)
 % constructor with passf set to 0 in order for the constructor merely to
 % make a phido object, without passing back to the other classes. 
 % 
-% $Id: phido.m,v 1.9 2005/05/31 11:11:32 matthewbrett Exp $
+% $Id: phido.m,v 1.10 2005/06/05 04:42:22 matthewbrett Exp $
 
 myclass = 'phido';
 cvs_v   = mars_cvs_version(myclass);

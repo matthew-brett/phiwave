@@ -1,5 +1,7 @@
 function data = invert(wimg, w, scales, oimgi)
-% invert  - inverts wt data using wavelet transform w, up to scales
+% inverts wt data using wavelet transform w, up to scales
+% FORMAT data = invert(wimg, w, scales, oimgi)
+%
 % Input
 % wimg    - wavelet transformed data to invert - up to 3 dimensions
 % w       - wavelet object specifying transform
@@ -11,7 +13,7 @@ function data = invert(wimg, w, scales, oimgi)
 % Output
 % data    - wavelet inverted data, in resized data matrix if necessary
 %
-% $Id: invert.m,v 1.3 2005/06/01 09:29:59 matthewbrett Exp $
+% $Id: invert.m,v 1.4 2005/06/05 04:42:22 matthewbrett Exp $
  
 if nargin < 4
   oimgi = []; % do not reembed in original matrix

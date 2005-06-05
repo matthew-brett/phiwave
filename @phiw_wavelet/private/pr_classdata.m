@@ -1,5 +1,7 @@
 function cdata = pr_classdata(fieldname, value)
-% pr_classdata method - sets/gets class data
+% sets/gets class data for wavelet object
+% FORMAT cdata = pr_classdata(fieldname, value)
+%
 % phiw_wvavelet class data is implemented with a persistent variable
 % - CLASSDATA.  This is a structure containing fields
 %
@@ -18,7 +20,7 @@ function cdata = pr_classdata(fieldname, value)
 % The same functionality results from 
 % classdata(obj, fieldname) etc.
 %
-% $Id: pr_classdata.m,v 1.1 2004/09/26 03:55:09 matthewbrett Exp $
+% $Id: pr_classdata.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
 
 persistent CLASSDATA
 if isempty(CLASSDATA)

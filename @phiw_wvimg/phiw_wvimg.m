@@ -1,6 +1,8 @@
 function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
-% phiw_wvimg - constructor for container for wt'ed image
-% function call takes four forms
+% constructor for phiw_wvimg object - a container for a wt'ed image
+% FORMAT wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
+%
+% Function call takes four forms
 % wvimg = phiw_wvimg;   no args, returns default object
 % wvimg = phiw_wvimg(wv_img); object passed, object returned
 % wvimg = phiw_wvimg(inpimg,input_options,wavelet,scales)
@@ -67,7 +69,7 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.8 2005/04/06 22:33:28 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.9 2005/06/05 04:42:22 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 

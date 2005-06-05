@@ -1,6 +1,6 @@
 function wv0 = unitywavelet(obj)
-% nullwavelet - return unity wavelet of same form
+% return unity wavelet of same form as input object
 %
-% $Id: unitywavelet.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: unitywavelet.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
 
 wv0 = phiw_wavelet;

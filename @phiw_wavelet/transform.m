@@ -1,5 +1,7 @@
 function [wimg, oimgi] = transform(data, w, scales)
-% transform - transforms data using wavelet transform w, up to scales
+% transforms data using wavelet transform w, up to scales
+% FORMAT [wimg, oimgi] = transform(data, w, scales)
+%
 % Input
 % data    - data to transform - up to 3 dimensions
 % w       - wavelet object specifying transform
@@ -10,7 +12,7 @@ function [wimg, oimgi] = transform(data, w, scales)
 % oimgi   - index limits to retrieve original data from (inverted) wimg
 %           matrix
 %
-% $Id: transform.m,v 1.4 2005/06/01 09:29:59 matthewbrett Exp $
+% $Id: transform.m,v 1.5 2005/06/05 04:42:22 matthewbrett Exp $
   
 % embed data in appropriate size matrix for wt
 [newdims oimgi] = inp2out(w, size(data));

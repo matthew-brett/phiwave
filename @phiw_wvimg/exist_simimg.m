@@ -1,9 +1,9 @@
 function exf = exist_simimg(obj, fname)
-% exist_simimg - returns 1 if similar wt image already exists
+% returns 1 if similar wt image already exists
 % Similar means - same filename, same wavelet, same scales, same .mat
 % and same dimensions
 %
-% $Id: exist_simimg.m,v 1.1 2004/06/25 15:20:43 matthewbrett Exp $
+% $Id: exist_simimg.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
 
 if nargin < 2
   fname = [];

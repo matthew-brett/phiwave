@@ -1,7 +1,15 @@
 function m = pr_expand(img, nvoxels, outvol)
-% expand (probably binary) image by 'voxels' no of voxels
+% expand (probably binary) image by 'nvoxels' no of voxels
 %
-% $Id: pr_expand.m,v 1.1 2005/04/20 15:09:08 matthewbrett Exp $
+% Inputs
+% img            - matrix, or image name, or vol struct
+% nvoxels        - number of voxels to expand by
+% outvol         - output image name or vol struct to write
+%
+% Outputs
+% m              - matrix, or vol struct output
+%
+% $Id: pr_expand.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
   
 if nargin < 2
   error('Need two input args');

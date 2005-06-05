@@ -1,6 +1,6 @@
 function r = ne(obj1, obj2)
-% ne - ~= overloaded 
+% ~= overloaded method
 %
-% $Id: ne.m,v 1.1 2004/11/18 18:41:39 matthewbrett Exp $
+% $Id: ne.m,v 1.2 2005/06/05 04:42:22 matthewbrett Exp $
 
 r = ~eq(obj1, obj2);

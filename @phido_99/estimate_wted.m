@@ -1,12 +1,18 @@
 function [phiwD] = estimate_wted(phiwD, params)
-% do_estimate method - estimates phiwave GLM for SPM99 model
+% estimates phiwave GLM for SPM99 model
+% FORMAT [phiwD] = estimate_wted(phiwD, params)
 %
+% Input  
 % phiwD           - phido_99 design object (containing SPM99 design)
 % params          - struct containing fields, specifying options
 %                   Only option so far: 
 %                   'write_res' - if not 0, write residual images
 %
-% $Id: estimate_wted.m,v 1.3 2005/05/30 16:52:44 matthewbrett Exp $
+% Output
+% phiwD           - estimated design object
+%                   'write_res', if 1, write residual images 
+%
+% $Id: estimate_wted.m,v 1.4 2005/06/05 04:42:22 matthewbrett Exp $
 
 def_params = struct('write_res', 1);
 

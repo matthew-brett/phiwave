@@ -1,11 +1,13 @@
 function [inplevs, quads, nquads] = levels(w, odim, scales)
-% levels - returns indices for levels, quadrants for data size odim
+% returns indices for levels, quadrants for data size odim
 % FORMAT [inplevs, quads] = levels(w, odim, scales)
+% 
+% Inputs
 % w      - wavelet
 % odim   - dimension of wavelet transformed data
 % scales - number of scales used by wavelet transform
 % 
-% returns
+% Output
 % inplevs - index limits for each scale, before xform, within the matrix size (odim)
 % quads  - scales by quadrants cell matrix giving index limits for 
 %          quadrants (at each scale) from wt
@@ -13,7 +15,7 @@ function [inplevs, quads, nquads] = levels(w, odim, scales)
 %
 % This template wavelet function assumes dyadic dimensions
 %
-% $Id: levels.m,v 1.2 2004/11/18 19:02:25 matthewbrett Exp $
+% $Id: levels.m,v 1.3 2005/06/05 04:42:22 matthewbrett Exp $
   
 if nargin < 3
   error('Need odim and scales to return level info');
