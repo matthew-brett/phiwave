@@ -1,7 +1,7 @@
 function obj = subsasgn(obj, s, rhs)
-%SUBSASGN  Method to overload subsasgn for phiw_wvimg object
+% SUBSASGN  Method to overload subsasgn for phiw_wvimg object
 %
-% $Id: subsasgn.m,v 1.2 2005/06/01 09:32:34 matthewbrett Exp $
+% $Id: subsasgn.m,v 1.3 2005/06/05 04:37:15 matthewbrett Exp $
 
 if nargin < 3
   error('Crazy no of args')
@@ -49,7 +49,7 @@ switch s(1).type
     obj.img = subsasgn(obj.img,s,rhs);
     return
   end
-  [blks s.subs sz] = procsubs(obj.wavelet,obj.wvol.dim(1:3),obj.scales, ...
+  [blks s.subs sz] = pr_procsubs(obj.wavelet,obj.wvol.dim(1:3),obj.scales, ...
 			       s.subs);
   rhsz = prod(size(rhs));
   if rhsz == 1
