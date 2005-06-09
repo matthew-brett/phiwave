@@ -20,7 +20,7 @@ function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 % phiw              - possible modified phiwave structure
 % msgstr            - any relevant messages
 %
-% $Id: phiw_options.m,v 1.10 2005/06/05 04:30:38 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.11 2005/06/09 23:56:04 matthewbrett Exp $
   
 if nargin < 1
   optstr = 'load';
@@ -268,7 +268,7 @@ switch lower(optstr)
 
     % Whether to write out variance image from denoising
     phiw.denoise.write_err = spm_input('Write denoised variance?', '+1', ...
-				       'b', 'Yes|No', [0 1], ...
+				       'b', 'Yes|No', [1 0], ...
 				       2 - phiw.denoise.write_err*-1);
     
     % display stuff - default structural scan
