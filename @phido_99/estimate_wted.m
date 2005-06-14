@@ -12,14 +12,11 @@ function [phiwD] = estimate_wted(phiwD, params)
 % phiwD           - estimated design object
 %                   'write_res', if 1, write residual images 
 %
-% $Id: estimate_wted.m,v 1.4 2005/06/05 04:42:22 matthewbrett Exp $
+% $Id: estimate_wted.m,v 1.5 2005/06/14 07:06:52 matthewbrett Exp $
 
 def_params = struct('write_res', 1);
 
 if nargin < 2
-  error('Need design and images');
-end
-if nargin < 3
   params = [];
 end
 
