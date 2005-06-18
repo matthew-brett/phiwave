@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.12 2005/06/18 17:58:32 matthewbrett Exp $
+% $Id: phiwave.m,v 1.13 2005/06/18 21:52:47 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -22,7 +22,7 @@ function varargout=phiwave(varargin)
 % grep "^case " phiwave.m
   
 % Phiwave version
-PWver = '3.0';  % First sourceforge release; alpha
+PWver = '3.1';  % Second sourceforge release; alpha
 
 % Various working variables in global variable structure
 global PHI;
