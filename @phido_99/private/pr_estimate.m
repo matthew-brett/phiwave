@@ -26,7 +26,7 @@ function SPM = pr_estimate(SPM, VY, params)
 % For detailed help on the mathematics, structures etc, see spm_spm.m in
 % the SPM99 distribution - version string above.
 %
-% $Id: pr_estimate.m,v 1.5 2005/06/18 00:26:39 matthewbrett Exp $
+% $Id: pr_estimate.m,v 1.6 2005/06/18 17:55:29 matthewbrett Exp $
 
 %-Condition arguments
 %-----------------------------------------------------------------------
@@ -69,11 +69,14 @@ wti = wtinfo(wvobj);
 wtp = wti.wtprefix;
 phiw_mat_name = [wtp 'phiw_spm.mat'];
 
+% We must set SPMid to contain SPM99 string in order for the mardo_99 object
+% to recognize this as an SPM99 design
+SPMid  = sprintf('SPM99: Phiwave estimation; %s version %s', ...
+		 mfilename, ...
+		 mars_cvs_version(mfilename, 'phido_99'));
+
 %-Say hello
 %-----------------------------------------------------------------------
-SPMid    = spm('FnBanner',mfilename, ...
-	       mars_cvs_version(mfilename, 'phido_99'));
-
 Finter   = spm('FigName','Stats: estimation...'); spm('Pointer','Watch')
 
 %-Parameters
@@ -723,6 +726,7 @@ SPM = mars_struct('ffillmerge', SPM, ...
 		      'S',     S, ...
 		      'xPhi',  struct('estimated', 1, 'wave', thin(wvobj)), ...
 		      'swd',   pwd, ...
+		      'fname', phiw_mat_name, ...
 		      'xCon',  xCon));
 
 % save design
