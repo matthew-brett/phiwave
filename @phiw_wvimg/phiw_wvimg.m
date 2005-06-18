@@ -26,7 +26,7 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %                   with fields: dim, mat, fname, pinfo
 %         wvol    = wavelet transformed SPM vol struct representing dimensions,
 %                   .mat data, filename for image data, datatype;
-%         input_options = struct with options, with fields below. Options fall
+%         options = struct with options, with fields below. Options fall
 %                   into two categories; permanent, and object creation
 %                   options (noproc, remap); the latter are reset to 0 by
 %                   this routine  
@@ -69,7 +69,7 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.9 2005/06/05 04:42:22 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.10 2005/06/18 20:45:31 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 
@@ -169,16 +169,16 @@ if ischar(inpimg)
   inpimg = spm_vol(inpimg);
 end
 
-% insert necessary data into wvimg structure to start
-[wvimg others] = mars_struct('ffillsplit', defstruct, ...
-			     struct(...
-				 'img', inpimg, ...
-				 'options', filled_opts, ...
-				 'wtf', 0, ...
-				 'descrip', filled_opts.descrip));
-
 % process different types of function call
 if nargin > 3  % must be untransformed data with wavelet and scales
+  
+  % insert necessary data into wvimg structure to start
+  [wvimg others] = mars_struct('ffillsplit', defstruct, ...
+			       struct(...
+				   'img', inpimg, ...
+				   'options', filled_opts, ...
+				   'wtf', 0, ...
+				   'descrip', filled_opts.descrip));
   
   if ~isa(waveobj,'phiw_wavelet') | isempty(scales)
     error('Need wavelet and scales for untransformed data');
@@ -188,7 +188,7 @@ if nargin > 3  % must be untransformed data with wavelet and scales
   if isstruct(inpimg) % got a vol struct
     % set output file name by adding wt prefix
     [p f e] = fileparts(inpimg.fname);
-    out_fname = fullfile(p,[wvimg.options.wtprefix f e]);
+    out_fname = fullfile(p, [wvimg.options.wtprefix f e]);
     
     % look for a similar image that exists already
     if filled_opts.find_similar
@@ -233,7 +233,7 @@ if nargin > 3  % must be untransformed data with wavelet and scales
   wvimg.wvol = mars_struct('fillafromb', wvimg.wvol, wvimg.ovol);
   wvimg.wvol.dim(1:3) = outdim(wvimg.wavelet, wvimg.ovol.dim(1:3));
 
-else
+else % i.e nargin <= 3
   
   % this must be a wt'ed vol struct for putting into object
   wvimg.wtf = 1;
@@ -253,8 +253,16 @@ else
   % no template obtainable -> give up and return empty
   if isempty(waveobj), wvimg = []; return, end
   
-  % fill any missing / empty object fields from template
-  wvimg = mars_struct('fillafromb', wvimg, struct(waveobj));
+  % Fill any missing input stuff from the template object
+  wvimg = mars_struct('fillafromb', ...
+		      struct(...
+			  'img', inpimg, ...
+			  'options', input_options), ...
+		      struct(waveobj));
+  
+  % fill any missing / empty object fields from defaults
+  wvimg.options = mars_struct('ffillsplit', defopts, wvimg.options);
+  [wvimg others] = mars_struct('ffillsplit', defstruct, wvimg);
   
   % input vol struct overrides template vol struct
   if isstruct(inpimg)
