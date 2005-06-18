@@ -16,7 +16,7 @@ function wtobj = pr_wvmask(voxmask, params, options)
 % Outputs
 % wtobj       - phiw_wvimg object with transformed mask
 % 
-% $Id: pr_wvmask.m,v 1.4 2005/06/05 04:23:40 matthewbrett Exp $
+% $Id: pr_wvmask.m,v 1.5 2005/06/18 17:53:56 matthewbrett Exp $
   
 if nargin < 1
   voxmask = spm_get(1,'img','Voxel mask');
@@ -44,7 +44,7 @@ wv1 = unitywavelet(params.wavelet);
 
 % wt voxel mask
 wtobj = phiw_wvimg(voxmask, ...
-		   struct('datatype', params.datatype), ...
+		   params, ...
 		   wv1, ...
 		   params.scales);
 
