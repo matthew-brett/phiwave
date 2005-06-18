@@ -26,7 +26,7 @@ function SPM = pr_estimate(SPM, VY, params)
 % For detailed help on the mathematics, structures etc, see spm_spm.m in
 % the SPM99 distribution - version string above.
 %
-% $Id: pr_estimate.m,v 1.4 2005/06/05 04:42:22 matthewbrett Exp $
+% $Id: pr_estimate.m,v 1.5 2005/06/18 00:26:39 matthewbrett Exp $
 
 %-Condition arguments
 %-----------------------------------------------------------------------
@@ -668,9 +668,14 @@ fprintf('%s%30s',sprintf('\b')*ones(1,30),'...scaling DesMtx')       %-#
 xX.nKX   = spm_DesMtx('sca',xX.xKXs.X,xX.Xnames);
 
 %-Set VResMS scalefactor as 1/trRV (raw voxel data is ResSS)
+% Note that, due to a bug in the SPM2 vol utils, this scalefactor does
+% not get properly written if we just use pinfo, so we have to save,
+% reload to set it here.
 %-----------------------------------------------------------------------
-VResMS.pinfo(1) = 1/xX.trRV;
-
+VResMS = spm_create_image(VResMS);
+img    = spm_read_vols(VResMS);
+img    = img / xX.trRV;
+VResMS = spm_write_vol(VResMS, img);
 
 %-"close" written image files, updating scalefactor information
 %=======================================================================
@@ -678,7 +683,6 @@ fprintf('%s%30s',sprintf('\b')*ones(1,30),'...closing image files')  %-#
 VM                      = spm_create_image(VM);
 for i=1:nBeta, Vbeta(i) = spm_create_image(Vbeta(i)); end
 if nVar > 1,   Vspm     = spm_create_image(Vspm);     end
-VResMS                  = spm_create_image(VResMS);
 
 %-Unmap files, retaining image names, and reset erdf if MV
 %-----------------------------------------------------------------------
