@@ -69,7 +69,7 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.10 2005/06/18 20:45:31 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.11 2005/06/21 04:01:04 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 
@@ -211,7 +211,9 @@ if nargin > 3  % must be untransformed data with wavelet and scales
       
     % No found similar image - make afresh
     wvimg.ovol = inpimg;
-    wvimg.descrip = strvcat(wvimg.descrip,wvimg.ovol.descrip);
+    if ~isempty(wvimg.descrip)
+      wvimg.descrip = [wvimg.descrip '; ' wvimg.ovol.descrip];
+    end
     wvimg.wvol.fname = out_fname;
   elseif ~isempty(inpimg) & isnumeric(inpimg)
     % maybe data passed was a matrix, we'll do our best
