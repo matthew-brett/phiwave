@@ -1,4 +1,4 @@
-% Example phiwave batch script 
+% Example Phiwave batch script 
 
 % Make sure phiwave is loaded
 phiwave on
@@ -33,8 +33,8 @@ d_params = struct(...
     'write_err', 1);
 
 % Write new denoised images with given file name 
-% (variance image prepended with 'err_')
+% (std image prepended with 'std_', sort-of t prepended by 't_')
 Vcon = get_wdimg(E, Ic, d_params, 'denoised_sure');
 
-% Interactive display, using some PhiWave defaults
+% Interactive display, using some Phiwave defaults
 phiw_display('display', 'orth', Vcon);

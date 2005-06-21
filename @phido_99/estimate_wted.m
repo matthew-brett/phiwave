@@ -12,7 +12,7 @@ function [phiwD] = estimate_wted(phiwD, params)
 % phiwD           - estimated design object
 %                   'write_res', if 1, write residual images 
 %
-% $Id: estimate_wted.m,v 1.5 2005/06/14 07:06:52 matthewbrett Exp $
+% $Id: estimate_wted.m,v 1.6 2005/06/21 15:18:55 matthewbrett Exp $
 
 def_params = struct('write_res', 1);
 
@@ -30,7 +30,7 @@ SPM = pr_estimate(SPM, [], params);
 
 % We must set SPMid to contain SPM99 string in order for the mardo_99 to
 % recognize this as an SPM99 design
-SPM.SPMid  = sprintf('SPM99: PhiWave estimation. phido_99 version %s', ...
+SPM.SPMid  = sprintf('SPM99: Phiwave estimation. phido_99 version %s', ...
 		     phiwD.cvs_version);
 
 % return modified structure

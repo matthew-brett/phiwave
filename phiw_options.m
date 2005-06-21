@@ -20,7 +20,7 @@ function [phiw, msgstr] = phiw_options(optstr, phiw, cfg_fname)
 % phiw              - possible modified phiwave structure
 % msgstr            - any relevant messages
 %
-% $Id: phiw_options.m,v 1.11 2005/06/09 23:56:04 matthewbrett Exp $
+% $Id: phiw_options.m,v 1.12 2005/06/21 15:19:22 matthewbrett Exp $
   
 if nargin < 1
   optstr = 'load';
@@ -139,7 +139,7 @@ switch lower(optstr)
   defarea = cfg_fname;  % third arg is defaults area, if specified
   if isempty(defarea)
     % get defaults area
-    [Finter,Fgraph,CmdLine] = spm('FnUIsetup','PhiWave Defaults');
+    [Finter,Fgraph,CmdLine] = spm('FnUIsetup','Phiwave Defaults');
     % fields, and descriptions of fields, in phiw options structure
     optfields = {'wt','statistics', 'denoise','structural','display'}; 
     optlabs =  {'Wavelet transform', 'Statistics', 'Denoising', ...
