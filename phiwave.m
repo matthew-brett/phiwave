@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.14 2005/06/21 03:59:55 matthewbrett Exp $
+% $Id: phiwave.m,v 1.15 2005/06/21 06:49:51 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -452,7 +452,9 @@ case 'ana_desmooth'           %-makes new SPM design for unsmoothed data
 %-----------------------------------------------------------------------
 phiwD = phiw_arm('get', 'def_design');
 if isempty(phiwD), return, end;
-phiwD = prefix_images(phiwD, 'remove', 's');
+phiwD = prefix_images(phiwD, 'remove', 's', ...
+		      struct('check_exist', 'error', ...
+			     'check_swap',  1));
 phiw_arm('set', 'def_design', phiwD);
 disp('Done');
 
