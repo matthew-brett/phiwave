@@ -14,15 +14,23 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.16 2005/06/21 14:57:20 matthewbrett Exp $
+% $Id: phiwave.m,v 1.17 2005/06/21 15:33:17 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
 % For a list of the functions implemented here, try
 % grep "^case " phiwave.m
+% 
+% To make a release, use the MarsBaR release/pre_release script with
+% something like: 
+% pre_release('matthewbrett', '-%s', pwd, 'phiwave', 'Phiwave wavelet toolbox');
+%
+% Don't forget to update the Phiwave and required MarsBaR version
+% numbers, change into a temporary directory, and put m2html on the path
+% before running the pre_release script.
   
-% Phiwave version
-PWver = '3.2';  % Third sourceforge release; alpha
+% Third sourceforge release; alpha
+PWver = '3.2';  
 
 % Required MarsBaR version
 MBver = '0.38.1';
