@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.15 2005/06/21 06:49:51 matthewbrett Exp $
+% $Id: phiwave.m,v 1.16 2005/06/21 14:57:20 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -23,6 +23,9 @@ function varargout=phiwave(varargin)
   
 % Phiwave version
 PWver = '3.2';  % Third sourceforge release; alpha
+
+% Required MarsBaR version
+MBver = '0.38.1';
 
 % Various working variables in global variable structure
 global PHI;
@@ -83,10 +86,19 @@ if isempty(which('marsbar'))
   end
 end
 
-% start marsbar
+% check MarsBaR version
+badv = ~strcmp(marsbar('ver'), MBver); % to allow 0.38.1 through
+if badv
+  try
+    badv = mars_utils('version_less_than', marsbar('ver'), MBver); 
+  end
+end
+if badv, error(['Need at least MarsBaR version ' MBver]); end
+
+% start MarsBaR
 marsbar('on');
 
-% promote spm replacement directory, affichevol directories
+% promote Phiwave analysis directories
 pwpath = fileparts(which('phiwave.m'));
 PHI.ADDPATHS = {fullfile(pwpath, 'uvi_wave')};
 addpath(PHI.ADDPATHS{:}, '-begin');
@@ -452,9 +464,7 @@ case 'ana_desmooth'           %-makes new SPM design for unsmoothed data
 %-----------------------------------------------------------------------
 phiwD = phiw_arm('get', 'def_design');
 if isempty(phiwD), return, end;
-phiwD = prefix_images(phiwD, 'remove', 's', ...
-		      struct('check_exist', 'error', ...
-			     'check_swap',  1));
+phiwD = prefix_images(phiwD, 'remove', 's');
 phiw_arm('set', 'def_design', phiwD);
 disp('Done');
 
@@ -810,16 +820,3 @@ error(['Unknown action string: ' Action])
 %=======================================================================
 end
 return
-
-% subfunctions
-function btn = sf_prev_save(obj_name)
-btn = phiw_arm('save_ui', obj_name, ...
-	       struct('ync', 1, ...
-		      'no_no_save', 1, ...
-		      'prompt_prefix', 'previous '));
-% If answer is 'No', then flag that we don't need to save
-if btn == 0
-  phiw_arm('set_param', obj_name, 'has_changed', 0);
-end
-return
-
