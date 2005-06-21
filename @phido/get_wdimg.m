@@ -18,7 +18,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %              'ncalc'  - null hypothesis calculation ['n']
 %              'alpha'  - alpha for t etc Bonferroni etc correction [0.05]
 %              't2z'    - if not 0, does T to Z transform on T data [0]
-%              'write_err' - if not 0, writes variance image [1]
+%              'write_err' - if not 0, writes std and sort-of t image [1]
 % fname      - filename for denoised image [via GUI]
 %
 % Returns
@@ -32,7 +32,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.9 2005/06/18 21:57:29 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.10 2005/06/21 15:17:42 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -127,7 +127,8 @@ VResMS = get_vol_field(pD, 'VResMS');
 wverr = phiw_wvimg(VResMS,[], wave);
 rmsi = as_matrix(wverr);
 rmsi(abs(rmsi)<eps) = NaN;
-rmsi = sqrt(rmsi.*(xC1.c'*xX.Bcov*xC1.c));
+con_cov = xC1.c'*xX.Bcov*xC1.c;
+rmsi = sqrt(rmsi .* con_cov);
 wverr = as_matrix(wverr, rmsi);
 
 % do wavelet denoise/inversion
@@ -155,7 +156,7 @@ Vdcon = struct(...
     'dim',    [1 1 1,16],...
     'mat',    wave.ovol.mat,...
     'pinfo',  [1,0,0]',...
-    'descrip',sprintf('PhiWave{%c} - %s',...
+    'descrip',sprintf('Phiwave{%c} - %s',...
 		      xC1.STAT,xC1.name));
 Vdcon = write_iwtimg(wvcond,Vdcon);
 fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
@@ -170,8 +171,8 @@ if ~isempty(VResI) & wdstruct.write_err
   nScan = prod(size(VResI));
   oi = oimgi(wave);
   odim = diff(oi)+1;
-  err_img = zeros(odim);
-  sum_img = err_img;
+  std_img = zeros(odim);
+  sum_img = std_img;
     
   % get whole thresholding object as image, find mask
   th_img = as_matrix(th_obj);
@@ -188,21 +189,38 @@ if ~isempty(VResI) & wdstruct.write_err
     img(in_mask) = img(in_mask) .* th_img;
     img = invert(img, wave.wavelet, wave.scales, oi);
     sum_img = sum_img + img;
-    err_img = err_img + img .^2;
+    std_img = std_img + img .^2;
   end
   xX = design_structure(pD);
-  err_img = (err_img - (sum_img .^2 / nScan)) / xX.trRV;
+  std_img = (std_img - (sum_img .^2 / nScan)) / xX.trRV;
+  std_img = sqrt(std_img .* con_cov);
   
-  % save error image
-  efname = fullfile(d_swd, ['err_' fname]);
+  % save std image
+  efname = fullfile(d_swd, ['std_' fname]);
   Vderr = struct(...
       'fname',  efname,...
       'dim',    [odim,16],...
       'mat',    wave.ovol.mat,...
       'pinfo',  [1,0,0]',...
-      'descrip',sprintf('PhiWave{%c} - error:%s',...
+      'descrip',sprintf('Phiwave{%c} - error:%s',...
 			xC1.STAT,xC1.name));
-  Vderr = spm_write_vol(Vderr, err_img);
+  Vderr = spm_write_vol(Vderr, std_img);
+
+  % save sort-of t image
+  con_img = spm_read_vols(Vdcon);
+  t_msk = abs(con_img) > eps & abs(std_img) > eps;
+  t_img = zeros(size(con_img));
+  t_img(t_msk) = con_img(t_msk) ./ std_img(t_msk);
+  tfname = fullfile(d_swd, ['t_' fname]);
+  Vdt = struct(...
+      'fname',  tfname,...
+      'dim',    [odim,16],...
+      'mat',    wave.ovol.mat,...
+      'pinfo',  [1,0,0]',...
+      'descrip',sprintf('Phiwave{%c} - t:%s',...
+			xC1.STAT,xC1.name));
+  Vdt = spm_write_vol(Vdt, t_img);
+
   fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done');
 end
 return
