@@ -20,7 +20,7 @@ function phiw_display(action, disp_type, vols, phiw, defyn)
 %
 % Matthew Brett 10/10/00
 %
-% $Id: phiw_display.m,v 1.7 2005/06/05 04:42:22 matthewbrett Exp $
+% $Id: phiw_display.m,v 1.8 2005/06/21 17:03:47 matthewbrett Exp $
   
 if nargin < 1
   action = 'display';
@@ -60,8 +60,9 @@ if ~ismember(disp_type, dist_opts)
   error('Don''t recognize display type');
 end
 if isempty(vols)
-  vols = spm_get(1, 'img', 'Activation image to display');
+  vols = spm_get([0 1], 'img', 'Activation image to display');
 end
+if isempty(vols), return, end
 if ischar(vols), vols = spm_vol(vols);end
 if length(vols)>1 % assume 1st image is structural, 2nd functional
   actvol = vols(2);
