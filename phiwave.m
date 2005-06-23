@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.18 2005/06/21 15:34:22 matthewbrett Exp $
+% $Id: phiwave.m,v 1.19 2005/06/23 17:20:07 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -827,5 +827,19 @@ otherwise                                        %-Unknown action string
 error(['Unknown action string: ' Action])
 
 %=======================================================================
+end
+return
+
+%=======================================================================
+% Subfunctions
+%=======================================================================
+function btn = sf_prev_save(obj_name)
+btn = mars_arm('save_ui', obj_name, ...
+	       struct('ync', 1, ...
+		      'no_no_save', 1, ...
+		      'prompt_prefix', 'previous '));
+% If answer is 'No', then flag that we don't need to save
+if btn == 0
+  mars_arm('set_param', obj_name, 'has_changed', 0);
 end
 return
