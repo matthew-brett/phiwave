@@ -32,7 +32,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.10 2005/06/21 15:17:42 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.11 2005/06/23 17:53:42 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -93,9 +93,14 @@ if isempty(Ic)
 				       1);
 end
 
+% Check we have only T contrasts
+xCon = get_contrasts(pD);
+if ~all([xCon(:).STAT] == 'T')
+  error('Sorry, we can only denoise t contrasts');
+end
+
 % get filename if necessary
 %=======================================================================
-xCon = get_contrasts(pD);
 if isempty(fname)
   str  = sprintf('con%04d_%s',Ic,xCon(Ic).name);
   fname = spm_input('Filename for contrast', 1, 's', ...
