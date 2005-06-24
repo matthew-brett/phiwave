@@ -25,7 +25,7 @@ function [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: write_contrasts.m,v 1.7 2005/06/21 14:58:12 matthewbrett Exp $
+% $Id: write_contrasts.m,v 1.8 2005/06/24 00:43:45 matthewbrett Exp $
 
 def_flags = struct(...
     'no_new', 0,...
@@ -206,9 +206,9 @@ for ii = 1:length(I)
       %-Write image
       %-----------------------------------------------------------
       fprintf('%s',sprintf('\b')*ones(1,30))                   %-#
-      Vcon  = spm_create_image(xCon(i).Vcon);
-      Vcon  = spm_resss(Vbeta,xCon(i).Vcon,h);
-      Vcon  = spm_create_image(xCon(i).Vcon);
+      Vcon  = spm_create_image(Vcon);
+      Vcon  = spm_resss(Vbeta, Vcon, h);
+      Vcon  = spm_create_image(Vcon);
       
      otherwise
       %---------------------------------------------------------------
