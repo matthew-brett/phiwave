@@ -25,7 +25,7 @@ function [phiwD, connos, changef] = write_contrasts(phiwD, connos, flags)
 % 
 % Matthew Brett 9/10/00  
 %
-% $Id: write_contrasts.m,v 1.9 2005/07/01 18:45:03 matthewbrett Exp $
+% $Id: write_contrasts.m,v 1.10 2005/07/01 20:03:45 matthewbrett Exp $
 
 def_flags = struct(...
     'no_new', 0,...
@@ -62,6 +62,9 @@ if flags.single  % only one contrast at a time
 else
   ncons = Inf;
 end
+
+% Backspace macro
+bs30 = repmat(sprintf('\b'),1,30);
 
 % get needed stuff from design
 Vbeta  = get_vol_field(phiwD, 'Vbeta');
@@ -179,12 +182,12 @@ for ii = 1:length(I)
       
       %-Write image
       %-----------------------------------------------------------
-      fprintf('%s%20s',sprintf('\b')*ones(1,20),'...computing')%-#
+      fprintf('%s%30s',bs30,'...computing')%-#
       Vcon            = spm_create_image(Vcon);
       Vcon.pinfo(1,1) = spm_add(V, Vcon);
-      Vcon            = spm_create_image(Vcon);
+      Vcon            = spm_close_vol(Vcon);
             
-      fprintf('%s%30s\n',sprintf('\b')*ones(1,30),sprintf(...
+      fprintf('%s%30s\n',bs30,sprintf(...
 	  '...written %s',spm_str_manip(Vcon.fname,'t')))%-#
      case 'F'  %-Implement ESS as sum of squared weighted beta images
       fprintf('\t%-32s: %30s',sprintf('ESS image %2d',i),...
@@ -205,10 +208,10 @@ for ii = 1:length(I)
       
       %-Write image
       %-----------------------------------------------------------
-      fprintf('%s',sprintf('\b')*ones(1,30))                   %-#
+      fprintf('%s',bs30)                   %-#
       Vcon  = spm_create_image(Vcon);
       Vcon  = spm_resss(Vbeta, Vcon, h);
-      Vcon  = spm_create_image(Vcon);
+      Vcon  = spm_close_vol(Vcon);
       
      otherwise
       %---------------------------------------------------------------
@@ -239,7 +242,7 @@ for ii = 1:length(I)
     if isempty(rmsi)
       fprintf('\t%-32s: %30s','ResMS file...','...done');
       rmsi = spm_read_vols(VResMS);
-      fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
+      fprintf('%s%30s\n',bs30,'...done')               %-#
       rmsi(abs(rmsi)<eps) = NaN;
     end
 
@@ -279,7 +282,7 @@ for ii = 1:length(I)
         
     %-Write full statistic image
     %---------------------------------------------------------------
-    fprintf('%s%30s',sprintf('\b')*ones(1,30),'...writing')      %-#
+    fprintf('%s%30s',bs30,'...writing')      %-#
     Vspm = struct(...
 	'fname',  fullfile(Swd,sprintf('%sphiw%c_%04d_%s.img',wvp,xCon(i).STAT,i,fsuff)),...
 	'dim',    [DIM 16],...
@@ -293,7 +296,7 @@ for ii = 1:length(I)
     % Write wave part of mat file
     putwave(Vspm.fname,wave);
     
-    fprintf('%s%30s\n',sprintf('\b')*ones(1,30),sprintf(...
+    fprintf('%s%30s\n',bs30,sprintf(...
 	'...written %s',spm_str_manip(Vspm.fname,'t')))  %-#
         
   end % (if ~flags.con_only & isemptu...)
