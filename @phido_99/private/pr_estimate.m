@@ -26,7 +26,7 @@ function SPM = pr_estimate(SPM, VY, params)
 % For detailed help on the mathematics, structures etc, see spm_spm.m in
 % the SPM99 distribution - version string above.
 %
-% $Id: pr_estimate.m,v 1.8 2005/07/01 01:28:59 matthewbrett Exp $
+% $Id: pr_estimate.m,v 1.9 2005/07/01 18:02:06 matthewbrett Exp $
 
 %-Condition arguments
 %-----------------------------------------------------------------------
@@ -678,7 +678,7 @@ xX.nKX   = spm_DesMtx('sca',xX.xKXs.X,xX.Xnames);
 % not get properly written if we just use pinfo, so we have to save,
 % reload to set it here.
 %-----------------------------------------------------------------------
-VResMS = spm_create_image(VResMS);
+VResMS = spm_close_vol(VResMS);
 img    = spm_read_vols(VResMS);
 img    = img / xX.trRV;
 VResMS = spm_write_vol(VResMS, img);
@@ -686,21 +686,22 @@ VResMS = spm_write_vol(VResMS, img);
 %-"close" written image files, updating scalefactor information
 %=======================================================================
 fprintf('%s%30s',bs30,'...closing image files')  %-#
-VM                      = spm_create_image(VM);
-for i=1:nBeta, Vbeta(i) = spm_create_image(Vbeta(i)); end
-if nVar > 1,   Vspm     = spm_create_image(Vspm);     end
+VM                      = spm_close_vol(VM);
+Vbeta                   = spm_close_vol(Vbeta);
+if nVar > 1,   Vspm     = spm_close_vol(Vspm);     end
+if params.write_res, VResI = spm_close_vol(VResI); end
 
 %-Unmap files, retaining image names, and reset erdf if MV
 %-----------------------------------------------------------------------
 fprintf('%s%30s',bs30,'...tidying file handles') %-#
 VM     = VM.fname;
 Vbeta  = {Vbeta.fname}';
-if params.write_res, VResI = {{VResI.fname}'}; end
 VResMS = VResMS.fname;
 if nVar > 1
 	xCon.Vspm = Vspm.fname;
 	xX.erdf   = erdf;
 end
+if params.write_res, VResI = {{VResI.fname}'}; end
 
 fprintf('%s%30s\n',bs30,'...done')               %-#
 
