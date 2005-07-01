@@ -26,7 +26,7 @@ function SPM = pr_estimate(SPM, VY, params)
 % For detailed help on the mathematics, structures etc, see spm_spm.m in
 % the SPM99 distribution - version string above.
 %
-% $Id: pr_estimate.m,v 1.7 2005/07/01 00:58:35 matthewbrett Exp $
+% $Id: pr_estimate.m,v 1.8 2005/07/01 01:28:59 matthewbrett Exp $
 
 %-Condition arguments
 %-----------------------------------------------------------------------
@@ -198,7 +198,7 @@ end
 
 %-Default F-contrasts (in contrast structure) & Y.mad pointlist filtering
 %=======================================================================
-fprintf('%s%30s',,'...F-contrast')           %-#
+fprintf('%s%30s',bs30,'...F-contrast')           %-#
 
 if isempty(F_iX0)
 	F_iX0 = struct(	'iX0',		[],...
