@@ -26,7 +26,7 @@ function SPM = pr_estimate(SPM, VY, params)
 % For detailed help on the mathematics, structures etc, see spm_spm.m in
 % the SPM99 distribution - version string above.
 %
-% $Id: pr_estimate.m,v 1.6 2005/06/18 17:55:29 matthewbrett Exp $
+% $Id: pr_estimate.m,v 1.7 2005/07/01 00:58:35 matthewbrett Exp $
 
 %-Condition arguments
 %-----------------------------------------------------------------------
@@ -74,6 +74,9 @@ phiw_mat_name = [wtp 'phiw_spm.mat'];
 SPMid  = sprintf('SPM99: Phiwave estimation; %s version %s', ...
 		 mfilename, ...
 		 mars_cvs_version(mfilename, 'phido_99'));
+
+% Backspace macro
+bs30 = repmat(sprintf('\b'),1,30);
 
 %-Say hello
 %-----------------------------------------------------------------------
@@ -195,7 +198,7 @@ end
 
 %-Default F-contrasts (in contrast structure) & Y.mad pointlist filtering
 %=======================================================================
-fprintf('%s%30s',sprintf('\b')*ones(1,30),'...F-contrast')           %-#
+fprintf('%s%30s',,'...F-contrast')           %-#
 
 if isempty(F_iX0)
 	F_iX0 = struct(	'iX0',		[],...
@@ -223,7 +226,7 @@ h             = spm_FcUtil('Hsqr',xCon(1),xX.xKXs);
 %-----------------------------------------------------------------------
 if nVar > 1
 
-  fprintf('%s%30s',sprintf('\b')*ones(1,30),'...multivariate prep')%-#
+  fprintf('%s%30s',bs30,'...multivariate prep')%-#
   
   % pseudoinverse of null partition KX0
   %---------------------------------------------------------------
@@ -252,7 +255,7 @@ if nVar > 1
   xCon.eidf = eidf;
 end
 
-fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
+fprintf('%s%30s\n',bs30,'...done')               %-#
 
 %-Initialise output images
 %=======================================================================
@@ -331,7 +334,7 @@ if nVar > 1
 	Vspm   = spm_create_image(Vspm);
 end
 
-fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...initialised')        %-#
+fprintf('%s%30s\n',bs30,'...initialised')        %-#
 
 
 %=======================================================================
@@ -403,7 +406,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
 
 	%-Get data & construct analysis mask for this bunch of lines
 	%===============================================================
-	fprintf('%s%30s',sprintf('\b')*ones(1,30),'...read & mask data')%-#
+	fprintf('%s%30s',bs30,'...read & mask data')%-#
 	CrLm    = logical(ones(1,xdim*bl));		%-current lines mask
 	CrLmxyz = zeros(size(CrLm));			%-and for smoothnes
 
@@ -460,7 +463,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
 
 		    case 'AR(1)'
 		    %---------------------------------------------------
-		    fprintf('%s%30s',sprintf('\b')*ones(1,30),...
+		    fprintf('%s%30s',bs30,...
 					'...AR(1) estimation')	     %-#
 
 		    for i = 1:length(xX.xVi.row)
@@ -473,7 +476,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
 
 		%-Temporal smoothing
 		%-------------------------------------------------------
-		fprintf('%s%30s',sprintf('\b')*ones(1,30),...
+		fprintf('%s%30s',bs30,...
 					'...temporal smoothing')     %-#
 
 		KY        = mardo_99('spm_filter', 'apply',xX.K, Y);
@@ -482,7 +485,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
 		% (Using pinv to allow for non-unique designs            )
 		% (Including temporal convolution of design matrix with K)
 		%-------------------------------------------------------
-		fprintf('%s%30s',sprintf('\b')*ones(1,30),...
+		fprintf('%s%30s',bs30,...
 					'...parameter estimation')   %-#
 		beta      = xX.pKX * KY;		%-Parameter estimates
 		res       = spm_sp('r',xX.xKXs,KY);	%-Residuals
@@ -495,7 +498,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
 		
 		%-get nVar-variate response variable
 		%-------------------------------------------------------
-		fprintf('%s%30s',sprintf('\b')*ones(1,30),...
+		fprintf('%s%30s',bs30,...
 				  '...Canonical Variates Analysis')   %-#
 
 		y     = zeros(nScan,nVar,nVox);
@@ -570,7 +573,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
 
     %-Plane complete, write out plane data to image files
     %===================================================================
-    fprintf('%s%30s',sprintf('\b')*ones(1,30),'...saving plane')     %-#
+    fprintf('%s%30s',bs30,'...saving plane')     %-#
 
     %-Mask image
     %-BePm now contains a complete plane mask
@@ -615,7 +618,7 @@ for z = 1:zdim				%-loop over planes (2D or 3D data)
 
     %-Report progress
     %-------------------------------------------------------------------
-    fprintf('%s%30s',sprintf('\b')*ones(1,30),'...done')             %-#
+    fprintf('%s%30s',bs30,'...done')             %-#
     spm_progress_bar('Set',100*(bch + nbch*(z-1))/(nbch*zdim));
 
 end % (for z = 1:zdim)
@@ -655,7 +658,7 @@ xX.xVi.Param = A;
 
 %-[Re]-enter Vi & derived values into design structure xX
 %-----------------------------------------------------------------------
-fprintf('%s%30s',sprintf('\b')*ones(1,30),'...V, & traces')          %-#
+fprintf('%s%30s',bs30,'...V, & traces')          %-#
 
 KVi      = mardo_99('spm_filter', 'apply',xX.K, xX.xVi.Vi);
 xX.V     = mardo_99('spm_filter', 'apply',xX.K,KVi'); 	%-V matrix
@@ -667,7 +670,7 @@ xX.erdf  = xX.trRV^2/xX.trRVRV;			%-Effective residual d.f.
 
 %-Compute scaled design matrix for display purposes
 %-----------------------------------------------------------------------
-fprintf('%s%30s',sprintf('\b')*ones(1,30),'...scaling DesMtx')       %-#
+fprintf('%s%30s',bs30,'...scaling DesMtx')       %-#
 xX.nKX   = spm_DesMtx('sca',xX.xKXs.X,xX.Xnames);
 
 %-Set VResMS scalefactor as 1/trRV (raw voxel data is ResSS)
@@ -682,14 +685,14 @@ VResMS = spm_write_vol(VResMS, img);
 
 %-"close" written image files, updating scalefactor information
 %=======================================================================
-fprintf('%s%30s',sprintf('\b')*ones(1,30),'...closing image files')  %-#
+fprintf('%s%30s',bs30,'...closing image files')  %-#
 VM                      = spm_create_image(VM);
 for i=1:nBeta, Vbeta(i) = spm_create_image(Vbeta(i)); end
 if nVar > 1,   Vspm     = spm_create_image(Vspm);     end
 
 %-Unmap files, retaining image names, and reset erdf if MV
 %-----------------------------------------------------------------------
-fprintf('%s%30s',sprintf('\b')*ones(1,30),'...tidying file handles') %-#
+fprintf('%s%30s',bs30,'...tidying file handles') %-#
 VM     = VM.fname;
 Vbeta  = {Vbeta.fname}';
 if params.write_res, VResI = {{VResI.fname}'}; end
@@ -699,7 +702,7 @@ if nVar > 1
 	xX.erdf   = erdf;
 end
 
-fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
+fprintf('%s%30s\n',bs30,'...done')               %-#
 
 
 
@@ -732,7 +735,7 @@ SPM = mars_struct('ffillmerge', SPM, ...
 % save design
 savestruct(phiw_mat_name, SPM);
 
-fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
+fprintf('%s%30s\n',bs30,'...done')               %-#
 
 %=======================================================================
 %- E N D: Cleanup GUI
