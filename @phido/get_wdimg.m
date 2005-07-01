@@ -32,7 +32,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.12 2005/07/01 21:33:00 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.13 2005/07/01 21:38:33 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -119,15 +119,13 @@ end
 
 % get contrasts 
 if changef, xCon = get_contrasts(pD); end
-Vcon = full_vol(pD, 'Vcon');
 xC1  = xCon(Ic);
 erdf = error_df(pD);
 edf   = [xC1.eidf erdf];
 
 % get contrast image
 wave = get_wave(pD);
-
-wvcon = phiw_wvimg(Vcon(Ic),struct('noproc',0), wave);
+wvcon = phiw_wvimg(full_vol(pD, xC1.Vcon),struct('noproc',0), wave);
 
 % get and process error image
 VResMS = get_vol_field(pD, 'VResMS');
