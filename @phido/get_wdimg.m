@@ -32,7 +32,7 @@ function [Vdcon, Vderr, pD, changef] = get_wdimg(pD, Ic, wdstruct, fname)
 %
 % Matthew Brett, Federico Turkheimer, 9/10/00
 %
-% $Id: get_wdimg.m,v 1.13 2005/07/01 21:38:33 matthewbrett Exp $
+% $Id: get_wdimg.m,v 1.14 2005/07/01 21:41:23 matthewbrett Exp $
   
 if nargin < 2
   Ic = [];
@@ -50,6 +50,9 @@ end
 % default return values
 [Vdcon, Vderr] = deal([]);
 changef = 0;
+
+% Backspace macro
+bs30 = repmat(sprintf('\b'),1,30);
 
 % default denoising - see comments above
 def_struct = struct(...
@@ -124,7 +127,7 @@ erdf = error_df(pD);
 edf   = [xC1.eidf erdf];
 
 % get contrast image
-wave = get_wave(pD);
+wave = get_wave(pD;)
 wvcon = phiw_wvimg(full_vol(pD, xC1.Vcon),struct('noproc',0), wave);
 
 % get and process error image
@@ -143,7 +146,7 @@ statinf = struct('stat','T','df',edf(2));
 if wdstruct.t2z, statinf.stat = 'TZ'; end
 fprintf('\t%-32s: %30s','Wavelet image','...calculate denoising')         %-#
 [th_obj, dndescrip] = thresh_calc(wvcon, wverr, statinf, wdstruct);
-fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
+fprintf('%s%30s\n',bs30,'...done')               %-#
 
 % check there is still some signal
 if all_null(th_obj)
@@ -164,7 +167,7 @@ Vdcon = struct(...
     'descrip',sprintf('Phiwave{%c} - %s',...
 		      xC1.STAT,xC1.name));
 Vdcon = write_iwtimg(wvcond,Vdcon);
-fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done')               %-#
+fprintf('%s%30s\n',bs30,'...done')               %-#
 
 % Write description into text file
 write_descrip(wvcond,Vdcon);
@@ -226,6 +229,6 @@ if ~isempty(VResI) & wdstruct.write_err
 			xC1.STAT,xC1.name));
   Vdt = spm_write_vol(Vdt, t_img);
 
-  fprintf('%s%30s\n',sprintf('\b')*ones(1,30),'...done');
+  fprintf('%s%30s\n',bs30,'...done');
 end
 return
