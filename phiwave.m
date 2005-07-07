@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.20 2005/06/23 17:55:00 matthewbrett Exp $
+% $Id: phiwave.m,v 1.21 2005/07/07 01:01:24 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -34,7 +34,7 @@ function varargout=phiwave(varargin)
 PWver = '3.2';  
 
 % Required MarsBaR version
-MBver = '0.38.1';
+MBver = '0.38.2';
 
 % Various working variables in global variable structure
 global PHI;
@@ -96,11 +96,9 @@ if isempty(which('marsbar'))
 end
 
 % check MarsBaR version
-badv = ~strcmp(marsbar('ver'), MBver); % to allow 0.38.1 through
-if badv
-  try
-    badv = mars_utils('version_less_than', marsbar('ver'), MBver); 
-  end
+badv = 1;
+try
+  badv = mars_utils('version_less_than', marsbar('ver'), MBver); 
 end
 if badv, error(['Need at least MarsBaR version ' MBver]); end
 
