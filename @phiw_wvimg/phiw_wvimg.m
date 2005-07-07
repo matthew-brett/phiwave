@@ -69,7 +69,7 @@ function wvimg = phiw_wvimg(inpimg,input_options,waveobj,scales)
 %
 % Matthew Brett 21/5/01 (C/NZD)
 %
-% $Id: phiw_wvimg.m,v 1.11 2005/06/21 04:01:04 matthewbrett Exp $
+% $Id: phiw_wvimg.m,v 1.12 2005/07/07 19:35:58 matthewbrett Exp $
 
 myclass = 'phiw_wvimg';
 
@@ -141,7 +141,7 @@ if ischar(inpimg)
     VY = input_options;
     if prod(size(VY)) > 1, error('Can only handle one vol'); end
     wvimg = pr_getwave(VY);
-    if ~ismempty(wvimg)
+    if ~isempty(wvimg)
       wvimg = wtinfo(wvimg);
     end
     return
