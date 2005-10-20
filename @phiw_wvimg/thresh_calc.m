@@ -50,7 +50,7 @@ function [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: thresh_calc.m,v 1.6 2005/06/05 04:36:38 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.7 2005/10/20 14:22:40 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least top and bottom of t statistic, sorry');
@@ -102,30 +102,33 @@ wtobj.img(isnan(wtobj.img)) = 0;
 % apply levels matrix
 suplevs = find(dninf.levels==0);
 if ~isempty(suplevs)
-  wtobj = subsasgn(wtobj,struct('type','()','subs',{{suplevs}}),0);
+  th_obj = subsasgn(th_obj, struct('type','()','subs',{{suplevs}}),0);
 end
 letlevs = find(dninf.levels==-Inf);
+if ~isempty(letlevs)
+  th_obj = subsasgn(th_obj, struct('type','()','subs',{{letlevs}}),1);
+end
 dolevs = find(dninf.levels==1);
 
 % determine blocks
 quads = 1:7;
 switch dninf.thlev
  case 'image'
-  l{1} = dolevs;
-  q{1} = quads;
+  levels{1} = dolevs;
+  quadrants{1} = quads;
  case 'level'
-  l = num2cell(dolevs);
-  q{1} = quads;
+  levels = num2cell(dolevs);
+  quadrants{1} = quads;
  case 'quadrant'
-  l = num2cell(dolevs);
-  q = num2cell(quads);
+  levels = num2cell(dolevs);
+  quadrants = num2cell(quads);
  otherwise
   error('Don''t recognize level specification');
 end  
 
 % number of blocks
-lq = length(q);
-nblks = length(l) * lq;
+lq = length(quadrants);
+nblks = length(levels) * lq;
 % take into account fewer blocks for top level
 if lq > 1 & any(dolevs == wtobj.scales+1)
   nblks = nblks - lq + 1;
@@ -143,13 +146,16 @@ else
 end
 
 % cycle over blocks to do denoising
-for li = 1:length(l)
-  if l{li} > wtobj.scales
+for level_index = 1:length(levels)
+  if levels{level_index} > wtobj.scales
     % at top level -> only one quadrant
-    q = {1};
+    quadrants = {1};
   end
-  for qi = 1:length(q)
-    s = struct('type','()','subs',{{l{li},q{qi}}});
+  for quadrant_index = 1:length(quadrants)
+    % structure for subsref (into wvimg object)
+    s = struct('type','()', ...
+	       'subs',{{levels{level_index},quadrants{quadrant_index}}});
+    
     % get data
     dblk = subsref(wtobj, s);
     eblk = subsref(errobj, s);
