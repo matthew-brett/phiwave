@@ -50,7 +50,7 @@ function [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: thresh_calc.m,v 1.7 2005/10/20 14:22:40 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.8 2005/10/22 22:41:57 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least top and bottom of t statistic, sorry');
@@ -106,7 +106,11 @@ if ~isempty(suplevs)
 end
 letlevs = find(dninf.levels==-Inf);
 if ~isempty(letlevs)
-  th_obj = subsasgn(th_obj, struct('type','()','subs',{{letlevs}}),1);
+  % Here we have to make sure 0 masking is preserved
+  s_st = struct('type','()','subs',{{letlevs}});
+  tmp = subsref(th_obj, s_st);
+  tmp(isfinite(tmp) & tmp ~=0) = 1;
+  th_obj = subsasgn(th_obj, s_st, tmp);
 end
 dolevs = find(dninf.levels==1);
 
