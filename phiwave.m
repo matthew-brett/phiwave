@@ -14,7 +14,7 @@ function varargout=phiwave(varargin)
 % under the GNU public licence.  Many thanks the SPM authors:
 % (John Ashburner, Karl Friston, Andrew Holmes, Jean-Baptiste Poline et al).
 %
-% $Id: phiwave.m,v 1.21 2005/07/07 01:01:24 matthewbrett Exp $
+% $Id: phiwave.m,v 1.22 2005/12/28 15:19:09 matthewbrett Exp $
 
 % Programmer's help
 % -----------------
@@ -30,8 +30,8 @@ function varargout=phiwave(varargin)
 % numbers, change into a temporary directory, and put m2html on the path
 % before running the pre_release script.
   
-% Third sourceforge release; alpha
-PWver = '3.2';  
+% Fourth sourceforge release; beta
+PWver = '3.3';  
 
 % Required MarsBaR version
 MBver = '0.38.2';
