@@ -50,7 +50,7 @@ function [th_obj, dndescrip] = thresh_calc(wtobj,errobj,statinf,dninf)
 %
 % Matthew Brett 2/6/2001, Federico E. Turkheimer 17/9/2000
 %
-% $Id: thresh_calc.m,v 1.8 2005/10/22 22:41:57 matthewbrett Exp $
+% $Id: thresh_calc.m,v 1.9 2005/12/28 11:46:03 matthewbrett Exp $
 
 if nargin < 2
   error('Need at least top and bottom of t statistic, sorry');
@@ -65,9 +65,6 @@ end
 % load objects
 wtobj = doproc(wtobj);
 errobj = doproc(errobj);
-
-% Make object for return
-th_obj = wtobj;
 
 % check stat structure
 defstat = struct('stat','Z','df',10000);
@@ -96,20 +93,24 @@ if isfield(dninf,'killbot') & ~isempty(dninf.killbot) & dninf.killbot > 0
   dninf.levels(1:(dninf.killbot)) = 0;
 end
 
-% remove NaNs
-wtobj.img(isnan(wtobj.img)) = 0;
+% remove NaNs etc
+wtobj.img(~isfinite(wtobj.img)) = 0;
 
-% apply levels matrix
+% Make object for return
+th_obj = wtobj;
+
+% apply levels matrix. We need to make sure that 0 masking is preserved
+% for later application to the residual images
 suplevs = find(dninf.levels==0);
 if ~isempty(suplevs)
   th_obj = subsasgn(th_obj, struct('type','()','subs',{{suplevs}}),0);
 end
 letlevs = find(dninf.levels==-Inf);
 if ~isempty(letlevs)
-  % Here we have to make sure 0 masking is preserved
+  % Preserving 0 masking
   s_st = struct('type','()','subs',{{letlevs}});
   tmp = subsref(th_obj, s_st);
-  tmp(isfinite(tmp) & tmp ~=0) = 1;
+  tmp(tmp ~= 0) = 1;
   th_obj = subsasgn(th_obj, s_st, tmp);
 end
 dolevs = find(dninf.levels==1);
